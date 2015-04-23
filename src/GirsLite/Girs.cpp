@@ -87,6 +87,17 @@ unsigned int captureSize = 201;
 unsigned long endingTimeout = 100000;
 #endif
 
+#define SIGNAL_LED_1 13
+#define SIGNAL_LED_2 A1
+#define SIGNAL_LED_2_GND A0
+#define SIGNAL_LED_3 A3
+#define SIGNAL_LED_3_GND A2
+#define SIGNAL_LED_4 A5
+#define SIGNAL_LED_4_GND A4
+#define SENSOR_GND 9
+#define SENSOR_VSS 10
+
+
 #ifdef ETHERNET
 EthernetServer server(PORT);
 #endif
@@ -114,6 +125,48 @@ void softwareReset() {
 #endif
 
 void setup() {
+#ifdef SENSOR_GND
+     pinMode(SENSOR_GND, OUTPUT);
+     digitalWrite(SENSOR_GND, LOW);
+#endif
+#ifdef SENSOR_VSS
+     pinMode(SENSOR_VSS, OUTPUT);
+     digitalWrite(SENSOR_VSS, HIGH);
+#endif
+#ifdef SIGNAL_LED_1
+     pinMode(SIGNAL_LED_1, OUTPUT);
+     digitalWrite(SIGNAL_LED_1, LOW);
+#endif
+#ifdef SIGNAL_LED_1_GND
+     pinMode(SIGNAL_LED_1_GND, OUTPUT);
+     digitalWrite(SIGNAL_LED_1_GND, LOW);
+#endif
+#ifdef SIGNAL_LED_2
+     pinMode(SIGNAL_LED_2, OUTPUT);
+     digitalWrite(SIGNAL_LED_2, LOW);
+#endif
+#ifdef SIGNAL_LED_2_GND
+     pinMode(SIGNAL_LED_2_GND, OUTPUT);
+     digitalWrite(SIGNAL_LED_2_GND, LOW);
+#endif
+#ifdef SIGNAL_LED_3
+     pinMode(SIGNAL_LED_3, OUTPUT);
+     digitalWrite(SIGNAL_LED_3, LOW);
+#endif
+#ifdef SIGNAL_LED_3_GND
+     pinMode(SIGNAL_LED_3_GND, OUTPUT);
+     digitalWrite(SIGNAL_LED_3_GND, LOW);
+#endif
+#ifdef SIGNAL_LED_4
+     pinMode(SIGNAL_LED_4, OUTPUT);
+     digitalWrite(SIGNAL_LED_4, LOW);
+#endif
+#ifdef SIGNAL_LED_4_GND
+     pinMode(SIGNAL_LED_4_GND, OUTPUT);
+     digitalWrite(SIGNAL_LED_4_GND, LOW);
+#endif
+     
+
 #ifdef ETHERNET
     byte mac[] = { MACADDRESS };
 #ifdef DHCP
@@ -153,6 +206,29 @@ boolean processCommand(Stream& stream) {
             streamPrintProgStr(stream, modulesSupported);
             stream.println();
             break;
+            
+#ifdef SIGNAL_LED_1
+        case 'l': // led
+        {
+
+            stream.find(separatorString);
+            int no = stream.parseInt();
+            int value = stream.parseInt();
+            gobble(stream);
+            digitalWrite(
+#ifdef SIGNAL_LED_4
+              no == 4 ? SIGNAL_LED_4 :
+#endif
+#ifdef SIGNAL_LED_3
+              no == 3 ? SIGNAL_LED_3 :
+#endif
+#ifdef SIGNAL_LED_2
+              no == 2 ? SIGNAL_LED_2 :
+#endif
+              SIGNAL_LED_1, value ? HIGH : LOW);
+        }
+            break;
+#endif // SIGNAL_LED_1      
 
 #ifdef RESET
         case 'R': // reset

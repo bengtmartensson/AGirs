@@ -30,6 +30,7 @@ http://arduino.cc/en/Hacking/PinMapping2560
 #include <Arduino.h>
 #include "IrCapturer.h"
 
+#define ENABLE_PULL_UP
 //#define DEBUG_PORT D
 //#define DEBUG_PIN 6
 //#define DEBUG_PORT L

@@ -28,7 +28,6 @@ http://arduino.cc/en/Hacking/PinMapping2560
 #define	IRWIDGET_H
 
 #include <Arduino.h>
-#include <Platform.h>
 #include "IrCapturer.h"
 
 //#define DEBUG_PORT D

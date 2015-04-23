@@ -17,8 +17,7 @@ this program. If not, see http://www.gnu.org/licenses/.
 
 #ifndef IRCAPTURER_H
 #define	IRCAPTURER_H
-
-#include <Platform.h>
+#include <Arduino.h>
 
 class IrCapturer {
 public:

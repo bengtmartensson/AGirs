@@ -16,7 +16,7 @@ this program. If not, see http://www.gnu.org/licenses/.
 */
 
 #include <Arduino.h>
-#include <Platform.h>
+//#include <Platform.h>
 #include <avr/pgmspace.h>
 
 #if defined(__AVR_ATmega1280__) || defined(__AVR_ATmega2560__)
@@ -70,7 +70,7 @@ void sendIrSignal(IRsendRaw *irSender, unsigned int noSends, unsigned int freque
 #endif
 
 static const char modulesSupported[] PROGMEM = "Base Transmit Capture";
-static const char versionString[] PROGMEM = "ArduinoGirsLite 2014-06-07";
+static const char versionString[] PROGMEM = "ArduinoGirsLite 2015-04-23";
 static const char welcomeString[] PROGMEM = "Welcome to ArduinoGirs";
 static const char okString[] PROGMEM = "OK";
 static const char errorString[] PROGMEM = "ERROR";
@@ -99,7 +99,7 @@ void gobble(Stream &stream) {
 }
 
 // given a PROGMEM string, use Stream.print() to send it out
-void streamPrintProgStr(Stream &stream, const prog_char str[]) {
+void streamPrintProgStr(Stream &stream, const char PROGMEM str[]) {
     if (!str)
         return;
     while (char c = pgm_read_byte(str++))

@@ -1,4 +1,4 @@
-/* IRLib.h from IRLib � an Arduino library for infrared encoding and decoding
+/* IRLib.h from IRLib an Arduino library for infrared encoding and decoding
  * Version 1.4   March 2014
  * Copyright 2014 by Chris Young http://cyborg5.com
  *
@@ -264,10 +264,10 @@ public:
     unsigned static long GAP_TICKS; //must be public & static for the ISR
 };
 
-/* Original IRrecv class uses 50�s interrupts to sample input. While this is generally
+/* Original IRrecv class uses 50us interrupts to sample input. While this is generally
  * accurate enough for everyday purposes, it may be difficult to port to other
  * hardware unless you know a lot about hardware timers and interrupts. Also
- * when trying to analyze unknown protocols, the 50�s granularity may not be sufficient.
+ * when trying to analyze unknown protocols, the 50us granularity may not be sufficient.
  * In that case use either the IRrecvLoop or the IRrecvPCI class.
  */
 class IRrecv: public IRrecvBase
@@ -295,7 +295,7 @@ public:
 };
 
 /* This receiver uses the pin change hardware interrupt to detect when your input pin
- * changes state. It gives more detailed results than the 50�s interrupts of IRrecv
+ * changes state. It gives more detailed results than the 50us interrupts of IRrecv
  * and theoretically is more accurate than IRrecvLoop. However because it only detects
  * pin changes, it doesn't always know when it's finished. GetResults attempts to detect
  * a long gap of space but sometimes the next signal gets there before GetResults notices.

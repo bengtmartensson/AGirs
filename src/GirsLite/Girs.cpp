@@ -16,7 +16,6 @@ this program. If not, see http://www.gnu.org/licenses/.
 */
 
 #include <Arduino.h>
-//#include <Platform.h>
 #include <avr/pgmspace.h>
 
 #if defined(__AVR_ATmega1280__) || defined(__AVR_ATmega2560__)
@@ -25,8 +24,39 @@ this program. If not, see http://www.gnu.org/licenses/.
 
 // Girs modules to enable
 #define TRANSMIT
+#define RENDERER
 #define CAPTURE
+#define RECEIVE
+#define DECODER
+#define PARAMETERS
 #define RESET
+#define FREEMEM
+#define LED
+
+#ifdef RECEIVE
+//#define IRRECEIVER_PIN 6
+#define IRRECEIVER_PIN 5
+#define IRRECEIVER_GND 6
+#define IRRECEIVER_VSS 7
+#endif
+
+#ifdef LED
+#define SIGNAL_LED_1 13
+#define SIGNAL_LED_2 A1
+#define SIGNAL_LED_2_GND A0
+#define SIGNAL_LED_3 A3
+#define SIGNAL_LED_3_GND A2
+#define SIGNAL_LED_4 A5
+#define SIGNAL_LED_4_GND A4
+//#define SIGNAL_LED_1 2
+//#define SIGNAL_LED_2 5
+//#define SIGNAL_LED_3 13
+#endif
+
+#ifdef CAPTURE
+#define SENSOR_GND 9
+#define SENSOR_VSS 10
+#endif
 
 //#define ETHERNET
 //#define DHCP
@@ -48,12 +78,81 @@ this program. If not, see http://www.gnu.org/licenses/.
 #define serialTimeout 5000L
 #endif
 
+#ifdef RECEIVE
+#include "IrReceiver.h"
+#endif
+
 #ifdef TRANSMIT
 #include "IRLib.h"
 #endif
 
+#ifdef RENDERER
+#include "IRLib.h"
+#include "IrSignal.h"
+#include "Nec1Renderer.h"
+#include "Rc5Renderer.h"
+#endif
+
 #ifdef CAPTURE
 #include "IrWidgetAggregating.h"
+//#include "IrWidgetRaw.h"
+#endif
+
+#ifdef DECODER
+#include "Nec1Decoder.h"
+#include "Rc5Decoder.h"
+#endif
+
+#ifdef TRANSMIT
+#define TRANSMIT_NAME Transmit
+#else
+#define TRANSMIT_NAME
+#endif
+
+#ifdef CAPTURE
+#define CAPTURE_NAME Capture
+#else
+#define CAPTURE_NAME
+#endif
+
+#ifdef RECEIVE
+#define RECEIVE_NAME Receive
+#else
+#define RECEIVE_NAME
+#endif
+
+#ifdef RENDERER
+#define RENDERER_NAME Renderer
+#else
+#define RENDERER_NAME
+#endif
+
+#ifdef DECODER
+#define DECODER_NAME Decoder
+#else
+#define DECODER_NAME
+#endif
+
+#ifdef LED
+#define LED_NAME Led
+#else
+#define LED_NAME
+#endif
+
+#ifdef PARAMETERS
+#define PARAMETERS_NAME Parameters
+#else
+#define PARAMETERS_NAME
+#endif
+
+#define QUOTE(str) #str
+#define EXPAND_AND_QUOTE(str) QUOTE(str)
+
+#ifdef RECEIVE
+void capture(IrReceiver *irReceiver, Stream& stream /***/) {
+        while (!(/*stream != NULL &&*/ stream.available()) && !irReceiver->hasContent())
+            ;
+    }
 #endif
 
 #ifdef TRANSMIT
@@ -67,15 +166,28 @@ void sendIrSignal(IRsendRaw *irSender, unsigned int noSends, unsigned int freque
     if (endingLength > 0)
         irSender->send(ending, endingLength, frequency/1000);
 }
+
+#ifdef RENDERER
+void sendIrSignal(IRsendRaw *irSender, unsigned int noSends, const IrSignal *signal) {
+    sendIrSignal(irSender, noSends, signal->getFrequency(),
+            signal->getLengthIntro(), signal->getLengthRepeat(), signal->getLengthEnding(),
+        (unsigned int*) signal->getIntro(), (unsigned int*) signal->getRepeat(), (unsigned int*) signal->getEnding());
+}
+#endif
 #endif
 
-static const char modulesSupported[] PROGMEM = "Base Transmit Capture";
-static const char versionString[] PROGMEM = "ArduinoGirsLite 2015-04-23";
+static const char modulesSupported[] PROGMEM = EXPAND_AND_QUOTE(Base TRANSMIT_NAME CAPTURE_NAME RENDERER_NAME RECEIVE_NAME DECODER_NAME LED_NAME PARAMETERS_NAME);
+static const char versionString[] PROGMEM = "ArduinoGirsLite 2015-04-24";
 static const char welcomeString[] PROGMEM = "Welcome to ArduinoGirs";
 static const char okString[] PROGMEM = "OK";
 static const char errorString[] PROGMEM = "ERROR";
 static /*const*/ char separatorString[] = " ";
-
+//static const char fEqualsString[] PROGMEM = "f=";
+#ifdef RECEIVE
+IrReceiver *irReceiver = NULL;
+//IRrecv *irReceiver = NULL;
+//unsigned int receiveSize = 201;
+#endif
 #ifdef TRANSMIT
 IRsendRaw *irSender = NULL;
 #endif
@@ -84,19 +196,14 @@ IrWidget *irWidget = NULL;
 unsigned int captureSize = 201;
 #endif
 #if defined(RECEIVE) || defined(CAPTURE)
-unsigned long endingTimeout = 100000;
+unsigned long endingTimeout =
+#ifdef DECODER
+// If using the decoder, be sure to end a capture before the repeat sequence.
+33333L;
+#else
+111111L;
 #endif
-
-#define SIGNAL_LED_1 13
-#define SIGNAL_LED_2 A1
-#define SIGNAL_LED_2_GND A0
-#define SIGNAL_LED_3 A3
-#define SIGNAL_LED_3_GND A2
-#define SIGNAL_LED_4 A5
-#define SIGNAL_LED_4_GND A4
-#define SENSOR_GND 9
-#define SENSOR_VSS 10
-
+#endif
 
 #ifdef ETHERNET
 EthernetServer server(PORT);
@@ -108,6 +215,15 @@ void gobble(Stream &stream) {
         c = stream.read();
     } while (c != '\r' && c != '\n');
 }
+
+#ifdef FREEMEM
+// http://playground.arduino.cc/Code/AvailableMemory#.U0EnzKogTzs
+int freeRam () {
+  extern int __heap_start, *__brkval;
+  int v;
+  return (int) &v - (__brkval == 0 ? (int) &__heap_start : (int) __brkval);
+}
+#endif
 
 // given a PROGMEM string, use Stream.print() to send it out
 void streamPrintProgStr(Stream &stream, const char PROGMEM str[]) {
@@ -125,6 +241,14 @@ void softwareReset() {
 #endif
 
 void setup() {
+#ifdef IRRECEIVER_GND
+    pinMode(IRRECEIVER_GND, OUTPUT);
+    digitalWrite(IRRECEIVER_GND, LOW);
+#endif
+#ifdef IRRECEIVER_VSS
+    pinMode(IRRECEIVER_VSS, OUTPUT);
+    digitalWrite(IRRECEIVER_VSS, HIGH);
+#endif
 #ifdef SENSOR_GND
      pinMode(SENSOR_GND, OUTPUT);
      digitalWrite(SENSOR_GND, LOW);
@@ -206,8 +330,16 @@ boolean processCommand(Stream& stream) {
             streamPrintProgStr(stream, modulesSupported);
             stream.println();
             break;
-            
-#ifdef SIGNAL_LED_1
+
+#ifdef FREEMEM
+        case 'i': // info
+            gobble(stream);
+            stream.println(freeRam());
+            stream.println(RAMEND);
+            break;
+#endif
+
+#ifdef LED
         case 'l': // led
         {
 
@@ -228,7 +360,39 @@ boolean processCommand(Stream& stream) {
               SIGNAL_LED_1, value ? HIGH : LOW);
         }
             break;
-#endif // SIGNAL_LED_1      
+#endif // LED
+
+#ifdef PARAMETERS
+        case 'p': // parameter
+        {
+            stream.find(separatorString);
+            String variableName = stream.readStringUntil(' ');
+            long value = stream.parseInt();
+            Serial.println(variableName);
+            Serial.println(value);
+            gobble(stream);
+#if defined(RECEIVE) || defined(CAPTURE)
+            if (variableName == "endingtimeout")
+                endingTimeout = value;
+            else
+#endif
+#ifdef CAPTURE
+            if (variableName == "capturesize")
+                captureSize = value;
+            else
+#endif
+#ifdef RECEIVE
+            //if (variableName == "receivesize")
+            //    receiveSize = value;
+            //else
+#endif
+            {
+                streamPrintProgStr(stream, errorString);
+                stream.println();
+            }
+        }
+            break;
+#endif // PARAMETERS
 
 #ifdef RESET
         case 'R': // reset
@@ -274,9 +438,101 @@ boolean processCommand(Stream& stream) {
             break;
 #endif // TRANSMIT
 
+#ifdef RENDERER
+        case 't': // transmit
+            stream.find(separatorString);
+        {
+            IrSignal* signal = NULL;
+            // TODO: handle silly data gracefully
+            uint16_t noSends = stream.parseInt();
+            stream.find(separatorString);
+            String protocol = stream.readStringUntil(' ');
+            protocol.toLowerCase();
+            if (protocol == "nec1") {
+                unsigned int D = stream.parseInt();
+                unsigned int S;// = stream.parseInt();
+                unsigned int F = stream.parseInt();
+                S = 255-D;
+                signal = Nec1Renderer::render(D, S, F);
+            } else if (protocol == "rc5") {
+                unsigned int D = stream.parseInt();
+                unsigned int F = stream.parseInt();
+                unsigned int T = 0U;//stream.parseInt();
+                signal = Rc5Renderer::render(D, F, T);
+            } else {
+                streamPrintProgStr(stream, errorString);
+                stream.println();
+                signal = NULL;
+            }
+            gobble(stream);
+            signal->dump(stream);
+            if (signal != NULL) {
+                if (irSender == NULL)
+                    irSender = new IRsendRaw();
+
+                //signal->dump(stream);
+
+                sendIrSignal(irSender, noSends, signal);
+            }
+        }
+            streamPrintProgStr(stream, okString);
+            stream.println();
+            break;
+#endif // RENDERER
+
+#ifdef RECEIVE
+        case 'r': // receive
+            gobble(stream);
+        {
+#ifdef CAPTURE
+            if (irWidget != NULL) {
+                delete irWidget;
+                irWidget = NULL;
+            }
+#endif // CAPTURE
+            if (irReceiver == NULL) {
+                //irReceiver = new IrReceiver(IRRECEIVER_PIN, receiveSize, &stream);
+                irReceiver = new IrReceiver(IRRECEIVER_PIN);
+                irReceiver->setEndingTimeout(endingTimeout);
+                irReceiver->Mark_Excess = 0;
+                irReceiver->enableIRIn();
+            } else {
+                irReceiver->resume();
+            }
+            //irReceiver->reset();
+
+            capture(irReceiver, stream);
+            if (irReceiver->hasContent()) {
+                irReceiver->dump(stream);
+		stream.println();		
+#ifdef DECODER
+                Nec1Decoder nec1Decoder(*irReceiver);
+                if (nec1Decoder.isValid())
+                    stream.println(nec1Decoder.toString());
+                else {
+                    Rc5Decoder rc5Decoder(*irReceiver);
+                    if (rc5Decoder.isValid())
+                        stream.println(rc5Decoder.toString());
+                    else
+                        stream.println(F("No decode"));
+                }
+#endif
+            } else
+                stream.println(F("null (no content)"));
+        }
+            break;
+#endif // RECEIVE
+
 #ifdef CAPTURE
         case 'a': // analyze
             gobble(stream);
+        {
+#ifdef RECEIVE
+            if (irReceiver != NULL) {
+                delete irReceiver;
+                irReceiver = NULL;
+            }
+#endif
             if (irWidget == NULL) {
                 irWidget = new IrWidgetAggregating(captureSize, &stream);
                 irWidget->setEndingTimeout(endingTimeout);
@@ -289,6 +545,7 @@ boolean processCommand(Stream& stream) {
                 delay(10);
             } else
                 stream.println(F("null"));
+        }
             break;
 #endif // CAPTURE
 

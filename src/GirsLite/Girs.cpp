@@ -53,12 +53,12 @@ this program. If not, see http://www.gnu.org/licenses/.
 //#define SIGNAL_LED_3 13
 #endif
 
-#ifdef CAPTURE
+#if defined(CAPTURE) & ! defined(ETHERNET)
 #define SENSOR_GND 9
 #define SENSOR_VSS 10
 #endif
 
-//#define ETHERNET
+#define ETHERNET
 //#define DHCP
 
 #ifdef ETHERNET
@@ -71,6 +71,7 @@ this program. If not, see http://www.gnu.org/licenses/.
 #endif // DHCP
 #define PORT       33333
 
+//#include <Ethernet.h>
 #include <Ethernet.h>
 #else
 #define serialBaud 115200
@@ -234,6 +235,9 @@ void streamPrintProgStr(Stream &stream, const char PROGMEM str[]) {
 }
 
 #ifdef RESET
+//static const char resetString[] PROGMEM = "Resetting";
+boolean reset = false;
+
 // Restarts program from beginning but does not reset the peripherals and registers
 void softwareReset() {
     asm volatile("  jmp 0");
@@ -312,7 +316,7 @@ void setup() {
 }
 
 boolean processCommand(Stream& stream) {
-#ifdef ETHERNET
+#ifdef ETHERNET_SESSION 
     boolean quit = false;
 #endif
     char ch = -1;
@@ -397,11 +401,11 @@ boolean processCommand(Stream& stream) {
 #ifdef RESET
         case 'R': // reset
             gobble(stream);
-            softwareReset();
+	    reset = true;
             break;
 #endif
 
-#ifdef ETHERNET
+#ifdef ETHERNET_SESSION
         case 'q': // quit
             gobble(stream);
             quit = true;
@@ -569,11 +573,17 @@ boolean processCommand(Stream& stream) {
             break;
         stream.read();
     }
-#ifdef ETHERNET
-    return !quit;
-#else
-    return true;
+#ifdef RESET
+    if (reset)
+      return false;
 #endif
+
+#ifdef ETHERNET_SESSION
+    if (quit)
+      return false;
+#endif
+
+    return true;
 }
 
 void loop() {
@@ -582,6 +592,7 @@ void loop() {
     if (!client)
         return;
 
+#ifdef ETHERNET_SESSION
     streamPrintProgStr(client, welcomeString);
     client.println();
     boolean goOn;
@@ -589,9 +600,17 @@ void loop() {
         goOn = processCommand(client);
     while (goOn);
     client.println("Bye");
+#else // ! ETHERNET_SESSION
+    processCommand(client);
+#endif
     client.flush();
     client.stop();
-#else
+#else // ! ETHERNET
     processCommand(Serial);
+#endif
+
+#ifdef RESET
+    if (reset)
+      softwareReset();
 #endif
 }

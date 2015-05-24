@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2014 Bengt Martensson.
+Copyright (C) 2014,2015 Bengt Martensson.
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -18,10 +18,6 @@ this program. If not, see http://www.gnu.org/licenses/.
 #include <Arduino.h>
 #include <avr/pgmspace.h>
 
-#if defined(__AVR_ATmega1280__) || defined(__AVR_ATmega2560__)
-#include <SPI.h>
-#endif
-
 // Girs modules to enable
 #define TRANSMIT
 #define RENDERER
@@ -33,33 +29,21 @@ this program. If not, see http://www.gnu.org/licenses/.
 #define FREEMEM
 #define LED
 
-#ifdef RECEIVE
-//#define IRRECEIVER_PIN 6
-#define IRRECEIVER_PIN 5
-#define IRRECEIVER_GND 6
-#define IRRECEIVER_VSS 7
-#endif
+//#define DECODE_CAPTURES
 
-#ifdef LED
-#define SIGNAL_LED_1 13
-#define SIGNAL_LED_2 A1
-#define SIGNAL_LED_2_GND A0
-#define SIGNAL_LED_3 A3
-#define SIGNAL_LED_3_GND A2
-#define SIGNAL_LED_4 A5
-#define SIGNAL_LED_4_GND A4
-//#define SIGNAL_LED_1 2
-//#define SIGNAL_LED_2 5
-//#define SIGNAL_LED_3 13
-#endif
-
-#if defined(CAPTURE) & ! defined(ETHERNET)
-#define SENSOR_GND 9
-#define SENSOR_VSS 10
-#endif
-
-#define ETHERNET
+//#define ETHERNET
+//#define ETHERNET_SESSION
 //#define DHCP
+
+#ifdef ARDUINO_AVT_MEGA2560
+#include "girs_pin_mega2560.h"
+#elif defined(ARDUINO_AVR_NANO)
+#include "girs_pins_nano.h"
+#elif defined(ARDUINO_AVR_MICRO)
+#include "girs_pins_micro.h"
+#else
+#include "girs_pins_default.h"
+#endif
 
 #ifdef ETHERNET
 #define MACADDRESS 0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED
@@ -71,7 +55,7 @@ this program. If not, see http://www.gnu.org/licenses/.
 #endif // DHCP
 #define PORT       33333
 
-//#include <Ethernet.h>
+//#include <UIPEthernet.h>
 #include <Ethernet.h>
 #else
 #define serialBaud 115200
@@ -79,11 +63,7 @@ this program. If not, see http://www.gnu.org/licenses/.
 #define serialTimeout 5000L
 #endif
 
-#ifdef RECEIVE
-#include "IrReceiver.h"
-#endif
-
-#ifdef TRANSMIT
+#if defined(TRANSMIT) | defined(RECEIVE)
 #include "IRLib.h"
 #endif
 
@@ -150,23 +130,62 @@ this program. If not, see http://www.gnu.org/licenses/.
 #define EXPAND_AND_QUOTE(str) QUOTE(str)
 
 #ifdef RECEIVE
-void capture(IrReceiver *irReceiver, Stream& stream /***/) {
-        while (!(/*stream != NULL &&*/ stream.available()) && !irReceiver->hasContent())
-            ;
+void dump(IRdecodeBase& decoder, Stream& stream) {
+    // First entry is introductory silence, therefore start at 1, not 0
+    for (unsigned int i = 1; i < decoder.rawlen; i++) {
+        stream.write((i & 0x01) ? '+' : '-');
+        stream.print(decoder.rawbuf[i], DEC);
+        stream.print(" ");
     }
-#endif
+    stream.println();
+}
+
+void blink_ack(uint8_t pin) {
+  digitalWrite(pin, HIGH);
+  // initialize Timer1
+  cli();          // disable global interrupts
+  TCCR1A = 0;     // set entire TCCR1A register to 0
+  TCCR1B = 0;     // same for TCCR1B
+ 
+  // set compare match register to desired timer count:
+  OCR1A = 15624;
+  // turn on CTC mode:
+  TCCR1B |= (1 << WGM12);
+  // Set CS10 and CS12 bits for 1024 prescaler:
+  TCCR1B |= (1 << CS10);
+  TCCR1B |= (1 << CS12);
+  // enable timer compare interrupt:
+  TIMSK1 |= (1 << OCIE1A);
+  // enable global interrupts:
+  sei();
+}
+
+ISR(TIMER1_COMPA_vect)
+{
+  digitalWrite(SIGNAL_LED_3, LOW);
+  digitalWrite(SIGNAL_LED_4, LOW);
+  cli();          // disable global interrupts
+  TCCR1A = 0;     // set entire TCCR1A register to 0
+  TCCR1B = 0;     // same for TCCR1B
+  sei();
+}
+
+#endif // RECEIVE
 
 #ifdef TRANSMIT
 void sendIrSignal(IRsendRaw *irSender, unsigned int noSends, unsigned int frequency,
         unsigned int introLength, unsigned int repeatLength, unsigned int endingLength,
         /*const*/ unsigned int intro[], /*const*/ unsigned int repeat[], /*const*/ unsigned int ending[]) {
+    digitalWrite(SIGNAL_LED_2, HIGH);
     if (introLength > 0)
         irSender->send(intro, introLength, frequency/1000);
     for (unsigned int i = 0; i < noSends - (introLength > 0); i++)
         irSender->send(repeat, repeatLength, frequency/1000);
     if (endingLength > 0)
         irSender->send(ending, endingLength, frequency/1000);
+    digitalWrite(SIGNAL_LED_2, LOW);
 }
+#endif
 
 #ifdef RENDERER
 void sendIrSignal(IRsendRaw *irSender, unsigned int noSends, const IrSignal *signal) {
@@ -175,18 +194,21 @@ void sendIrSignal(IRsendRaw *irSender, unsigned int noSends, const IrSignal *sig
         (unsigned int*) signal->getIntro(), (unsigned int*) signal->getRepeat(), (unsigned int*) signal->getEnding());
 }
 #endif
-#endif
 
 static const char modulesSupported[] PROGMEM = EXPAND_AND_QUOTE(Base TRANSMIT_NAME CAPTURE_NAME RENDERER_NAME RECEIVE_NAME DECODER_NAME LED_NAME PARAMETERS_NAME);
-static const char versionString[] PROGMEM = "ArduinoGirsLite 2015-04-24";
+static const char versionString[] PROGMEM = "ArduinoGirsLite 2015-05-17";
 static const char welcomeString[] PROGMEM = "Welcome to ArduinoGirs";
 static const char okString[] PROGMEM = "OK";
 static const char errorString[] PROGMEM = "ERROR";
 static /*const*/ char separatorString[] = " ";
 //static const char fEqualsString[] PROGMEM = "f=";
 #ifdef RECEIVE
-IrReceiver *irReceiver = NULL;
-//IRrecv *irReceiver = NULL;
+// Need a trivial IRdecodeBase instance, but that class is abstract...
+class TrivialIrDecoder : public IRdecodeBase {
+};
+
+IRrecv *irReceiver = NULL;
+TrivialIrDecoder decoder;
 //unsigned int receiveSize = 201;
 #endif
 #ifdef TRANSMIT
@@ -293,7 +315,27 @@ void setup() {
      pinMode(SIGNAL_LED_4_GND, OUTPUT);
      digitalWrite(SIGNAL_LED_4_GND, LOW);
 #endif
-     
+#ifdef SIGNAL_LED_5
+     pinMode(SIGNAL_LED_5, OUTPUT);
+     digitalWrite(SIGNAL_LED_5, LOW);
+#endif
+#ifdef SIGNAL_LED_6
+     pinMode(SIGNAL_LED_6, OUTPUT);
+     digitalWrite(SIGNAL_LED_6, LOW);
+#endif
+#ifdef SIGNAL_LED_7
+     pinMode(SIGNAL_LED_7, OUTPUT);
+     digitalWrite(SIGNAL_LED_7, LOW);
+#endif
+#ifdef SIGNAL_LED_8
+     pinMode(SIGNAL_LED_8, OUTPUT);
+     digitalWrite(SIGNAL_LED_8, LOW);
+#endif
+
+#if defined(TRANSMIT) | defined(RECEIVE)
+     // Make sure that sender is quiet
+     IRsendBase::No_Output();
+#endif
 
 #ifdef ETHERNET
     byte mac[] = { MACADDRESS };
@@ -352,6 +394,19 @@ boolean processCommand(Stream& stream) {
             int value = stream.parseInt();
             gobble(stream);
             digitalWrite(
+
+#ifdef SIGNAL_LED_8
+              no == 8 ? SIGNAL_LED_8 :
+#endif
+#ifdef SIGNAL_LED_7
+              no == 7 ? SIGNAL_LED_7 :
+#endif
+#ifdef SIGNAL_LED_6
+              no == 6 ? SIGNAL_LED_6 :
+#endif
+#ifdef SIGNAL_LED_5
+              no == 5 ? SIGNAL_LED_5 :
+#endif              
 #ifdef SIGNAL_LED_4
               no == 4 ? SIGNAL_LED_4 :
 #endif
@@ -456,7 +511,7 @@ boolean processCommand(Stream& stream) {
                 unsigned int D = stream.parseInt();
                 unsigned int S;// = stream.parseInt();
                 unsigned int F = stream.parseInt();
-                S = 255-D;
+                S = 255-D; // FIXME
                 signal = Nec1Renderer::render(D, S, F);
             } else if (protocol == "rc5") {
                 unsigned int D = stream.parseInt();
@@ -495,34 +550,31 @@ boolean processCommand(Stream& stream) {
             }
 #endif // CAPTURE
             if (irReceiver == NULL) {
-                //irReceiver = new IrReceiver(IRRECEIVER_PIN, receiveSize, &stream);
-                irReceiver = new IrReceiver(IRRECEIVER_PIN);
+                irReceiver = new IRrecv(IRRECEIVER_PIN);
                 irReceiver->setEndingTimeout(endingTimeout);
-                irReceiver->Mark_Excess = 0;
+                irReceiver->Mark_Excess = 50;
                 irReceiver->enableIRIn();
+                //irReceiver->blink13(true);
             } else {
-                irReceiver->resume();
+                irReceiver->setEndingTimeout(endingTimeout);
+                irReceiver->enableIRIn();
+                //irReceiver->resume();
             }
-            //irReceiver->reset();
-
-            capture(irReceiver, stream);
-            if (irReceiver->hasContent()) {
-                irReceiver->dump(stream);
-		stream.println();		
+            digitalWrite(SIGNAL_LED_2, HIGH);
+            while (!stream.available() && !(irReceiver->GetResults(&decoder)))
+                ;
+            digitalWrite(SIGNAL_LED_2, LOW);
+            decoder.decode();
+            
 #ifdef DECODER
-                Nec1Decoder nec1Decoder(*irReceiver);
-                if (nec1Decoder.isValid())
-                    stream.println(nec1Decoder.toString());
-                else {
-                    Rc5Decoder rc5Decoder(*irReceiver);
-                    if (rc5Decoder.isValid())
-                        stream.println(rc5Decoder.toString());
-                    else
-                        stream.println(F("No decode"));
-                }
-#endif
-            } else
-                stream.println(F("null (no content)"));
+	    if (Nec1Decoder::tryDecode(decoder, stream))
+	      blink_ack(SIGNAL_LED_3);
+	    else if (Rc5Decoder::tryDecode(decoder, stream))
+	      blink_ack(SIGNAL_LED_4);
+	    else
+#endif // DECODER
+	      dump(decoder, stream);
+            irReceiver->disableIRIn();
         }
             break;
 #endif // RECEIVE
@@ -542,11 +594,20 @@ boolean processCommand(Stream& stream) {
                 irWidget->setEndingTimeout(endingTimeout);
             }
             irWidget->reset();
+#ifdef SIGNAL_LED_4
+            digitalWrite(SIGNAL_LED_4, HIGH);
             irWidget->capture();
-
+#endif
+#ifdef SIGNAL_LED_4            
+            digitalWrite(SIGNAL_LED_4, LOW);
+#endif
             if (irWidget->hasContent()) {
                 irWidget->dump(stream);
-                delay(10);
+#ifdef DECODE_CAPTURES
+            Nec1Decoder::tryDecode(*irWidget, stream)
+                || Rc5Decoder::tryDecode(*irWidget, stream)
+                || stream.println(F("No decode"));
+#endif // DECODE_CAPTURES
             } else
                 stream.println(F("null"));
         }

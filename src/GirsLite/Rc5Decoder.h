@@ -3,14 +3,16 @@
 
 #include "Decoder.h"
 #include "IrCapturer.h"
-#include "IrReceiver.h"
+//#include "IrReceiver.h"
+#include <IRLib.h>
 
 class Rc5Decoder : public Decoder {
 public:
     //Rc5Decoder();
     //Rc5Decoder(const Rc5Decoder& orig);
-    Rc5Decoder(IrCapturer& irCapturer);
-    Rc5Decoder(IrReceiver& irReceiver);
+    Rc5Decoder(const IrCapturer& irCapturer);
+    //Rc5Decoder(IrReceiver& irReceiver);
+    Rc5Decoder(const IRdecodeBase& irReceiver);
     //virtual ~Rc5Decoder();
     String toString() const;
 
@@ -25,6 +27,8 @@ public:
     unsigned int getT() const {
         return T;
     }
+    static boolean tryDecode(const IRdecodeBase& iRdecodeBase, Stream& string);
+    static boolean tryDecode(const IrCapturer& irCapturer, Stream& string);
 private:
     const static uint32_t timebase = 889;
     const static uint32_t timebaseLower = 800;
@@ -41,7 +45,7 @@ private:
 
     Length decode(uint32_t t) const;
     unsigned int decode(uint32_t flash, uint32_t gap) const;
-    unsigned int decode(IrCapturer &irCapture, unsigned int index) const;
+    //unsigned int decode(IrCapturer &irCapture, unsigned int index) const;
 
     uint32_t getTimebase() const { return timebase; }
     uint32_t getTimebaseLower() const { return timebaseLower; }

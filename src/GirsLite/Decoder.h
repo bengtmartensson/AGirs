@@ -16,6 +16,13 @@ public:
     bool isValid() const {
         return valid;
     }
+
+    bool printDecode(Stream& stream) const {
+        if (isValid())
+            stream.println(toString());
+        return isValid();
+    }
+    
 private:
     //const static double tolerance = 0.1; //10% relative tolerance
     const static uint32_t endingMin = 20000U;

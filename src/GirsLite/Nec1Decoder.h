@@ -3,7 +3,8 @@
 
 #include "Decoder.h"
 #include "IrCapturer.h"
-#include "IrReceiver.h"
+//#include "IrReceiver.h"
+#include <IRLib.h>
 
 class Nec1Decoder : public Decoder {
 private:
@@ -19,7 +20,8 @@ public:
     Nec1Decoder();
     //Nec1Decoder(uint16_t* irSequence, unsigned int length);
     Nec1Decoder(const IrCapturer& irCapturer);
-    Nec1Decoder(const IrReceiver& irReceiver);
+    //Nec1Decoder(const IrReceiver& irReceiver);
+    Nec1Decoder(const IRdecodeBase& iRdecodeBase);
     //Nec1Decoder(const Nec1Decoder& orig);
     //virtual ~Nec1Decoder();
 
@@ -42,7 +44,11 @@ public:
     String toString() const;
     unsigned int decodeFlashGap(uint32_t flash, uint32_t gap) const;
     unsigned int decode(const IrCapturer& irCapturer, unsigned int index) const;
-    unsigned int decode(const IrReceiver& irCapturer, unsigned int index) const;
+    //unsigned int decode(const IrReceiver& irCapturer, unsigned int index) const;
+    unsigned int decode(const IRdecodeBase& irCapturer, unsigned int index) const;
+    
+    static boolean tryDecode(const IRdecodeBase& iRdecodeBase, Stream& string);
+    static boolean tryDecode(const IrCapturer& irCapturer, Stream& string);
 };
 
 #endif	/* NEC1DECODER_H */

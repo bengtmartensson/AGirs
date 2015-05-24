@@ -8,8 +8,8 @@ String Rc5Decoder::toString() const {
 
 Rc5Decoder::Length Rc5Decoder::decode(uint32_t t) const {
     Length len =  (t < getTimebaseLower()) ? invalid
-            : (t < getTimebaseUpper()) ? half
-            : (t > 2*getTimebaseLower() && t < 2*getTimebaseUpper()) ? full
+            : (t <= getTimebaseUpper()) ? half
+            : (t >= 2*getTimebaseLower() && t <= 2*getTimebaseUpper()) ? full
             : invalid;
     return len;
 }
@@ -24,18 +24,17 @@ unsigned int Rc5Decoder::decode(uint32_t flash, uint32_t gap) const {
             : invalid;
 }
 
-unsigned int Rc5Decoder::decode(IrCapturer& irCapturer, unsigned int index) const {
-    unsigned int sum = 0U;
-    for (unsigned int i = 7U; i >= 0U; i--) {
-        int result = decode(irCapturer.getTime(2U * i + index), irCapturer.getTime(2U * i + 1U + index));
-        if (result == invalid)
-            return invalid;
-        sum = (sum << 1U) + result;
-    }
-    return sum;
+bool Rc5Decoder::tryDecode(const IRdecodeBase& iRdecodeBase, Stream& stream) {
+    Rc5Decoder decoder(iRdecodeBase);
+    return decoder.printDecode(stream);
 }
 
-Rc5Decoder::Rc5Decoder(IrCapturer& irCapturer) {
+bool Rc5Decoder::tryDecode(const IrCapturer& irCapturer, Stream& stream) {
+    Rc5Decoder decoder(irCapturer);
+    return decoder.printDecode(stream);
+}
+
+Rc5Decoder::Rc5Decoder(const IrCapturer& irCapturer) {
     //super(irSequence);
     unsigned int index = 0U;
     unsigned int sum = 0U;
@@ -62,23 +61,22 @@ Rc5Decoder::Rc5Decoder(IrCapturer& irCapturer) {
     setValid(true);
 }
 
-Rc5Decoder::Rc5Decoder(IrReceiver& irCapturer) {
-    //super(irSequence);
-    unsigned int index = 0U;
+Rc5Decoder::Rc5Decoder(const IRdecodeBase& iRdecodeBase) {
+    unsigned int index = 1U;
     unsigned int sum = 0U;
     int doublet = -1;
 
     while (doublet < 25) {
-        Length length = decode(irCapturer.getTime(index++));
+        Length length = decode(iRdecodeBase.rawbuf[index++]);
         if (length == invalid)
             return;
         doublet += (int) length;
         if (doublet % 2 == 1)
             sum = (sum << 1U) + (index & 1U);
     }
-    sum = ~sum & 0x1FFFU;
+    sum &= 0x1FFFU;
 
-    boolean success = getEnding(irCapturer.getTime(irCapturer.getCaptureCount()-1));
+    boolean success = getEnding(iRdecodeBase.rawbuf[iRdecodeBase.rawlen-1]);
     if (!success)
         return;
 

@@ -2,7 +2,7 @@
 
 String Rc5Decoder::toString() const {
     return isValid()
-            ? ("rc5 " + String(D) + " " + String(F) + " " + String(T))
+            ? ("RC5 " + String(D) + " " + String(F) + " " + String(T))
             : NULL;
 }
 

@@ -14,10 +14,10 @@
 #define SIGNAL_LED_2 A1
 #define SIGNAL_LED_3 A2
 #define SIGNAL_LED_4 A3
-#define SIGNAL_LED_5 A0
-#define SIGNAL_LED_6 6
-#define SIGNAL_LED_7 7
-#define SIGNAL_LED_8 9
+#define SIGNAL_LED_5 A4
+#define SIGNAL_LED_6 A5
+#define SIGNAL_LED_7 6
+#define SIGNAL_LED_8 7
 #endif
 
 #if defined(CAPTURE)

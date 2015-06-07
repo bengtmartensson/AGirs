@@ -1,7 +1,7 @@
 // Configuration for Arduino Nano with components soldered on the PCB.
 
-#ifndef GIRS_PINS_NANO_H
-#define GIRS_PINS_NANO_H
+#ifndef GIRS_PINS_NANO_LCD_H
+#define GIRS_PINS_NANO_LCD_H
 
 #ifndef ARDUINO_AVR_NANO
 #error This file is for Nano only
@@ -13,10 +13,10 @@
 #define SIGNAL_LED_2_GND A0
 #define SIGNAL_LED_3 A3
 #define SIGNAL_LED_3_GND A2
-#define SIGNAL_LED_4 A5
-#define SIGNAL_LED_4_GND A4
-#define SIGNAL_LED_5 A7
-#define SIGNAL_LED_5_GND A6
+#define SIGNAL_LED_4 11
+//#define SIGNAL_LED_4_GND A4
+//#define SIGNAL_LED_5 A7
+//#define SIGNAL_LED_5_GND A6
 #endif
 
 #if defined(CAPTURE)
@@ -28,16 +28,11 @@
 #endif
 
 #ifdef RECEIVE
-#define IRRECEIVER_PIN 5
-#define IRRECEIVER_GND 6
-#define IRRECEIVER_VSS 7
-#endif
-#ifdef RECEIVER_2
-#define IRRECEIVER_2_PIN 12
+#define IRRECEIVER_PIN 12
 #endif
 
 #ifdef TRANSMIT
 // Send pin 3
 #endif
 
-#endif // ! GIRS_PINS_NANO_H
+#endif // ! GIRS_PINS_NANO_LCD_H

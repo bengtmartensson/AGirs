@@ -9,13 +9,13 @@
 
 #ifdef LED
 #define SIGNAL_LED_1 2
-#define SIGNAL_LED_1_GND 3
-#define SIGNAL_LED_2 A1
-#define SIGNAL_LED_2_GND A0
-#define SIGNAL_LED_3 A3
-#define SIGNAL_LED_3_GND A2
-#define SIGNAL_LED_4 7
-#define SIGNAL_LED_4_GND 8
+//#define SIGNAL_LED_1_GND 3
+#define SIGNAL_LED_4 A0
+#define SIGNAL_LED_4_GND 15
+#define SIGNAL_LED_3 A2
+#define SIGNAL_LED_3_GND A1
+#define SIGNAL_LED_2 A3
+//#define SIGNAL_LED_1_GND 8
 #endif
 
 #if defined(CAPTURE)

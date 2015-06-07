@@ -6,7 +6,6 @@
 #ifndef ARDUINO_AVR_MEGA2560
 #error This file is for AVR_MEGA2560 only
 #endif
-#error pattar
 #ifdef LED
 #define SIGNAL_LED_1 13
 #define SIGNAL_LED_2 A1

@@ -1,8 +1,27 @@
 #ifndef _GIRS_MACROS_H
 #define _GIRS_MACROS_H
 
-#if defined(LCD) & defined(LCD_I2C)
-#error Both LCD and LCD_I2C cannot be defined
+#if defined(LCD_4BIT) & defined(LCD_I2C)
+#error Both LCD_4BIT and LCD_I2C cannot be defined
+#endif
+
+#if defined(LCD_4BIT) | defined(LCD_I2C)
+#define LCD
+#endif
+
+#ifdef LCD_4BIT
+#define LCD_DEFINE(lcd) LiquidCrystal lcd(LCD_INIT_ARGS)
+#define LCD_BACKLIGHT_ON(led) digitalWrite(LCD_BACKLIGHT_PIN, HIGH)
+#define LCD_INIT(lcd) pinMode(LCD_BACKLIGHT_PIN, OUTPUT); \
+  lcd.begin(LCD_WIDTH, LCD_HEIGHT);
+#elif defined(LCD_I2C)
+#define LCD_DEFINE(lcd) LiquidCrystal_I2C lcd(LCD_I2C_ADDRESS, LCD_WIDTH, LCD_HEIGHT)
+#define LCD_BACKLIGHT_ON(lcd) lcd.backlight()
+#define LCD_INIT(lcd) lcd.begin()
+#else
+#define LCD_DEFINE(lcd)
+#define LCD_BACKLIGHT_ON(led)
+#define LCD_INIT(lcd)
 #endif
 
 #define DEFINE_IRRECEIVER DEFINE_IRRECEIVER_GND DEFINE_IRRECEIVER_VSS

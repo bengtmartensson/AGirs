@@ -10,12 +10,7 @@
 #error This file is not for Micro
 #endif
 
-#include <LiquidCrystal.h>
-
-#define LCD_INIT_ARGS 8,9,4,5,6,7
-#define LCD_BACKLIGHT_PIN 10 // Clashes with W5100 ethernet shield
-#define LCD_WIDTH 16
-#define LCD_HEIGHT 2
+//#include <lcd_4bit_16_2.h>
 
 #ifdef LED
 #define SIGNAL_LED_1 13
@@ -29,7 +24,7 @@
 #endif
 
 #if defined(CAPTURE)
-// capture pin (ICP) 8/4/49
+// capture pin 8
 #endif
 
 #ifdef RECEIVE
@@ -40,7 +35,7 @@
 #endif
 
 #ifdef TRANSMIT
-// Send pin 3/9
+// Send pin 3
 #endif
 
 #endif // ! GIRS_PINS_DEFAULT_H

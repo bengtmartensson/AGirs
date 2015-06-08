@@ -18,71 +18,47 @@ this program. If not, see http://www.gnu.org/licenses/.
 #include <Arduino.h>
 #include <avr/pgmspace.h>
 
-#define RECEIVE
-#define DECODE
-#define LED
-
-#ifdef ARDUINO_AVR_NANO
-#define LCD_I2C
-//#include <girs_pins_nano_shield.h>
-#include <girs_pins_nano_lcd.h>
-#else
-//#define LCD
-#define LCD_I2C
-//#include <girs_pins_lcdshield.h>
-#include <girs_pins.h>
-#endif
-
-#define ETHERNET
-//#ifdef ARDUINO_AVR_MEGA2560
-//#define DHCP
-//#endif
+#include "config.h"
 
 #include <GirsMacros.h>
-#define VERSION "2015-06-06"
 
-#ifdef LCD_I2C
-//#include <lcd_0x27_16_2.h>
-#include <lcd_0x3F_20_4.h>
+#ifdef ETHERNET
+#ifdef ETHER_ENC28J60
+#include <UIPEthernet.h>
+#else
+#include <Ethernet.h>
 #endif
+#else // ! ETHERNET
+#define serialBaud 115200
+#define serialTimeout 5000L
+#endif // ! ETHERNET
+
+#ifdef LCD_4BIT
+#include <LiquidCrystal.h>
+#endif
+#ifdef LCD_I2C
+#include <LiquidCrystal_I2C.h>
+#endif
+
+#if  defined(RECEIVE) | defined(TRANSMIT)
+#include "IRLib.h"
+#endif
+#ifdef DECODER
+#include "Nec1Decoder.h"
+#include "Rc5Decoder.h"
+#endif
+
+#define VERSION "2015-06-07"
 
 static const unsigned long endingTimeout = 35000UL;
 static const unsigned long beginningTimeout = 10000000UL;
-#if defined(LCD_I2C) | defined(LCD)
+#ifdef LCD
 static const unsigned long blinkTime = 2500L; // milliseconds
 #else
 static const unsigned long blinkTime = 250L;
 #endif
 
-#ifdef ETHERNET
-#define MACADDRESS 0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED
-#ifndef DHCP
-#define IPADDRESS  192,168,1,29
-#define GATEWAY    192,168,1,254
-#define DNSSERVER  192,168,1,4
-#define SUBNETMASK 255,255,255,0
-#endif // DHCP
-#define PORT       33333
-
-#ifdef ARDUINO_AVR_NANO
-#include <UIPEthernet.h>
-#else
-#include <Ethernet.h>
-#endif
-#else
-#define serialBaud 115200
-#define serialTimeout 5000L
-#endif
-
-#include "IRLib.h"
-#include "Nec1Decoder.h"
-#include "Rc5Decoder.h"
-
-#ifdef LCD_I2C
-LiquidCrystal_I2C lcd(LCD_I2C_ADDRESS, LCD_WIDTH, LCD_HEIGHT);
-#else
-LiquidCrystal lcd(LCD_INIT_ARGS);
-#endif
+LCD_DEFINE(lcd);
 
 unsigned long turnoffTime = 0L; // millis() semantic (ms since progarm start)
 bool somethingTurnedOn = false;
@@ -97,16 +73,12 @@ void turnoff() {
   somethingTurnedOn = false;
 }
 
-#if defined(LCD_I2C) | defined(LCD)
+#ifdef LCD
 void lcdPrint(String str, bool clear) {
   if (clear)
     lcd.clear();
   lcd.display();
-#ifdef LCD_I2C
-  lcd.backlight();
-#else
-  digitalWrite(LCD_BACKLIGHT_PIN, HIGH);
-#endif
+  LCD_BACKLIGHT_ON(lcd);
   lcd.print(str);
   updateTurnoffTime();
 }
@@ -141,20 +113,23 @@ void setup() {
   DEFINE_IRRECEIVER;
   DEFINE_LEDS;
   ALL_LEDS_ON(blinkAck); // Just as a test
-#ifdef LCD_I2C
-  lcd.begin();
-  lcdPrint(F("GirsListener"), true);
-#endif
 #ifdef LCD
-  pinMode(LCD_BACKLIGHT_PIN, OUTPUT);
-  lcd.begin(LCD_WIDTH, LCD_HEIGHT);
+  LCD_INIT(lcd);
   lcdPrint(F("GirsListener"), true);
+  lcd.setCursor(0, 1);
+  lcdPrint(F(VERSION), false);  
 #endif
   
 #ifdef ETHERNET
+#ifdef SDCARD_ON_ETHERSHIELD
   // disable the SD card, as recommended in the doc
   pinMode(4, OUTPUT);
   digitalWrite(4, LOW);
+#endif
+#ifdef ARDUINO_AVR_MEGA2560
+  pinMode(53, OUTPUT);
+  digitalWrite(53, LOW);
+#endif
   byte mac[] = { MACADDRESS };
 #ifdef DHCP
   Ethernet.begin(mac);
@@ -194,7 +169,7 @@ void decode(Stream& stream) {
   if (nec1decoder.isValid()) {
     String s = nec1decoder.toString();
     stream.println(s);
-#if defined(LCD_I2C) | defined(LCD)
+#ifdef LCD
     if (nec1decoder.isDitto()) {
       lcdPrint(".", false);
     } else {
@@ -209,7 +184,7 @@ void decode(Stream& stream) {
   if (rc5decoder.isValid()) {
     String s = rc5decoder.toString();
     stream.println(s);
-#if defined(LCD_I2C) | defined(LCD)
+#ifdef LCD
     lcdPrint(s, true);
 #endif
     BLINK_LED_3(blinkAck);
@@ -217,11 +192,10 @@ void decode(Stream& stream) {
   }
   // undecoded
   stream.println(F("undecoded"));
-#if defined(LCD_I2C) | defined(LCD)
+#ifdef LCD
   lcdPrint(F("*** unknown: "), true);
   lcdPrint(String(decoder.getRawlen()), false);
 #endif
-  //BLINK_LED_2;
   BLINK_LED_2(blinkAck);
 }
 
@@ -246,7 +220,7 @@ void loop() {
   EthernetClient client = server.available();
   if (!client)
     return;
-   BLINK_LED_2(blinkAck);
+  BLINK_LED_2(blinkAck);
   client.println(F("GirsListener"));
   while (client.read() != -1)
     if (millis() > turnoffTime && somethingTurnedOn)
@@ -263,3 +237,4 @@ void loop() {
   work(Serial);
 #endif
 }
+

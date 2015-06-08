@@ -1,4 +1,4 @@
-// Configuration for my Arduino Nano shield.
+// Configuration for Arduino Nano with receiver on the ICSP pin
 
 #ifndef GIRS_PINS_NANO_H
 #define GIRS_PINS_NANO_H
@@ -10,8 +10,10 @@
 #ifdef LED
 #define SIGNAL_LED_1 13
 #define SIGNAL_LED_2 A1
-#define SIGNAL_LED_3 A2
-#define SIGNAL_LED_4 A3
+#define SIGNAL_LED_2_GND A0
+#define SIGNAL_LED_3 A3
+#define SIGNAL_LED_3_GND A2
+#define SIGNAL_LED_4 11
 #endif
 
 #if defined(CAPTURE)
@@ -19,10 +21,7 @@
 #endif
 
 #ifdef RECEIVE
-#define IRRECEIVER_PIN 5
-#endif
-#ifdef RECEIVER_2
-#define IRRECEIVER_2_PIN 12
+#define IRRECEIVER_PIN 12
 #endif
 
 #ifdef TRANSMIT

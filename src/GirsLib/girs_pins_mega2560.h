@@ -11,10 +11,10 @@
 #define SIGNAL_LED_2 A1
 #define SIGNAL_LED_3 A2
 #define SIGNAL_LED_4 A3
-#define SIGNAL_LED_5 A4
-#define SIGNAL_LED_6 A5
-#define SIGNAL_LED_7 6
-#define SIGNAL_LED_8 7
+//#define SIGNAL_LED_5 A4
+//#define SIGNAL_LED_6 A5
+//#define SIGNAL_LED_7 6
+//#define SIGNAL_LED_8 7
 #endif
 
 #if defined(CAPTURE)
@@ -25,7 +25,7 @@
 #define IRRECEIVER_PIN 5
 #endif
 #ifdef RECEIVER_2
-#define IRRECEIVER_2_PIN 12
+//#define IRRECEIVER_2_PIN 12
 #endif
 
 #ifdef TRANSMIT

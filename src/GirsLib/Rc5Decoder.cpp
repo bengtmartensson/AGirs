@@ -2,8 +2,8 @@
 
 String Rc5Decoder::toString() const {
     return isValid()
-            ? ("RC5 " + String(D) + " " + String(F) + " " + String(T))
-            : NULL;
+      ? String(F("RC5 ")) + String(D) + F(" ") + String(F) + F(" ") + String(T)
+      : String();
 }
 
 Rc5Decoder::Length Rc5Decoder::decode(uint32_t t) const {

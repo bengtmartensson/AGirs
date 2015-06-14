@@ -8,7 +8,7 @@
 #endif
 
 #ifdef LED
-#define SIGNAL_LED_1 13
+#define SIGNAL_LED_1 LED_BUILTIN // 13
 #define SIGNAL_LED_2 A1
 #define SIGNAL_LED_2_GND A0
 #define SIGNAL_LED_3 A3

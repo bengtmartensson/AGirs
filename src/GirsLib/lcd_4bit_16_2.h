@@ -12,5 +12,6 @@
 #define LCD_BACKLIGHT_PIN 10 // Clashes with W5100 ethernet shield
 #define LCD_WIDTH 16
 #define LCD_HEIGHT 2
+#define LCD_BACKLIGHT_SILLY
 
 #endif // ! LCD_4BIT_16_2_h

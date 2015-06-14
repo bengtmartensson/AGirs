@@ -1,5 +1,9 @@
 #include <SPI.h>
 
+#include <Wire.h>
+
+#include <LiquidCrystal_I2C.h>
+
 #include <Dhcp.h>
 #include <EthernetUdp.h>
 #include <Ethernet.h>
@@ -7,9 +11,7 @@
 #include <EthernetClient.h>
 #include <EthernetServer.h>
 
-#include <Wire.h>
-
-#include <LiquidCrystal_I2C.h>
+#include <LiquidCrystal.h>
 
 #include <IRLibMatch.h>
 #include <IRLibTimer.h>
@@ -29,3 +31,4 @@
 
 // Dummy file to placify the silly Arduino IDE.
 // Do not delete unless you know what you do.
+

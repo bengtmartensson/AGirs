@@ -10,19 +10,39 @@
 #endif
 
 #ifdef LCD_4BIT
+
 #define LCD_DEFINE(lcd) LiquidCrystal lcd(LCD_INIT_ARGS)
-#define LCD_BACKLIGHT_ON(led) digitalWrite(LCD_BACKLIGHT_PIN, HIGH)
+#ifdef LCD_BACKLIGHT_SILLY
+#define LCD_BACKLIGHT_ON(lcd) pinMode(LCD_BACKLIGHT_PIN, INPUT_PULLUP)
+//#define LCD_BACKLIGHT_ON(lcd)
+//#define LCD_INIT(lcd) pinMode(LCD_BACKLIGHT_PIN, OUTPUT);	\
+//  digitalWrite(LCD_BACKLIGHT_PIN, LOW);			\
+//  lcd.begin(LCD_WIDTH, LCD_HEIGHT);
+#define LCD_INIT(lcd)  lcd.begin(LCD_WIDTH, LCD_HEIGHT)
+#define LCD_OFF(lcd) lcd.noDisplay(); pinMode(LCD_BACKLIGHT_PIN, OUTPUT); digitalWrite(LCD_BACKLIGHT_PIN, LOW)
+//#define LCD_OFF(lcd) lcd.noDisplay()
+#else // !LCD_BACKLIGHT_SILLY
+#define LCD_BACKLIGHT_ON(lcd) digitalWrite(LCD_BACKLIGHT_PIN, HIGH)
 #define LCD_INIT(lcd) pinMode(LCD_BACKLIGHT_PIN, OUTPUT); \
   lcd.begin(LCD_WIDTH, LCD_HEIGHT);
-#elif defined(LCD_I2C)
+#define LCD_OFF(lcd) lcd.noDisplay(); digitalWrite(LCD_BACKLIGHT_PIN, LOW)
+#endif // !LCD_BACKLIGHT_SILLY
+
+#elif defined(LCD_I2C) // !LCD_4BIT
+
 #define LCD_DEFINE(lcd) LiquidCrystal_I2C lcd(LCD_I2C_ADDRESS, LCD_WIDTH, LCD_HEIGHT)
 #define LCD_BACKLIGHT_ON(lcd) lcd.backlight()
 #define LCD_INIT(lcd) lcd.begin()
-#else
+#define LCD_OFF(lcd) lcd.noDisplay(); lcd.noBacklight()
+
+#else   // ! defined(LCD_I2C)
+
 #define LCD_DEFINE(lcd)
-#define LCD_BACKLIGHT_ON(led)
+#define LCD_BACKLIGHT_ON(lcd)
 #define LCD_INIT(lcd)
-#endif
+#define LCD_OFF(lcd)
+
+#endif  // ! defined(LCD_I2C)
 
 #define DEFINE_IRRECEIVER DEFINE_IRRECEIVER_GND DEFINE_IRRECEIVER_VSS
 #ifdef IRRECEIVER_GND
@@ -212,58 +232,74 @@
 #ifdef SIGNAL_LED_1
 #define SIGNAL_LED_1_OFF  digitalWrite(SIGNAL_LED_1, LOW)
 #define BLINK_LED_1(f) f(SIGNAL_LED_1)
+#define TERNARY_LED_1(led_no)  (led_no) == 1 ? SIGNAL_LED_1 :
 #else
 #define SIGNAL_LED_1_OFF
 #define BLINK_LED_1(f)
+#define TERNARY_LED_1(led_no)
 #endif
 #ifdef SIGNAL_LED_2
 #define SIGNAL_LED_2_OFF  digitalWrite(SIGNAL_LED_2, LOW)
 #define BLINK_LED_2(f) f(SIGNAL_LED_2)
+#define TERNARY_LED_2(led_no)  (led_no) == 2 ? SIGNAL_LED_2 :
 #else
 #define SIGNAL_LED_2_OFF
 #define BLINK_LED_2(f)
+#define TERNARY_LED_2(led_no)
 #endif
 #ifdef SIGNAL_LED_3
 #define SIGNAL_LED_3_OFF  digitalWrite(SIGNAL_LED_3, LOW)
 #define BLINK_LED_3(f) f(SIGNAL_LED_3)
+#define TERNARY_LED_3(led_no)  (led_no) == 3 ? SIGNAL_LED_3 :
 #else
 #define SIGNAL_LED_3_OFF
 #define BLINK_LED_3(f)
+#define TERNARY_LED_3(led_no)
 #endif
 #ifdef SIGNAL_LED_4
 #define SIGNAL_LED_4_OFF  digitalWrite(SIGNAL_LED_4, LOW)
 #define BLINK_LED_4(f) f(SIGNAL_LED_4)
+#define TERNARY_LED_4(led_no)  (led_no) == 4 ? SIGNAL_LED_4 :
 #else
 #define SIGNAL_LED_4_OFF
 #define BLINK_LED_4(f)
+#define TERNARY_LED_4(led_no)
 #endif
 #ifdef SIGNAL_LED_5
 #define SIGNAL_LED_5_OFF  digitalWrite(SIGNAL_LED_5, LOW)
 #define BLINK_LED_5(f) f(SIGNAL_LED_5)
+#define TERNARY_LED_5(led_no)  (led_no) == 5 ? SIGNAL_LED_5 :
 #else
 #define SIGNAL_LED_5_OFF
 #define BLINK_LED_5(f)
+#define TERNARY_LED_5(led_no)
 #endif
 #ifdef SIGNAL_LED_6
 #define SIGNAL_LED_6_OFF  digitalWrite(SIGNAL_LED_6, LOW)
 #define BLINK_LED_6(f) f(SIGNAL_LED_6)
+#define TERNARY_LED_6(led_no)  (led_no) == 6 ? SIGNAL_LED_6 :
 #else
 #define SIGNAL_LED_6_OFF
 #define BLINK_LED_6(f)
+#define TERNARY_LED_6(led_no)
 #endif
 #ifdef SIGNAL_LED_7
 #define SIGNAL_LED_7_OFF  digitalWrite(SIGNAL_LED_7, LOW)
 #define BLINK_LED_7(f) f(SIGNAL_LED_7)
+#define TERNARY_LED_7(led_no)  (led_no) == 7 ? SIGNAL_LED_7 :
 #else
 #define SIGNAL_LED_7_OFF
 #define BLINK_LED_7(f)
+#define TERNARY_LED_7(led_no)
 #endif
 #ifdef SIGNAL_LED_8
 #define SIGNAL_LED_8_OFF  digitalWrite(SIGNAL_LED_8, LOW)
 #define BLINK_LED_8(f) f(SIGNAL_LED_8)
+#define TERNARY_LED_8(led_no)  (led_no) == 8 ? SIGNAL_LED_8 :
 #else
 #define SIGNAL_LED_8_OFF
 #define BLINK_LED_8(f)
+#define TERNARY_LED_8(led_no)
 #endif
 
 #define ALL_LEDS_OFF \
@@ -274,10 +310,13 @@
   BLINK_LED_1(f); BLINK_LED_2(f); BLINK_LED_3(f); BLINK_LED_4(f); \
   BLINK_LED_5(f); BLINK_LED_6(f); BLINK_LED_7(f); BLINK_LED_8(f)
 
-#ifdef  LCD_I2C
-#define LCD_OFF(lcd) lcd.noDisplay(); lcd.noBacklight()
-#elif defined(LCD)
-#define LCD_OFF(lcd) lcd.noDisplay(); digitalWrite(LCD_BACKLIGHT_PIN, LOW)
-#else
-#define LCD_OFF(lcd)
-#endif
+#define LED2PIN(led_no) ( \
+	      TERNARY_LED_1(led_no)	\
+              TERNARY_LED_2(led_no) \
+              TERNARY_LED_3(led_no) \
+              TERNARY_LED_4(led_no) \
+              TERNARY_LED_5(led_no) \
+              TERNARY_LED_6(led_no) \
+              TERNARY_LED_7(led_no) \
+              TERNARY_LED_8(led_no) \
+              -1)

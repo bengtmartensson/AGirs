@@ -19,7 +19,6 @@ this program. If not, see http://www.gnu.org/licenses/.
 #include <avr/pgmspace.h>
 
 #include "config.h"
-
 #include <GirsMacros.h>
 
 #ifdef ETHERNET
@@ -41,14 +40,14 @@ this program. If not, see http://www.gnu.org/licenses/.
 #endif
 
 #if  defined(RECEIVE) | defined(TRANSMIT)
-#include "IRLib.h"
+#include <IRLib.h>
+#include <TrivialDecoder.h>
 #endif
 #ifdef DECODER
-#include "Nec1Decoder.h"
-#include "Rc5Decoder.h"
+#include <MultiDecoder.h>
 #endif
 
-#define VERSION "2015-06-07"
+#define VERSION "2015-06-14"
 
 static const unsigned long endingTimeout = 35000UL;
 static const unsigned long beginningTimeout = 10000000UL;
@@ -67,10 +66,12 @@ void updateTurnoffTime() {
   turnoffTime = millis() + blinkTime;
 }
 
-void turnoff() {
-  ALL_LEDS_OFF;
-  LCD_OFF(lcd);
-  somethingTurnedOn = false;
+static void checkTurnoff() {
+  if (millis() > turnoffTime && somethingTurnedOn) {
+    ALL_LEDS_OFF;
+    LCD_OFF(lcd);
+    somethingTurnedOn = false;
+  }
 }
 
 #ifdef LCD
@@ -91,28 +92,23 @@ void blinkAck(uint8_t pin) {
 }
 #endif
 
-// Need a trivial IRdecodeBase instance, but that class is abstract...
-class TrivialIrDecoder : public IRdecodeBase {
-  public:
-  boolean isTimeOut() {
-    return rawlen == 1;
-  }
-  unsigned char getRawlen() {
-    return rawlen;
-  }
-};
-
 IRrecv *irReceiver = NULL;
 TrivialIrDecoder decoder;
 
 #ifdef ETHERNET
+#ifdef SERVER
 EthernetServer server(PORT);
 #endif
+#ifdef USEUDP
+EthernetUDP udp;
+IPAddress peer_ip(PEER_IP);
+#endif // USEUDP
+#endif // ETHERNET
 
 void setup() {
   DEFINE_IRRECEIVER;
   DEFINE_LEDS;
-  ALL_LEDS_ON(blinkAck); // Just as a test
+  ALL_LEDS_ON(blinkAck); // self test
 #ifdef LCD
   LCD_INIT(lcd);
   lcdPrint(F("GirsListener"), true);
@@ -127,8 +123,8 @@ void setup() {
   digitalWrite(4, LOW);
 #endif
 #ifdef ARDUINO_AVR_MEGA2560
-  pinMode(53, OUTPUT);
-  digitalWrite(53, LOW);
+  //pinMode(53, OUTPUT);
+  //digitalWrite(53, LOW);
 #endif
   byte mac[] = { MACADDRESS };
 #ifdef DHCP
@@ -137,7 +133,13 @@ void setup() {
   Ethernet.begin(mac, IPAddress(IPADDRESS), IPAddress(DNSSERVER), IPAddress(GATEWAY), IPAddress(SUBNETMASK));
 #endif // !DHCP
 
+#ifdef USEUDP
+  udp.begin(PORT);
+#else
+#ifdef SERVER
   server.begin();
+#endif // SERVER
+#endif // USEUDP
 #else // !ETHERNET
 
   Serial.begin(serialBaud);
@@ -155,86 +157,78 @@ void setup() {
   irReceiver->Mark_Excess = 50;
 }
 
-void decode(Stream& stream) {
-  if (decoder.isTimeOut()) {
-    stream.println(F("."));
-    return;
-  }
-  if (decoder.getRawlen() < 4) { // Probably noise
-    stream.println(F(":"));
-    return;
-  }
-  
-  Nec1Decoder nec1decoder(decoder);
-  if (nec1decoder.isValid()) {
-    String s = nec1decoder.toString();
-    stream.println(s);
-#ifdef LCD
-    if (nec1decoder.isDitto()) {
-      lcdPrint(".", false);
-    } else {
-      lcdPrint(s, true);
-      lcd.setCursor(0,1); // prepare for dittos
-    }
-#endif
-    BLINK_LED_4(blinkAck);
-    return;
-  }
-  Rc5Decoder rc5decoder(decoder);
-  if (rc5decoder.isValid()) {
-    String s = rc5decoder.toString();
-    stream.println(s);
-#ifdef LCD
-    lcdPrint(s, true);
-#endif
-    BLINK_LED_3(blinkAck);
-    return;
-  }
-  // undecoded
-  stream.println(F("undecoded"));
-#ifdef LCD
-  lcdPrint(F("*** unknown: "), true);
-  lcdPrint(String(decoder.getRawlen()), false);
-#endif
-  BLINK_LED_2(blinkAck);
-}
-
+// Read one IR signal.
+// If something arrives on the stream, abort and return false.
 bool work(Stream& stream) {
   irReceiver->enableIRIn();
+  // Wait until something arrives
   while (!(irReceiver->GetResults(&decoder))) {
-    if (millis() > turnoffTime && somethingTurnedOn)
-      turnoff();
+    checkTurnoff();
     if (stream.available())
       return false;
   }
+  // Setup decoder
   decoder.decode();
-  decode(stream);
+  // Do actual decode
+  MultiDecoder multiDecoder(decoder);
+#ifdef LCD
+  if (multiDecoder.getType() > MultiDecoder::noise) {
+    lcdPrint(multiDecoder.getType() == MultiDecoder::nec_ditto
+	     ? F(".") : multiDecoder.getDecode(),
+	     multiDecoder.getType() != MultiDecoder::nec_ditto);
+    if (multiDecoder.getType() == MultiDecoder::nec)
+            lcd.setCursor(0,1); // prepare for dittos
+  }
+#endif
+#ifdef LED
+  blinkAck(LED2PIN(multiDecoder.getType()));
+#endif
+#ifdef USEUDP
+  udp.beginPacket(peer_ip, PEER_PORT);
+#endif
+  stream.println(multiDecoder.getDecode());
+#ifdef USEUDP
+  udp.endPacket();
+#endif
   irReceiver->disableIRIn();
   return true;  
 }
 
 void loop() {
 #ifdef ETHERNET
-  if (millis() > turnoffTime && somethingTurnedOn)
-    turnoff();
+
+#ifdef USEUDP
+ work(udp);
+#else // !USEUDP
+  checkTurnoff();
+#ifdef SERVER
   EthernetClient client = server.available();
   if (!client)
     return;
-  BLINK_LED_2(blinkAck);
   client.println(F("GirsListener"));
+  
   while (client.read() != -1)
-    if (millis() > turnoffTime && somethingTurnedOn)
-      turnoff();
-
-  do
+    checkTurnoff();
+  while (work(client))
     ;
-  while (work(client));
   
   client.println(F("Bye"));
+#else // !SERVER
+  IPAddress peer(PEER_IP);
+  EthernetClient client;
+  boolean status = client.connect(peer, PEER_PORT);
+  if (!status)
+      return;
+
+  //blinkAck(SIGNAL_LED_8);
+  while(work(client))
+    ;
+#endif // !SERVER
   client.flush();
   client.stop();
-#else
+  
+#endif // !USEUDP
+#else // ! ETHERNET
   work(Serial);
-#endif
+#endif // !ETHERNET
 }
-

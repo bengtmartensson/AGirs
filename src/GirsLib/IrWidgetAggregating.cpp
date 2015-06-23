@@ -43,8 +43,8 @@ void IrWidgetAggregating::capture() {
     /////////////////////////////////////////
     // wait for first edge
     while (!(tifr = (CAT2(TIFR, CAP_TIM) & (_BV(CAT2(ICF, CAP_TIM)))))) {
-        if (stream->available()) // abort the capture when any character is received // FIXME
-            goto endCapture;
+        //if (stream->available()) // abort the capture when any character is received // FIXME
+        //    goto endCapture;
     }
     debugPinToggle();
     val = CAT2(ICR, CAP_TIM);

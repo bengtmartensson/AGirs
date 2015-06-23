@@ -1,6 +1,10 @@
 #ifndef _GIRS_MACROS_H
 #define _GIRS_MACROS_H
 
+#if defined(LED_DEBUG) & ! defined(LED)
+#error Cannot define LED_DEBUG without defining LED
+#endif
+
 #if defined(LCD_4BIT) & defined(LCD_I2C)
 #error Both LCD_4BIT and LCD_I2C cannot be defined
 #endif
@@ -13,6 +17,7 @@
 
 #define LCD_DEFINE(lcd) LiquidCrystal lcd(LCD_INIT_ARGS)
 #ifdef LCD_BACKLIGHT_SILLY
+// See http://forum.arduino.cc/index.php?topic=96747.0
 #define LCD_BACKLIGHT_ON(lcd) pinMode(LCD_BACKLIGHT_PIN, INPUT_PULLUP)
 //#define LCD_BACKLIGHT_ON(lcd)
 //#define LCD_INIT(lcd) pinMode(LCD_BACKLIGHT_PIN, OUTPUT);	\
@@ -227,8 +232,6 @@
   DEFINE_LED_1 DEFINE_LED_2 DEFINE_LED_3 DEFINE_LED_4	\
   DEFINE_LED_5 DEFINE_LED_6 DEFINE_LED_7 DEFINE_LED_8
 
-#endif
-
 #ifdef SIGNAL_LED_1
 #define SIGNAL_LED_1_OFF  digitalWrite(SIGNAL_LED_1, LOW)
 #define BLINK_LED_1(f) f(SIGNAL_LED_1)
@@ -320,3 +323,56 @@
               TERNARY_LED_7(led_no) \
               TERNARY_LED_8(led_no) \
               -1)
+
+#ifdef TRANSMIT
+#define TRANSMIT_NAME Transmit
+#else
+#define TRANSMIT_NAME
+#endif
+
+#ifdef CAPTURE
+#define CAPTURE_NAME Capture
+#else
+#define CAPTURE_NAME
+#endif
+
+#ifdef RECEIVE
+#define RECEIVE_NAME Receive
+#else
+#define RECEIVE_NAME
+#endif
+
+#ifdef RENDERER
+#define RENDERER_NAME Renderer
+#else
+#define RENDERER_NAME
+#endif
+
+#ifdef DECODER
+#define DECODER_NAME Decoder
+#else
+#define DECODER_NAME
+#endif
+
+#ifdef LED
+#define LED_NAME Led
+#else
+#define LED_NAME
+#endif
+
+#ifdef LCD
+#define LCD_NAME Lcd
+#else
+#define LCD_NAME
+#endif
+
+#ifdef PARAMETERS
+#define PARAMETERS_NAME Parameters
+#else
+#define PARAMETERS_NAME
+#endif
+
+#define QUOTE(str) #str
+#define EXPAND_AND_QUOTE(str) QUOTE(str)
+
+#endif

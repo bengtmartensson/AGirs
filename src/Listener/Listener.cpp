@@ -23,7 +23,7 @@ this program. If not, see http://www.gnu.org/licenses/.
 
 #ifdef ETHERNET
 #ifdef ETHER_ENC28J60
-#include <UIPEthernet.h>
+#error ETHER_ENC28J60 not yet supported, only W5100.
 #else
 #include <Ethernet.h>
 #endif
@@ -54,7 +54,7 @@ static const unsigned long beginningTimeout = 10000000UL;
 #ifdef LCD
 static const unsigned long blinkTime = 2500L; // milliseconds
 #else
-static const unsigned long blinkTime = 250L;
+static const unsigned long blinkTime = 500L;
 #endif
 
 LCD_DEFINE(lcd);
@@ -181,7 +181,7 @@ bool work(Stream& stream) {
   }
 #endif
 #ifdef LED
-  blinkAck(LED2PIN(multiDecoder.getType()));
+  blinkAck(LED2PIN(multiDecoder.getType()+1));
 #endif
 #ifdef USEUDP
   udp.beginPacket(peer_ip, PEER_PORT);

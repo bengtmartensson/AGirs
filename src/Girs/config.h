@@ -5,21 +5,24 @@
 
 // Properties
 // Girs modules
-//#define TRANSMIT
-//#define RENDERER
-//#define CAPTURE
+#define TRANSMIT
+#define RENDERER
+#define CAPTURE
 #define RECEIVE
 #define DECODER
-//#define PARAMETERS
-//#define RESET
-//#define FREEMEM
+#define PARAMETERS
+#define RESET
+#define FREEMEM
 #define LED
+#define LISTEN
+
+#define LED_DEBUG
 
 // Other properties
 //#define LCD_4BIT
-//#define LCD_I2C
+#define LCD_I2C
 
-//#define ETHERNET
+#define ETHERNET
 
 #ifdef ETHERNET
 // If SERVER but not USEUDP are defined, runs in "telnet" mode,

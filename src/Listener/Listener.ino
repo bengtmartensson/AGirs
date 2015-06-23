@@ -1,18 +1,3 @@
-#include <SPI.h>
-
-#include <Wire.h>
-
-#include <LiquidCrystal_I2C.h>
-
-#include <Dhcp.h>
-#include <EthernetUdp.h>
-#include <Ethernet.h>
-#include <Dns.h>
-#include <EthernetClient.h>
-#include <EthernetServer.h>
-
-#include <LiquidCrystal.h>
-
 #include <IRLibMatch.h>
 #include <IRLibTimer.h>
 #include <IRLib.h>

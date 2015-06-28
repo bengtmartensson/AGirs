@@ -70,7 +70,6 @@ public:
 
 
 private:
-    bool checkForInvertingSensor();
     void setup();
 
     ////////////////////////////////////////////////////////////////////////////////
@@ -164,7 +163,8 @@ protected:
     uint16_t *captureData; //[bufSize]; // the buffer where the catured data is stored
     uint16_t captureCount; // number of values stored in captureData
     uint16_t period/* = 0*/; // the time of one period in CPU clocks
-    bool sensorIsInverting/* = false*/; // true means the sensor signal is inverted (low = signal on)
+    // Only inverting sensors are supported in this version
+    static const bool sensorIsInverting = true;///* = false*/; // true means the sensor signal is inverted (low = signal on)
     static const uint8_t sampleSize = 2;
 
     virtual uint32_t unpackTimeVal(uint32_t val) const = 0;

@@ -16,8 +16,6 @@ this program. If not, see http://www.gnu.org/licenses/.
 */
 
 #include <Arduino.h>
-#include <avr/pgmspace.h>
-
 #include "config.h"
 #include <GirsMacros.h>
 
@@ -27,10 +25,11 @@ this program. If not, see http://www.gnu.org/licenses/.
 #else
 #include <Ethernet.h>
 #endif
-#else // ! ETHERNET
+#endif // ETHERNET
+#if !defined(ETHERNET) | defined(SERIAL_DEBUG)
 #define serialBaud 115200
 #define serialTimeout 5000L
-#endif // ! ETHERNET
+#endif // !defined(ETHERNET) | defined(SERIAL_DEBUG)
 
 #ifdef LCD_4BIT
 #include <LiquidCrystal.h>
@@ -48,7 +47,6 @@ this program. If not, see http://www.gnu.org/licenses/.
 
 #ifdef CAPTURE
 #include "IrWidgetAggregating.h"
-//#include "IrWidgetRaw.h"
 #endif
 
 #ifdef DECODER
@@ -61,29 +59,20 @@ this program. If not, see http://www.gnu.org/licenses/.
 #include <Rc5Renderer.h>
 #endif
 
-#ifdef PARAMETERS
-#define PARAMETER_CONST
-#else
-#define PARAMETER_CONST const
-#endif
+LCD_DEFINE(lcd);
+
+#include <LedFuncs.inc> // Must come after lcd
+#include <LcdFuncs.inc>
 
 static PARAMETER_CONST unsigned long beginTimeout = 10000000UL;
 #if defined(RECEIVE) || defined(CAPTURE)
 static PARAMETER_CONST unsigned long endingTimeout =
 #ifdef DECODER
 // If using the decoder, be sure to end a capture before the repeat sequence.
-33333L;
+30000L;
 #else
-111111L;
+100000L;
 #endif
-#endif
-
-
-static PARAMETER_CONST unsigned long blinkTime =
-#ifdef LCD
-    2500L; // milliseconds
-#else
-    1000L;
 #endif
 
 #ifdef RECEIVE
@@ -108,66 +97,22 @@ IPAddress peer_ip(PEER_IP);
 #endif // USEUDP
 #endif // ETHERNET
 
-LCD_DEFINE(lcd);
-unsigned long turnoffTime = 0L; // millis() semantic (ms since progarm start)
-bool somethingTurnedOn = false;
-
-void updateTurnoffTime() {
-    somethingTurnedOn = true;
-    turnoffTime = millis() + blinkTime;
-}
-
-static void checkTurnoff() {
-    if (millis() > turnoffTime && somethingTurnedOn) {
-        ALL_LEDS_OFF;
-        LCD_OFF(lcd);
-        somethingTurnedOn = false;
-    }
-}
-
-#ifdef LED
-void blinkAck(uint8_t pin) {
-    digitalWrite(pin, HIGH);
-    updateTurnoffTime();
-}
-
-void setLogicLed(uint8_t pin, int state) {
-    digitalWrite(LED2PIN(pin), state ? HIGH : LOW);
-    if (state < 0)
-        updateTurnoffTime();
-}
-#endif
-
-#ifdef LCD
-
-void lcdPrint(String str, bool clear = false, int x = 0, int y = -1) {
-    if (clear)
-        lcd.clear();
-    lcd.display();
-    LCD_BACKLIGHT_ON(lcd);
-    if (y >= 0)
-        lcd.setCursor(x, y);
-    lcd.print(str);
-    updateTurnoffTime();
-}
-
-#endif
-
 #if defined(TRANSMIT) | defined(RENDERER)
+
 void sendIrSignal(IRsendRaw *irSender, unsigned int noSends, unsigned int frequency,
         unsigned int introLength, unsigned int repeatLength, unsigned int endingLength,
         /*const*/ unsigned int intro[], /*const*/ unsigned int repeat[], /*const*/ unsigned int ending[]) {
-#ifdef TRANSMITBLINK
-digitalWrite(SIGNAL_LED_2, HIGH);
+#ifdef TRANSMITLED
+    setLogicLed(TRANSMITLED, HIGH);
 #endif
-if (introLength > 0)
-        irSender->send(intro, introLength, frequency/1000);
+    if (introLength > 0)
+        irSender->send(intro, introLength, frequency / 1000);
     for (unsigned int i = 0; i < noSends - (introLength > 0); i++)
-        irSender->send(repeat, repeatLength, frequency/1000);
+        irSender->send(repeat, repeatLength, frequency / 1000);
     if (endingLength > 0)
-        irSender->send(ending, endingLength, frequency/1000);
-#ifdef TRANSMITBLINK
-digitalWrite(SIGNAL_LED_2, LOW);
+        irSender->send(ending, endingLength, frequency / 1000);
+#ifdef TRANSMITLED
+    setLogicLed(TRANSMITLED, LOW);
 #endif
 }
 #endif
@@ -182,20 +127,13 @@ void sendIrSignal(IRsendRaw *irSender, unsigned int noSends, const IrSignal *sig
 
 #define modulesSupported EXPAND_AND_QUOTE(Base TRANSMIT_NAME CAPTURE_NAME RENDERER_NAME RECEIVE_NAME DECODER_NAME LED_NAME LCD_NAME PARAMETERS_NAME)
 #define PROGNAME "ArduinoGirs"
-#define VERSION "2015-06-22"
+#define VERSION "2015-06-28"
 #define welcomeString "Welcome to " PROGNAME
 #define okString "OK"
 #define errorString "ERROR"
 #define timeoutString "."
 #define versionString PROGNAME " " VERSION
 static /*const*/ char separatorString[] = " ";
-
-//void gobble(Stream &stream) {
-//    char c;
- //   do {
- //       c = stream.read();
- //   } while (c != '\r' && c != '\n');
-//}
 
 void flushIn(Stream &stream) {
     while (stream.available())
@@ -211,16 +149,10 @@ int freeRam () {
 }
 #endif
 
-/*/ given a PROGMEM string, use Stream.print() to send it out
-/*void streamPrintProgStr(Stream &stream, const char PROGMEM str[]) {
-    if (!str)
-        return;
-    while (char c = pgm_read_byte(str++))
-        stream.print(c);
-}*/
-
 #ifdef RESET
-//static const char resetString[] PROGMEM = "Resetting";
+// TODO: While this works on atmega386 and atmega2560,
+// I suspect that it does not on atmega32/Leonardo/Micro. Verify. 
+
 boolean reset = false;
 
 // Restarts program from beginning but does not reset the peripherals and registers
@@ -241,7 +173,7 @@ void dump(IRdecodeBase& decoder, Stream& stream) {
     stream.println();
 }
 
-boolean receive(Stream& stream) {
+void receive(Stream& stream) {
 #ifdef CAPTURE
     if (irWidget != NULL) {
         delete irWidget;
@@ -255,20 +187,17 @@ boolean receive(Stream& stream) {
     irReceiver->Mark_Excess = 50;
     irReceiver->enableIRIn();
     //irReceiver->resume();
-#ifdef LED_DEBUG
-    setLogicLed(6, 1); // FIXME
+#ifdef RECEIVELED
+    setLogicLed(RECEIVELED, HIGH);
 #endif
     while (!(irReceiver->GetResults(&decoder))) {
         checkTurnoff();
         //if (stream.available()) {
-#ifdef LED_DEBUG
-        //    setLogicLed(8, false);
-#endif
         //    return false;
         //}
     }
-#ifdef LED_DEBUG
-    setLogicLed(6, 0);
+#ifdef RECEIVELED
+     setLogicLed(RECEIVELED, LOW);
 #endif
     // Setup decoder
     decoder.decode();
@@ -284,8 +213,8 @@ boolean receive(Stream& stream) {
             lcd.setCursor(0, 1); // prepare for dittos
     }
 #endif
-#ifdef LED
-    setLogicLed(multiDecoder.getType() + 1, -1);
+#ifdef DECODELED
+    setLogicLed(DECODELED(multiDecoder.getType()), BLINK);
 #endif
 #ifdef USEUDP
     udp.beginPacket(peer_ip, PEER_PORT);
@@ -326,14 +255,15 @@ void capture(Stream& stream) {
         irWidget->setEndingTimeout(endingTimeout);
     }
     irWidget->reset();
-#ifdef LED_DEBUG
-    setLogicLed(7, 1); // FIXME
+#ifdef CAPTURELED
+    setLogicLed(CAPTURELED, HIGH);
 #endif
     irWidget->capture();
-#ifdef LED_DEBUG
-    setLogicLed(7, 0); // FIXME
+#ifdef CAPTURELED
+    setLogicLed(CAPTURELED, LOW); // FIXME
 #endif
     if (irWidget->hasContent()) {
+        // No point in decoding, that is what "receive" is for.
         irWidget->dump(stream);
     } else
         stream.println(F("null"));
@@ -342,18 +272,29 @@ void capture(Stream& stream) {
 
 void setup() {
     DEFINE_IRRECEIVER;
+    DEFINE_IRSENSOR;
     DEFINE_LEDS;
-    ALL_LEDS_ON(blinkAck); // self test
+    BLINK_ALL_LEDS; // as self test
 #ifdef LCD
     LCD_INIT(lcd);
     lcdPrint(F(PROGNAME), true, 0, 0);
     lcdPrint(F(VERSION), false, 0, 1);
 #ifdef ETHERNET
-    lcdPrint(F("Ethernet"), false, 0, 2);
+#ifdef USEUDP
+    lcdPrint(F("UDP"), false, 0, 2);
 #else
+    lcdPrint(F("TCP"), false, 0, 2);
+#endif
+#ifdef SERVER
+    lcdPrint(F(" Srv"), false);
+#endif
+#ifdef SERIAL_DEBUG
+    lcdPrint(F(" SerialDebug"), false);
+#endif
+#else // ! ETHERNET
     lcdPrint(F("Serial"), false, 0, 2);
-#endif
-#endif
+#endif // ! ETHERNET
+#endif // LCD
 
 #if defined(TRANSMIT) | defined(RECEIVE)
     // Make sure that sender is quiet
@@ -384,7 +325,9 @@ void setup() {
     server.begin();
 #endif // SERVER
 #endif // USEUDP
-#else // !ETHERNET
+#endif // ETHERNET
+
+#if !defined(ETHERNET) | defined(SERIAL_DEBUG)
 
     Serial.begin(serialBaud);
 #if defined(ARDUINO_AVR_LEONARDO) | defined(ARDUINO_AVR_MICRO)
@@ -393,7 +336,7 @@ void setup() {
 #endif
     Serial.println(F(versionString));
     Serial.setTimeout(serialTimeout);
-#endif // !ETHERNET
+#endif // !defined(ETHERNET) | defined(SERIAL_DEBUG)
 }
 
 // Process one command.
@@ -402,10 +345,18 @@ boolean work(Stream& stream) {
     boolean quit = false;
 #endif
     char ch = -1;
+#ifdef COMMANDLED
+    setLogicLed(COMMANDLED, HIGH);
+#endif
     while (ch == -1) {
+#ifdef LED
         checkTurnoff();
+#endif
         ch = stream.read(); // Blocks... FIXME
     }
+#ifdef COMMANDLED
+    setLogicLed(COMMANDLED, LOW);
+#endif
     switch (ch) {
         case 'v': // version
             flushIn(stream);
@@ -430,7 +381,7 @@ boolean work(Stream& stream) {
             // TODO: syntax
         {
             stream.find(separatorString);
-            int no = stream.parseInt();
+            uint8_t no = stream.parseInt();
             int value = stream.parseInt();
             flushIn(stream);
             setLogicLed(no, value);
@@ -504,7 +455,7 @@ boolean work(Stream& stream) {
         case 's': // send
         {
             stream.find(separatorString);
-            // TODO: handle silly data gracefully
+            // TODO: handle unparsable data gracefully
             uint16_t noSends = stream.parseInt();
             uint16_t frequency = stream.parseInt();
             uint16_t introLength = stream.parseInt();
@@ -523,13 +474,7 @@ boolean work(Stream& stream) {
             flushIn(stream);
             if (irSender == NULL)
                 irSender = new IRsendRaw();
-#ifdef LED_DEBUG
-            setLogicLed(5, 1);
-#endif
-            sendIrSignal(irSender, noSends, frequency, introLength, repeatLength, endingLength, intro, repeat, ending);
-#ifdef LED_DEBUG
-            setLogicLed(5, 0);
-#endif
+            sendIrSignal(irSender, noSends, frequency, introLength, repeatLength, endingLength, intro, repeat, ending); // waits
             stream.println(okString);
         }
             break;
@@ -539,7 +484,7 @@ boolean work(Stream& stream) {
         case 't': // transmit
         {
             stream.find(separatorString);
-            // TODO: handle silly data gracefully
+            // TODO: handle unparseable data gracefully
             uint16_t noSends = stream.parseInt();
             stream.find(separatorString);
             String protocol = stream.readStringUntil(' ');
@@ -547,31 +492,23 @@ boolean work(Stream& stream) {
             IrSignal* signal = NULL;
             if (protocol == "nec1") {
                 unsigned int D = stream.parseInt();
-                unsigned int S = stream.parseInt();
+                unsigned int S = stream.parseInt();// TODO: Implement default S = 255-D;
                 unsigned int F = stream.parseInt();
-                //S = 255-D; // FIXME
                 signal = Nec1Renderer::render(D, S, F);
             } else if (protocol == "rc5") {
                 unsigned int D = stream.parseInt();
                 unsigned int F = stream.parseInt();
-                unsigned int T = 0U;
+                unsigned int T = 0U; // FIXME?
                 signal = Rc5Renderer::render(D, F, T);
             } else {
                 stream.println(errorString);
-                stream.println();
                 signal = NULL;
             }
             flushIn(stream);
             if (signal != NULL) {
                 if (irSender == NULL)
                     irSender = new IRsendRaw();
-#ifdef LED_DEBUG
-                setLogicLed(5, 1);
-#endif
-                sendIrSignal(irSender, noSends, signal);
- #ifdef LED_DEBUG
-                setLogicLed(5, 0);
-#endif
+                sendIrSignal(irSender, noSends, signal); // waits, blinks
             }
             stream.println(okString);
         }
@@ -579,14 +516,10 @@ boolean work(Stream& stream) {
 #endif // RENDERER
 
 #ifdef RECEIVE
-        // TODO: no-decode mode
+        // TODO: force no-decode
         case 'r': // receive
-        {
             flushIn(stream);
-            boolean status = receive(stream);
-            //if (!status)
-            //    return false;
-        }
+            receive(stream);
             break;
 #ifdef LISTEN
         case '@': // Listen
@@ -607,21 +540,14 @@ boolean work(Stream& stream) {
 
         case '\n':
         case '\r':
-            stream.println(okString);
+            stream.println(F(okString));
             break;
 
         default:
             flushIn(stream);
-            stream.println(errorString);
+            stream.println(F(errorString));
     }
 
-    // Junk pending line feeds
-    //while (true) {
-    //    char c = stream.peek();
-    //    if (c != '\n' && c != '\r')
-    //        break;
-    //    stream.read();
-    //}
     flushIn(stream);
 #ifdef RESET
     if (reset)
@@ -646,12 +572,18 @@ void loop() {
     EthernetClient client = server.available();
     if (!client)
         return;
+#ifdef LCD
+    lcdPrint(F("Connection!"), true, 0, 0);
+#endif
     client.println(F(PROGNAME));
 
     while (client.read() != -1)
         checkTurnoff();
     while (work(client))
         ;
+#ifdef LCD
+    lcdPrint(F("Connection closed!"), true, 0, 0);
+#endif
     client.println(F("Bye"));
 #else // !SERVER
     IPAddress peer(PEER_IP);
@@ -659,6 +591,12 @@ void loop() {
     boolean status = client.connect(peer, PEER_PORT);
     if (!status)
         return;
+#ifdef SERIAL_DEBUG
+    Serial.println(F("Connection!"));
+#endif
+#ifdef LCD
+    lcdPrint(F("Connection!"), true, 0, 0);
+#endif
 
     while (work(client))
         ;

@@ -19,10 +19,12 @@
 #ifdef LCD_BACKLIGHT_SILLY
 // See http://forum.arduino.cc/index.php?topic=96747.0
 #define LCD_BACKLIGHT_ON(lcd) pinMode(LCD_BACKLIGHT_PIN, INPUT_PULLUP)
+/*
 //#define LCD_BACKLIGHT_ON(lcd)
 //#define LCD_INIT(lcd) pinMode(LCD_BACKLIGHT_PIN, OUTPUT);	\
 //  digitalWrite(LCD_BACKLIGHT_PIN, LOW);			\
 //  lcd.begin(LCD_WIDTH, LCD_HEIGHT);
+ * */
 #define LCD_INIT(lcd)  lcd.begin(LCD_WIDTH, LCD_HEIGHT)
 #define LCD_OFF(lcd) lcd.noDisplay(); pinMode(LCD_BACKLIGHT_PIN, OUTPUT); digitalWrite(LCD_BACKLIGHT_PIN, LOW)
 //#define LCD_OFF(lcd) lcd.noDisplay()
@@ -309,9 +311,9 @@
   SIGNAL_LED_1_OFF; SIGNAL_LED_2_OFF; SIGNAL_LED_3_OFF; SIGNAL_LED_4_OFF; \
   SIGNAL_LED_5_OFF; SIGNAL_LED_6_OFF; SIGNAL_LED_7_OFF; SIGNAL_LED_8_OFF
 
-#define ALL_LEDS_ON(f) \
-  BLINK_LED_1(f); BLINK_LED_2(f); BLINK_LED_3(f); BLINK_LED_4(f); \
-  BLINK_LED_5(f); BLINK_LED_6(f); BLINK_LED_7(f); BLINK_LED_8(f)
+#define BLINK_ALL_LEDS \
+  BLINK_LED_1(blinkAck); BLINK_LED_2(blinkAck); BLINK_LED_3(blinkAck); BLINK_LED_4(blinkAck); \
+  BLINK_LED_5(blinkAck); BLINK_LED_6(blinkAck); BLINK_LED_7(blinkAck); BLINK_LED_8(blinkAck)
 
 #define LED2PIN(led_no) ( \
 	      TERNARY_LED_1(led_no)	\
@@ -368,8 +370,10 @@
 
 #ifdef PARAMETERS
 #define PARAMETERS_NAME Parameters
+#define PARAMETER_CONST
 #else
 #define PARAMETERS_NAME
+#define PARAMETER_CONST const
 #endif
 
 #define QUOTE(str) #str

@@ -15,8 +15,8 @@
 #define SIGNAL_LED_3_GND A2
 #define SIGNAL_LED_4 A5
 #define SIGNAL_LED_4_GND A4
-#define SIGNAL_LED_5 A7
-#define SIGNAL_LED_5_GND A6
+//#define SIGNAL_LED_5 A7
+//#define SIGNAL_LED_5_GND A6
 #endif
 
 #if defined(CAPTURE)

@@ -29,7 +29,6 @@ IrWidget::IrWidget(unsigned int bufSize_, Stream* stream_) : IrCapturer(bufSize_
     stream = stream_;
     bufSize = bufSize_;
     captureData = new uint16_t[bufSize];
-    sensorIsInverting = false; // true means the sensor signal is inverted (low = signal on)
     endingTimeout = _BV(RANGE_EXTENSION_BITS) - 1;
     setup();
     // make sure the whole capture buffer can be used. Your sketch will crash here if the buffer is too large.
@@ -53,28 +52,6 @@ uint32_t IrWidget::getEndingTimeout() const {
 ////////////////////////////////////////////////////////////////////////////////
 // Initialization
 ////////////////////////////////////////////////////////////////////////////////
-
-// returns 'true' when the sensor is non-inverting, 'false' otherwise
-bool IrWidget::checkForInvertingSensor() {
-    uint32_t tStart = micros();
-    uint32_t tDelta = 0;
-    bool negativePolarity = false;
-
-    for (;;) {
-        if (((CAT2(PIN, CAP_PORT) & _BV(CAP_PIN)) != 0) != negativePolarity) {
-            // if the value has changed, reset the counter and change the polarity
-            negativePolarity = !negativePolarity;
-            tStart = micros();
-        } else {
-            tDelta = micros() - tStart;
-            if (tDelta >= 1000)
-                break; // the value has not changed for the threshold time
-        }
-    }
-
-    return negativePolarity;
-}
-
 
 // initialize Timer and IO pins, needs to be called once before calling startCapture()
 void IrWidget::setup() {
@@ -101,8 +78,4 @@ void IrWidget::setup() {
 
     CAT3(TCCR, CAP_TIM, A) = 0; // Timer mode 0 = normal
     CAT3(TCCR, CAP_TIM, B) = _BV(CAT2(ICNC, CAP_TIM)) | CAPTURE_PRESCALER_SETTING; // prescaler according to setting, enable noise canceler
-
-    // TODO: automatically determine if the sensor is inverting:
-    //   wait for a long period without level changes (e.g. 1ms) and use the value as the low value
-    sensorIsInverting = checkForInvertingSensor();
 }

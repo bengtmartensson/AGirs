@@ -88,13 +88,15 @@ static PARAMETER_CONST unsigned int captureSize = 201;
 #endif
 
 #ifdef ETHERNET
-#ifdef SERVER
-EthernetServer server(PORT);
-#endif
 #ifdef USEUDP
 EthernetUDP udp;
-IPAddress peer_ip(PEER_IP);
-#endif // USEUDP
+#else // !USEUDP
+#ifdef SERVER
+EthernetServer server(PORT);
+#else
+IPAddress peer(PEER_IP);
+#endif
+#endif // !USEUDP
 #endif // ETHERNET
 
 #if defined(TRANSMIT) | defined(RENDERER)
@@ -216,9 +218,6 @@ void receive(Stream& stream) {
 #ifdef DECODELED
     setLogicLed(DECODELED(multiDecoder.getType()), BLINK);
 #endif
-#ifdef USEUDP
-    udp.beginPacket(peer_ip, PEER_PORT);
-#endif
     switch (multiDecoder.getType()) {
         case MultiDecoder::noise:
             // ignore
@@ -230,13 +229,9 @@ void receive(Stream& stream) {
             stream.println(multiDecoder.getDecode()); // also for timeout
             break;
     }
-
-#ifdef USEUDP
-            udp.endPacket();
-#endif
-            irReceiver->disableIRIn();
+    irReceiver->disableIRIn();
 #else // ! DECODE
-            dump(decoder, stream);
+    dump(decoder, stream);
 #endif // !DECODE
 }
 #endif // RECEIVE
@@ -287,9 +282,12 @@ void setup() {
 #endif
 #ifdef SERVER
     lcdPrint(F(" Srv"), false);
+#else
+    lcdPrint(" " + String(peer[0], DEC) + "." + String(peer[1], DEC) + "." 
+            + String(peer[2], DEC) + "." + String(peer[3], DEC) + "@" + String(PEER_PORT), false);
 #endif
 #ifdef SERIAL_DEBUG
-    lcdPrint(F(" SerialDebug"), false);
+    lcdPrint(F(" SerialDbg"), false);
 #endif
 #else // ! ETHERNET
     lcdPrint(F("Serial"), false, 0, 2);
@@ -319,6 +317,9 @@ void setup() {
 #endif // !DHCP
 
 #ifdef USEUDP
+#ifndef SERVER
+#error Client mode for UDP not implementd
+#endif
     udp.begin(PORT);
 #else
 #ifdef SERVER
@@ -565,7 +566,32 @@ boolean work(Stream& stream) {
 void loop() {
 #ifdef ETHERNET
 #ifdef USEUDP
-    work(udp);
+#ifdef SERVER
+    int packetSize = udp.parsePacket();
+    if (packetSize) {
+        IPAddress remote = udp.remoteIP();
+#ifdef SERIAL_DEBUG
+        Serial.print("Received packet of size ");
+        Serial.println(packetSize);
+        Serial.print("From ");
+        Serial.print(remote);
+        Serial.print(", port ");
+        Serial.println(udp.remotePort());
+#endif
+        //lcdPrint("UDP: ", true, 0, 0);
+        for (int i = 0; i < 3; i++)
+            lcdPrint(String(remote[i], DEC) + ".", false);
+        lcdPrint(String(remote[3], DEC) + "@" + String(udp.remotePort(), DEC), false);
+        lcdPrint(String(char(udp.peek())), false, 0, 3);
+
+        udp.beginPacket(udp.remoteIP(), udp.remotePort());
+        work(udp);
+        udp.endPacket();
+    } else {
+        delay(10);
+        checkTurnoff();
+    }
+#endif // SERVER
 #else // !USEUDP
     checkTurnoff();
 #ifdef SERVER
@@ -579,7 +605,10 @@ void loop() {
 
     while (client.read() != -1)
         checkTurnoff();
-    while (work(client))
+#ifdef ETHERNET_SESSION
+    while
+#endif
+        (work(client))
         ;
 #ifdef LCD
     lcdPrint(F("Connection closed!"), true, 0, 0);
@@ -598,7 +627,10 @@ void loop() {
     lcdPrint(F("Connection!"), true, 0, 0);
 #endif
 
-    while (work(client))
+#ifdef ETHERNET_SESSION
+    while
+#endif
+        (work(client))
         ;
 #endif // !SERVER
     client.flush();

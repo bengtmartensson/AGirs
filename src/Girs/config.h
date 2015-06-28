@@ -46,12 +46,13 @@
 // received.  If USEUDP is defined, use UDP instead. Input is then ignored.
 
 #define SERVER // Wait for incoming connections, for "telnet-ting" to the Arduino
+               // If not the Arduino tries to establish a connection to PEER_IP at port PEER_PORT
 // do NOT use UDP as preprocessor symbol, it makes Ethernet.h go berserk
 //#define USEUDP
 //#define ETHER_W5100 // Use normal Arduino Ethernet library, usin W5100 and pin 10
 //#define SDCARD_ON_ETHERSHIELD // there is a pin4 to be selected low
 //#define ETHER_ENC28J60 // Cheapie ENC 28J60 chip, not yet supported
-#define ETHERNET_SESSION // presently not used
+//#define ETHERNET_SESSION // presently not used
 //#define DHCP
 #endif // ETHERNET
 
@@ -72,8 +73,8 @@
 #endif
 
 #ifdef ETHERNET
-#if defined(USEUDP) | ! defined(SERVER)
-#define PEER_IP 192, 168, 1, 3
+#ifndef SERVER
+#define PEER_IP 192,168,1,3
 #define PEER_PORT 44444
 #endif
 

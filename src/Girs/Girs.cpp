@@ -129,7 +129,7 @@ void sendIrSignal(IRsendRaw *irSender, unsigned int noSends, const IrSignal *sig
 
 #define modulesSupported EXPAND_AND_QUOTE(Base TRANSMIT_NAME CAPTURE_NAME RENDERER_NAME RECEIVE_NAME DECODER_NAME LED_NAME LCD_NAME PARAMETERS_NAME)
 #define PROGNAME "ArduinoGirs"
-#define VERSION "2015-06-28"
+#define VERSION "2015-06-29"
 #define welcomeString "Welcome to " PROGNAME
 #define okString "OK"
 #define errorString "ERROR"
@@ -153,7 +153,7 @@ int freeRam () {
 
 #ifdef RESET
 // TODO: While this works on atmega386 and atmega2560,
-// I suspect that it does not on atmega32/Leonardo/Micro. Verify. 
+// I suspect that it does not on atmega32/Leonardo/Micro. Verify.
 
 boolean reset = false;
 
@@ -283,7 +283,7 @@ void setup() {
 #ifdef SERVER
     lcdPrint(F(" Srv"), false);
 #else
-    lcdPrint(" " + String(peer[0], DEC) + "." + String(peer[1], DEC) + "." 
+    lcdPrint(" " + String(peer[0], DEC) + "." + String(peer[1], DEC) + "."
             + String(peer[2], DEC) + "." + String(peer[3], DEC) + "@" + String(PEER_PORT), false);
 #endif
 #ifdef SERIAL_DEBUG
@@ -342,7 +342,7 @@ void setup() {
 
 // Process one command.
 boolean work(Stream& stream) {
-#ifdef ETHERNET_SESSION 
+#ifdef ETHERNET_SESSION
     boolean quit = false;
 #endif
     char ch = -1;
@@ -358,16 +358,15 @@ boolean work(Stream& stream) {
 #ifdef COMMANDLED
     setLogicLed(COMMANDLED, LOW);
 #endif
-    switch (ch) {
-        case 'v': // version
-            flushIn(stream);
-            stream.println(F(versionString));
-            break;
 
-        case 'm': // modules
+    switch (ch) {
+
+#ifdef CAPTURE
+        case 'a': // analyze
             flushIn(stream);
-            stream.println(F(modulesSupported));
+            capture(stream);
             break;
+#endif // CAPTURE
 
 #ifdef FREEMEM
         case 'i': // info
@@ -376,6 +375,18 @@ boolean work(Stream& stream) {
             stream.println(RAMEND);
             break;
 #endif
+
+#ifdef LCD
+        case 'L': //LCD
+        {
+            stream.find(separatorString);
+            String s = stream.readStringUntil('\n');
+            s.trim();
+            lcdPrint(s, true, 0, 0);
+            flushIn(stream);
+        }
+            break;
+#endif // LCD
 
 #ifdef LED
         case 'l': // led
@@ -389,18 +400,20 @@ boolean work(Stream& stream) {
         }
             break;
 #endif // LED
-            
-#ifdef LCD
-        case 'L': //LCD
-        {
-            stream.find(separatorString);
-            String s = stream.readStringUntil('\n');
-            s.trim();
-            lcdPrint(s, true, 0, 0);
+
+#ifdef LISTEN
+        case '@': // Listen
             flushIn(stream);
-        }
+            do {
+                receive(stream);
+            } while (true); // ???
             break;
-#endif // LCD
+#endif // LISTEN
+
+        case 'm': // modules
+            flushIn(stream);
+            stream.println(F(modulesSupported));
+            break;
 
 #ifdef PARAMETERS
         case 'p': // parameter
@@ -438,6 +451,21 @@ boolean work(Stream& stream) {
             break;
 #endif // PARAMETERS
 
+#ifdef ETHERNET_SESSION
+        case 'q': // quit
+            flushIn(stream);
+            quit = true;
+            break;
+#endif
+
+#ifdef RECEIVE
+        // TODO: force no-decode
+        case 'r': // receive
+            flushIn(stream);
+            receive(stream);
+            break;
+#endif // RECEIVE
+
 #ifdef RESET
         case 'R': // reset
             flushIn(stream);
@@ -445,12 +473,7 @@ boolean work(Stream& stream) {
             break;
 #endif
 
-#ifdef ETHERNET_SESSION
-        case 'q': // quit
-            flushIn(stream);
-            quit = true;
-            break;
-#endif
+
 
 #ifdef TRANSMIT
         case 's': // send
@@ -516,28 +539,10 @@ boolean work(Stream& stream) {
 	break;
 #endif // RENDERER
 
-#ifdef RECEIVE
-        // TODO: force no-decode
-        case 'r': // receive
+        case 'v': // version
             flushIn(stream);
-            receive(stream);
+            stream.println(F(versionString));
             break;
-#ifdef LISTEN
-        case '@': // Listen
-            flushIn(stream);
-            do {
-                receive(stream);
-            } while (true); // ???
-            break;
-#endif // LISTEN
-#endif // RECEIVE
-
-#ifdef CAPTURE
-        case 'a': // analyze
-            flushIn(stream);
-            capture(stream);
-            break;
-#endif // CAPTURE
 
         case '\n':
         case '\r':

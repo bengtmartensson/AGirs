@@ -7,8 +7,9 @@
 
 // Wait for a signal on pin ICP1 and store the captured time values in the array 'captureData'
 void IrWidgetAggregating::capture() {
+    uint32_t timeForBeginTimeout = millis() + beginningTimeout;
     uint8_t tccr0b = TCCR0B;
-    TCCR0B &= ~(_BV(CS02) | _BV(CS01) | _BV(CS00)); // stop timer0 (disables timer IRQs)
+    //TCCR0B &= ~(_BV(CS02) | _BV(CS01) | _BV(CS00)); // stop timer0 (disables timer IRQs)
 
     /*register uint16_t*/ period = ((F_CPU) / (20000UL)) >> CAPTURE_PRESCALER_BITS; // the time of one period in CPU clocks
     //register uint16_t aggThreshold = (period * 10UL) / 8UL; // 65 us = (1/20kHz * 130%) might be a good starting point
@@ -43,9 +44,12 @@ void IrWidgetAggregating::capture() {
     /////////////////////////////////////////
     // wait for first edge
     while (!(tifr = (CAT2(TIFR, CAP_TIM) & (_BV(CAT2(ICF, CAP_TIM)))))) {
-        //if (stream->available()) // abort the capture when any character is received // FIXME
-        //    goto endCapture;
+        if (millis() >= timeForBeginTimeout)
+            goto endCapture;
+        if (stream->available()) // abort the capture when any character is received // FIXME
+            goto endCapture;
     }
+    TCCR0B &= ~(_BV(CS02) | _BV(CS01) | _BV(CS00)); // stop timer0 (disables timer IRQs)
     debugPinToggle();
     val = CAT2(ICR, CAP_TIM);
     CAT3(OCR, CAP_TIM, CAP_TIM_OC) = val; // timeout based on previous trigger time
@@ -131,5 +135,5 @@ endCapture:
     period = aggThreshold >> 1;
 
     uint32_t mediumPeriod = timerValueToNanoSeconds(period);
-    frequency = (unsigned int) (1000000000 / mediumPeriod);
+    frequency = (unsigned int) (1000000000L / mediumPeriod);
 }

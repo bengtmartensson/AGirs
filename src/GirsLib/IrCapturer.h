@@ -20,6 +20,16 @@ this program. If not, see http://www.gnu.org/licenses/.
 #include <Arduino.h>
 
 class IrCapturer {
+protected:
+    unsigned int frequency;
+    uint32_t beginningTimeout; // unit milli seconds
+
+    // Used only for the available() function, to check for interruption
+    Stream* stream;
+    unsigned int bufSize;
+
+private:
+    static const char fEqualsString[];
 public:
     IrCapturer(unsigned int bufSize, Stream* stream);
     virtual ~IrCapturer() {};
@@ -31,16 +41,9 @@ public:
     boolean hasContent() const { return getCaptureCount() > 0; }
     virtual void setEndingTimeout(uint32_t) = 0;
     virtual uint32_t getEndingTimeout() const = 0;
+    void setBeginningTimeout(uint32_t timeOut) { beginningTimeout = timeOut/1000L; }
+    uint32_t getBeginningTimeout() const { return 1000L * beginningTimeout; }
     unsigned int getBufSize() const { return bufSize; }
-protected:
-    unsigned int frequency;
-
-    // Used only for the available() function, to check for interruption
-    Stream* stream;
-    unsigned int bufSize;
-
-private:
-    static const char fEqualsString[];
 };
 
 #endif	/* IRCAPTURER_H */

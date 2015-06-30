@@ -52,7 +52,7 @@
 //#define ETHER_W5100 // Use normal Arduino Ethernet library, usin W5100 and pin 10
 //#define SDCARD_ON_ETHERSHIELD // there is a pin4 to be selected low
 //#define ETHER_ENC28J60 // Cheapie ENC 28J60 chip, not yet supported
-//#define ETHERNET_SESSION // presently not used
+#define ETHERNET_SESSION // multi-command session, otherwise close after one command
 //#define DHCP
 #endif // ETHERNET
 

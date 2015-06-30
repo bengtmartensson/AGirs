@@ -21,6 +21,7 @@ IrCapturer::IrCapturer(unsigned int bufSize_, Stream* stream_) {
     bufSize = bufSize_;
     stream = stream_;
     frequency = (unsigned int) -1;
+    beginningTimeout = 10000L;
 }
 
 const char IrCapturer::fEqualsString[] = "f=";

@@ -129,12 +129,13 @@ void sendIrSignal(IRsendRaw *irSender, unsigned int noSends, const IrSignal *sig
 
 #define modulesSupported EXPAND_AND_QUOTE(Base TRANSMIT_NAME CAPTURE_NAME RENDERER_NAME RECEIVE_NAME DECODER_NAME LED_NAME LCD_NAME PARAMETERS_NAME)
 #define PROGNAME "ArduinoGirs"
-#define VERSION "2015-06-29"
+#define VERSION "2015-06-30"
 #define welcomeString "Welcome to " PROGNAME
 #define okString "OK"
 #define errorString "ERROR"
 #define timeoutString "."
 #define versionString PROGNAME " " VERSION
+//#define interruptedString "#"
 static /*const*/ char separatorString[] = " ";
 
 void flushIn(Stream &stream) {
@@ -152,8 +153,8 @@ int freeRam () {
 #endif
 
 #ifdef RESET
-// TODO: While this works on atmega386 and atmega2560,
-// I suspect that it does not on atmega32/Leonardo/Micro. Verify.
+// TODO: This is somewhat suspect.
+// Works at least on atmega386 and atmega2560,
 
 boolean reset = false;
 
@@ -188,19 +189,22 @@ void receive(Stream& stream) {
     irReceiver->setBeginningTimeout(beginTimeout);
     irReceiver->Mark_Excess = 50;
     irReceiver->enableIRIn();
-    //irReceiver->resume();
+    flushIn(stream);
 #ifdef RECEIVELED
     setLogicLed(RECEIVELED, HIGH);
 #endif
-    while (!(irReceiver->GetResults(&decoder))) {
+    boolean interrupted = false;
+    while (!(irReceiver->GetResults(&decoder)) && !interrupted) {
         checkTurnoff();
-        //if (stream.available()) {
-        //    return false;
-        //}
+        interrupted = stream.available();
     }
 #ifdef RECEIVELED
      setLogicLed(RECEIVELED, LOW);
 #endif
+     if (interrupted) {
+         stream.println(F(timeoutString));
+         return;
+     }
     // Setup decoder
     decoder.decode();
 #if defined(DECODER)
@@ -245,23 +249,24 @@ void capture(Stream& stream) {
         irReceiver = NULL;
     }
 #endif
-    if (irWidget == NULL) {
+    if (irWidget == NULL)
         irWidget = new IrWidgetAggregating(captureSize, &stream);
-        irWidget->setEndingTimeout(endingTimeout);
-    }
+    irWidget->setEndingTimeout(endingTimeout);
+    irWidget->setBeginningTimeout(beginTimeout);
     irWidget->reset();
 #ifdef CAPTURELED
     setLogicLed(CAPTURELED, HIGH);
 #endif
+    flushIn(stream);
     irWidget->capture();
 #ifdef CAPTURELED
     setLogicLed(CAPTURELED, LOW); // FIXME
 #endif
     if (irWidget->hasContent()) {
-        // No point in decoding, that is what "receive" is for.
+        // Do not try to decode, that is what "receive" is for.
         irWidget->dump(stream);
     } else
-        stream.println(F("null"));
+        stream.println(F(timeoutString));
 }
 #endif // CAPTURE
 
@@ -353,7 +358,7 @@ boolean work(Stream& stream) {
 #ifdef LED
         checkTurnoff();
 #endif
-        ch = stream.read(); // Blocks... FIXME
+        ch = stream.read(); // May block
     }
 #ifdef COMMANDLED
     setLogicLed(COMMANDLED, LOW);
@@ -363,55 +368,59 @@ boolean work(Stream& stream) {
 
 #ifdef CAPTURE
         case 'a': // analyze
-            flushIn(stream);
+        case 'c': // capture
             capture(stream);
             break;
 #endif // CAPTURE
 
 #ifdef FREEMEM
         case 'i': // info
-            flushIn(stream);
             stream.println(freeRam());
             stream.println(RAMEND);
             break;
 #endif
 
+#if defined(LCD) | defined(LED)
+        case 'l': //LCD
+        {
+            String cmd = stream.readStringUntil(' ');
+#endif
+#if defined(LCD) & defined(LED)
+            if (cmd.charAt(0) == 'c')
+#endif
 #ifdef LCD
-        case 'L': //LCD
-        {
-            stream.find(separatorString);
-            String s = stream.readStringUntil('\n');
-            s.trim();
-            lcdPrint(s, true, 0, 0);
-            flushIn(stream);
-        }
-            break;
+            {
+                String s = stream.readStringUntil('\n'); // FIXME?
+                s.trim();
+                lcdPrint(s, true, 0, 0);
+            }
 #endif // LCD
-
+#if defined(LCD) & defined(LED)
+            else
+#endif
 #ifdef LED
-        case 'l': // led
-            // TODO: syntax
-        {
-            stream.find(separatorString);
-            uint8_t no = stream.parseInt();
-            int value = stream.parseInt();
-            flushIn(stream);
-            setLogicLed(no, value);
+            {
+                uint8_t no = stream.parseInt();
+                int value = stream.parseInt();
+                setLogicLed(no, value);
+            }
+#endif
+#if defined(LCD) & defined(LED)
         }
+#endif
+#if defined(LCD) | defined(LED)
             break;
 #endif // LED
 
 #ifdef LISTEN
         case '@': // Listen
-            flushIn(stream);
             do {
                 receive(stream);
-            } while (true); // ???
+            } while (stream.available() == 0); // ???
             break;
 #endif // LISTEN
 
         case 'm': // modules
-            flushIn(stream);
             stream.println(F(modulesSupported));
             break;
 
@@ -421,39 +430,33 @@ boolean work(Stream& stream) {
             stream.find(separatorString);
             String variableName = stream.readStringUntil(' ');
             long value = stream.parseInt();
-            stream.println(variableName);
-            stream.println(value);
-            flushIn(stream);
+            if (!value) // parse error
+                stream.println(errorString);
+            else
 #if defined(RECEIVE) || defined(CAPTURE)
-            if (variableName == "endingtimeout")
+            if (variableName.startsWith(F("end")))
                 endingTimeout = value;
-            else
-#endif
-#ifdef CAPTURE
-            if (variableName == "capturesize")
-                captureSize = value;
-            else
-#endif
-#ifdef RECEIVE
-            if (variableName == "begintimeout")
+            else if (variableName.startsWith(F("beg")))
                 beginTimeout = value;
             else
 #endif
+#ifdef CAPTURE
+            if (variableName.startsWith(F("cap")))
+                captureSize = value;
+            else
+#endif
 #ifdef LED
-            if (variableName == "blinktime")
+            if (variableName.startsWith(F("bli")))
                 blinkTime = value;
             else
 #endif
-            {
-	      stream.println(errorString);
-            }
+	        stream.println(errorString);
         }
             break;
 #endif // PARAMETERS
 
 #ifdef ETHERNET_SESSION
         case 'q': // quit
-            flushIn(stream);
             quit = true;
             break;
 #endif
@@ -461,19 +464,15 @@ boolean work(Stream& stream) {
 #ifdef RECEIVE
         // TODO: force no-decode
         case 'r': // receive
-            flushIn(stream);
             receive(stream);
             break;
 #endif // RECEIVE
 
 #ifdef RESET
         case 'R': // reset
-            flushIn(stream);
             reset = true;
             break;
 #endif
-
-
 
 #ifdef TRANSMIT
         case 's': // send
@@ -495,7 +494,6 @@ boolean work(Stream& stream) {
                 repeat[i] = stream.parseInt();
             for (uint16_t i = 0; i < endingLength; i++)
                 ending[i] = stream.parseInt();
-            flushIn(stream);
             if (irSender == NULL)
                 irSender = new IRsendRaw();
             sendIrSignal(irSender, noSends, frequency, introLength, repeatLength, endingLength, intro, repeat, ending); // waits
@@ -528,7 +526,6 @@ boolean work(Stream& stream) {
                 stream.println(errorString);
                 signal = NULL;
             }
-            flushIn(stream);
             if (signal != NULL) {
                 if (irSender == NULL)
                     irSender = new IRsendRaw();
@@ -540,17 +537,10 @@ boolean work(Stream& stream) {
 #endif // RENDERER
 
         case 'v': // version
-            flushIn(stream);
             stream.println(F(versionString));
             break;
 
-        case '\n':
-        case '\r':
-            stream.println(F(okString));
-            break;
-
         default:
-            flushIn(stream);
             stream.println(F(errorString));
     }
 
@@ -583,7 +573,7 @@ void loop() {
         Serial.print(", port ");
         Serial.println(udp.remotePort());
 #endif
-        //lcdPrint("UDP: ", true, 0, 0);
+        lcdPrint("UDP: ", true, 0, 0);
         for (int i = 0; i < 3; i++)
             lcdPrint(String(remote[i], DEC) + ".", false);
         lcdPrint(String(remote[3], DEC) + "@" + String(udp.remotePort(), DEC), false);

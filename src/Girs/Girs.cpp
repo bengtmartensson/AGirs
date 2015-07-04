@@ -21,10 +21,12 @@ this program. If not, see http://www.gnu.org/licenses/.
 
 #ifdef ETHERNET
 #ifdef ETHER_ENC28J60
-#error ETHER_ENC28J60 not yet supported, only W5100.
-#else
-#include <Ethernet.h>
+#error ETHER_ENC28J60 not yet supported
 #endif
+
+#include <Ethernet.h>
+#include <IPAddress.h>
+
 #endif // ETHERNET
 #if !defined(ETHERNET) | defined(SERIAL_DEBUG)
 #define serialBaud 115200
@@ -97,6 +99,16 @@ EthernetServer server(PORT);
 IPAddress peer(PEER_IP);
 #endif
 #endif // !USEUDP
+
+String ip2string(IPAddress ip) {
+    String result;
+    for (int i = 0; i < 4; i++) {
+        result.concat(String(ip[i], DEC));
+        if (i < 3)
+            result.concat(".");
+    }
+    return result;
+}
 #endif // ETHERNET
 
 #if defined(TRANSMIT) | defined(RENDERER)
@@ -129,7 +141,7 @@ void sendIrSignal(IRsendRaw *irSender, unsigned int noSends, const IrSignal *sig
 
 #define modulesSupported EXPAND_AND_QUOTE(Base TRANSMIT_NAME CAPTURE_NAME RENDERER_NAME RECEIVE_NAME DECODER_NAME LED_NAME LCD_NAME PARAMETERS_NAME)
 #define PROGNAME "ArduinoGirs"
-#define VERSION "2015-06-30"
+#define VERSION "2015-07-04"
 #define welcomeString "Welcome to " PROGNAME
 #define okString "OK"
 #define errorString "ERROR"
@@ -321,6 +333,10 @@ void setup() {
     Ethernet.begin(mac, IPAddress(IPADDRESS), IPAddress(DNSSERVER), IPAddress(GATEWAY), IPAddress(SUBNETMASK));
 #endif // !DHCP
 
+#ifdef LCD
+    lcdPrint(ip2string(Ethernet.localIP()), false, 0, 3);
+#endif
+
 #ifdef USEUDP
 #ifndef SERVER
 #error Client mode for UDP not implementd
@@ -342,6 +358,10 @@ void setup() {
 #endif
     Serial.println(F(versionString));
     Serial.setTimeout(serialTimeout);
+
+#ifdef ETHERNET
+    Serial.println(Ethernet.localIP());
+#endif
 #endif // !defined(ETHERNET) | defined(SERIAL_DEBUG)
 }
 
@@ -390,7 +410,7 @@ boolean work(Stream& stream) {
 #endif
 #ifdef LCD
             {
-                String s = stream.readStringUntil('\n'); // FIXME?
+                String s = stream.readStringUntil('\r'); // FIXME?
                 s.trim();
                 lcdPrint(s, true, 0, 0);
             }
@@ -405,10 +425,8 @@ boolean work(Stream& stream) {
                 setLogicLed(no, value);
             }
 #endif
-#if defined(LCD) & defined(LED)
-        }
-#endif
 #if defined(LCD) | defined(LED)
+        }
             break;
 #endif // LED
 
@@ -573,10 +591,8 @@ void loop() {
         Serial.print(", port ");
         Serial.println(udp.remotePort());
 #endif
-        lcdPrint("UDP: ", true, 0, 0);
-        for (int i = 0; i < 3; i++)
-            lcdPrint(String(remote[i], DEC) + ".", false);
-        lcdPrint(String(remote[3], DEC) + "@" + String(udp.remotePort(), DEC), false);
+        lcdPrint("UDP: " + ip2string(remote), true, 0, 0);
+        lcdPrint("@" + String(udp.remotePort(), DEC), false, 0, 1);
         lcdPrint(String(char(udp.peek())), false, 0, 3);
 
         udp.beginPacket(udp.remoteIP(), udp.remotePort());

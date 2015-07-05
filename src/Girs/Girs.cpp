@@ -18,6 +18,7 @@ this program. If not, see http://www.gnu.org/licenses/.
 #include <Arduino.h>
 #include "config.h"
 #include <GirsMacros.h>
+#include "Tokenizer.h"
 
 #ifdef ETHERNET
 #ifdef ETHER_ENC28J60
@@ -66,6 +67,7 @@ LCD_DEFINE(lcd);
 #include <LedFuncs.inc> // Must come after lcd
 #include <LcdFuncs.inc>
 
+static const char EOLCHAR = '\r';
 static PARAMETER_CONST unsigned long beginTimeout = 10000000UL;
 #if defined(RECEIVE) || defined(CAPTURE)
 static PARAMETER_CONST unsigned long endingTimeout =
@@ -140,15 +142,12 @@ void sendIrSignal(IRsendRaw *irSender, unsigned int noSends, const IrSignal *sig
 #endif
 
 #define modulesSupported EXPAND_AND_QUOTE(Base TRANSMIT_NAME CAPTURE_NAME RENDERER_NAME RECEIVE_NAME DECODER_NAME LED_NAME LCD_NAME PARAMETERS_NAME)
-#define PROGNAME "ArduinoGirs"
-#define VERSION "2015-07-04"
+#define PROGNAME "AGirs"
+#define VERSION "2015-07-05"
 #define welcomeString "Welcome to " PROGNAME
 #define okString "OK"
 #define errorString "ERROR"
 #define timeoutString "."
-#define versionString PROGNAME " " VERSION
-//#define interruptedString "#"
-static /*const*/ char separatorString[] = " ";
 
 void flushIn(Stream &stream) {
     while (stream.available())
@@ -167,13 +166,17 @@ int freeRam () {
 #ifdef RESET
 // TODO: This is somewhat suspect.
 // Works at least on atmega386 and atmega2560,
-
+#if defined(ARDUINO_AVR_LEONARDO) | defined(ARDUINO_AVR_MICRO)
+#warning RESET not working on this platform, ignored
+#undef RESET
+#else
 boolean reset = false;
 
 // Restarts program from beginning but does not reset the peripherals and registers
 void softwareReset() {
     asm volatile("  jmp 0");
 }
+#endif
 #endif
 
 #ifdef RECEIVE
@@ -219,7 +222,7 @@ void receive(Stream& stream) {
      }
     // Setup decoder
     decoder.decode();
-#if defined(DECODER)
+#ifdef DECODER
     // Do actual decode
     MultiDecoder multiDecoder(decoder);
 #ifdef LCD
@@ -356,7 +359,7 @@ void setup() {
     while (!Serial)
         ; // wait for serial port to connect. "Needed for Leonardo only"
 #endif
-    Serial.println(F(versionString));
+    Serial.println(F(PROGNAME " " VERSION));
     Serial.setTimeout(serialTimeout);
 
 #ifdef ETHERNET
@@ -370,199 +373,179 @@ boolean work(Stream& stream) {
 #ifdef ETHERNET_SESSION
     boolean quit = false;
 #endif
-    char ch = -1;
 #ifdef COMMANDLED
     setLogicLed(COMMANDLED, HIGH);
 #endif
-    while (ch == -1) {
+    //stream.println(F(okString));
+    flushIn(stream);
+    while (stream.available() == 0) {
 #ifdef LED
         checkTurnoff();
 #endif
-        ch = stream.read(); // May block
     }
+    String line = stream.readStringUntil(EOLCHAR);
+#if defined(DEBUG_CMD)
+    lcdPrint(line, true, 0, 0);
+#endif
+    Tokenizer tokenizer(line);
+    String cmd = tokenizer.getToken();
 #ifdef COMMANDLED
     setLogicLed(COMMANDLED, LOW);
 #endif
 
-    switch (ch) {
+    if (cmd.length() == 0) {
+        // ok, do nothing
+        stream.println(F(okString));
+    } else
 
 #ifdef CAPTURE
-        case 'a': // analyze
-        case 'c': // capture
-            capture(stream);
-            break;
+        if (cmd.startsWith("a") || cmd.startsWith("c")) {
+        capture(stream);
+    } else
 #endif // CAPTURE
 
 #ifdef FREEMEM
-        case 'i': // info
-            stream.println(freeRam());
-            stream.println(RAMEND);
-            break;
+        if (cmd.startsWith("i")) {
+        stream.println(freeRam());
+        stream.println(RAMEND);
+    } else
 #endif
-
-#if defined(LCD) | defined(LED)
-        case 'l': //LCD
-        {
-            String cmd = stream.readStringUntil(' ');
-#endif
-#if defined(LCD) & defined(LED)
-            if (cmd.charAt(0) == 'c')
-#endif
-#ifdef LCD
-            {
-                String s = stream.readStringUntil('\r'); // FIXME?
-                s.trim();
-                lcdPrint(s, true, 0, 0);
-            }
-#endif // LCD
-#if defined(LCD) & defined(LED)
-            else
-#endif
-#ifdef LED
-            {
-                uint8_t no = stream.parseInt();
-                int value = stream.parseInt();
-                setLogicLed(no, value);
-            }
-#endif
-#if defined(LCD) | defined(LED)
-        }
-            break;
-#endif // LED
 
 #ifdef LISTEN
-        case '@': // Listen
-            do {
-                receive(stream);
-            } while (stream.available() == 0); // ???
-            break;
+        if (cmd == "listen") {
+        do {
+            receive(stream);
+        } while (stream.available() == 0);
+        stream.println(F(okString));
+    } else
 #endif // LISTEN
 
-        case 'm': // modules
+#ifdef LCD
+        if (cmd.startsWith("lc")) { //LCD
+            lcdPrint(tokenizer.getRest(), true, 0, 0);
+        } else
+#endif // LCD
+
+#ifdef LED
+        if (cmd.startsWith("l")) {
+        int8_t no = (int8_t) tokenizer.getInt();
+        int8_t value = (int8_t) tokenizer.getInt();
+        setLogicLed(no, value);
+    } else
+#endif // LED
+
+            if (cmd.startsWith("m")) {
             stream.println(F(modulesSupported));
-            break;
+        } else
 
 #ifdef PARAMETERS
-        case 'p': // parameter
-        {
-            stream.find(separatorString);
-            String variableName = stream.readStringUntil(' ');
-            long value = stream.parseInt();
+            if (cmd.startsWith("p")) { // parameter
+            String variableName = tokenizer.getToken();
+                    long value = tokenizer.getInt();
             if (!value) // parse error
-                stream.println(errorString);
+                    stream.println(errorString);
             else
 #if defined(RECEIVE) || defined(CAPTURE)
-            if (variableName.startsWith(F("end")))
-                endingTimeout = value;
+                if (variableName.startsWith(F("end")))
+                    endingTimeout = value;
             else if (variableName.startsWith(F("beg")))
-                beginTimeout = value;
+                    beginTimeout = value;
             else
 #endif
 #ifdef CAPTURE
-            if (variableName.startsWith(F("cap")))
-                captureSize = value;
+                if (variableName.startsWith(F("cap")))
+                    captureSize = value;
             else
 #endif
 #ifdef LED
-            if (variableName.startsWith(F("bli")))
-                blinkTime = value;
+                if (variableName.startsWith(F("bli")))
+                    blinkTime = value;
             else
 #endif
-	        stream.println(errorString);
-        }
-            break;
+                stream.println(errorString);
+            } else
 #endif // PARAMETERS
 
 #ifdef ETHERNET_SESSION
-        case 'q': // quit
+                if (cmd.startsWith("q")) { // quit
             quit = true;
-            break;
+                } else
 #endif
-
-#ifdef RECEIVE
-        // TODO: force no-decode
-        case 'r': // receive
-            receive(stream);
-            break;
-#endif // RECEIVE
 
 #ifdef RESET
-        case 'R': // reset
+            if (cmd == "reset") {
             reset = true;
-            break;
+        } else
 #endif
+#ifdef RECEIVE
+            // TODO: force no-decode
+            if (cmd.startsWith("r")) {
+
+            // receive
+            receive(stream);
+        } else
+#endif // RECEIVE
 
 #ifdef TRANSMIT
-        case 's': // send
-        {
-            stream.find(separatorString);
+            if (cmd.startsWith("s")) { // send
             // TODO: handle unparsable data gracefully
-            uint16_t noSends = stream.parseInt();
-            uint16_t frequency = stream.parseInt();
-            uint16_t introLength = stream.parseInt();
-            uint16_t repeatLength = stream.parseInt();
-            uint16_t endingLength = stream.parseInt();
+            uint16_t noSends = (uint16_t) tokenizer.getInt();
+            uint16_t frequency = (uint16_t) tokenizer.getInt();
+            uint16_t introLength = (uint16_t) tokenizer.getInt();
+            uint16_t repeatLength = (uint16_t) tokenizer.getInt();
+            uint16_t endingLength = (uint16_t) tokenizer.getInt();
             uint16_t intro[introLength];
             uint16_t repeat[repeatLength];
             uint16_t ending[endingLength];
             // FIXME: Should take care of overflows, if a duration > 65536us
             for (uint16_t i = 0; i < introLength; i++)
-                intro[i] = stream.parseInt();
+                intro[i] = (uint16_t) tokenizer.getInt();
             for (uint16_t i = 0; i < repeatLength; i++)
-                repeat[i] = stream.parseInt();
+                repeat[i] = (uint16_t) tokenizer.getInt();
             for (uint16_t i = 0; i < endingLength; i++)
-                ending[i] = stream.parseInt();
+                ending[i] = (uint16_t) tokenizer.getInt();
             if (irSender == NULL)
                 irSender = new IRsendRaw();
             sendIrSignal(irSender, noSends, frequency, introLength, repeatLength, endingLength, intro, repeat, ending); // waits
             stream.println(okString);
-        }
-            break;
+        } else
 #endif // TRANSMIT
 
 #ifdef RENDERER
-        case 't': // transmit
-        {
-            stream.find(separatorString);
+            if (cmd.startsWith("t")) { // transmit
             // TODO: handle unparseable data gracefully
-            uint16_t noSends = stream.parseInt();
-            stream.find(separatorString);
-            String protocol = stream.readStringUntil(' ');
-            protocol.toLowerCase();
-            IrSignal* signal = NULL;
+            uint16_t noSends = (uint16_t) tokenizer.getInt();
+                    String protocol = tokenizer.getToken();
+                    IrSignal* signal = NULL;
             if (protocol == "nec1") {
-                unsigned int D = stream.parseInt();
-                unsigned int S = stream.parseInt();// TODO: Implement default S = 255-D;
-                unsigned int F = stream.parseInt();
-                signal = Nec1Renderer::render(D, S, F);
+                unsigned int D = (unsigned) tokenizer.getInt();
+                        unsigned int S = (unsigned) tokenizer.getInt(); // TODO: Implement default S = 255-D;
+                        unsigned int F = (unsigned) tokenizer.getInt();
+                        signal = Nec1Renderer::render(D, S, F);
             } else if (protocol == "rc5") {
-                unsigned int D = stream.parseInt();
-                unsigned int F = stream.parseInt();
-                unsigned int T = 0U; // FIXME?
-                signal = Rc5Renderer::render(D, F, T);
+                unsigned int D = (unsigned) tokenizer.getInt();
+                        unsigned int F = (unsigned) tokenizer.getInt();
+                        unsigned int T = 0U; // FIXME?
+                        signal = Rc5Renderer::render(D, F, T);
             } else {
                 stream.println(errorString);
-                signal = NULL;
+                        signal = NULL;
             }
             if (signal != NULL) {
                 if (irSender == NULL)
-                    irSender = new IRsendRaw();
-                sendIrSignal(irSender, noSends, signal); // waits, blinks
-            }
+                        irSender = new IRsendRaw();
+                        sendIrSignal(irSender, noSends, signal); // waits, blinks
+                }
             stream.println(okString);
-        }
-	break;
+        } else
 #endif // RENDERER
-
-        case 'v': // version
-            stream.println(F(versionString));
-            break;
-
-        default:
-            stream.println(F(errorString));
+    if (cmd.startsWith("v")) { // version
+        stream.println(F(PROGNAME " " VERSION));
+    } else {
+        stream.println(F(errorString));
     }
 
-    flushIn(stream);
+    //flushIn(stream);
 #ifdef RESET
     if (reset)
         return false;

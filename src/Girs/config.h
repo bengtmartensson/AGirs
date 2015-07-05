@@ -11,6 +11,7 @@
 #define RECEIVE
 #define DECODER
 #define PARAMETERS
+#define LISTEN
 
 // Additional modules
 
@@ -22,7 +23,6 @@
 
 // Leds connected, implements a led command
 #define LED
-//#define LISTEN
 
 // Light this led when transmission is taking place
 #define TRANSMITLED 8
@@ -42,12 +42,12 @@
 // Other properties
 
 // LCD display with parallel connection, 4 bit mode. Defines a command "lcd".
-#define LCD_4BIT
+//#define LCD_4BIT
 
 // LCD display with I2C connection. Defines a command "lcd".
-//#define LCD_I2C
+#define LCD_I2C
 
-//#define ETHERNET
+#define ETHERNET
 
 #ifdef ETHERNET
 
@@ -80,9 +80,13 @@
 
 // If LCD support desired, include appropriate hardware description
 #ifdef LCD_I2C
-//#include <lcd_0x27_16_2.h>
+#ifdef ARDUINO_AVR_NANO
+#include <lcd_0x27_16_2.h>
+#else
 #include <lcd_0x3F_20_4.h>
 #endif
+#endif
+
 #ifdef LCD_4BIT
 #include <lcd_4bit_16_2.h>
 #endif

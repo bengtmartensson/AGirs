@@ -1,4 +1,4 @@
-// Configuration for Arduino Nano with components soldered on the PCB.
+// Configuration for Arduino Leonardo
 
 #ifndef GIRS_PINS_DEFAULT_H
 #define GIRS_PINS_DEFAULT_H

@@ -18,10 +18,10 @@
 // Reset command
 #define RESET
 
-// Report free memory (for debugging)
+// Report free memory (for debugging). Command "info".
 #define FREEMEM
 
-// Leds connected, implements a led command
+// Leds connected, implements a command "led".
 #define LED
 
 // Light this led when transmission is taking place

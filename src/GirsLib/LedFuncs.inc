@@ -2,6 +2,8 @@
 
 #define BLINK -1
 
+static void allLedsOff();
+
 static unsigned long turnoffTime = 0L; // millis() semantic (ms since progarm start)
 static bool somethingTurnedOn = false;
 
@@ -19,7 +21,8 @@ void updateTurnoffTime() {
 
 static void checkTurnoff() {
     if (millis() > turnoffTime && somethingTurnedOn) {
-        ALL_LEDS_OFF;
+        //ALL_LEDS_OFF;
+        allLedsOff();
         LCD_OFF(lcd);
         somethingTurnedOn = false;
     }
@@ -31,9 +34,12 @@ void blinkAck(uint8_t pin) {
 }
 
 void setLogicLed(uint8_t pin, int state) {
-    digitalWrite(LED2PIN(pin), state ? HIGH : LOW);
-    if (state < 0)
-        updateTurnoffTime();
+    uint8_t physicalPin = LED2PIN(pin);
+    if (physicalPin > 0 && physicalPin < 255) {
+        digitalWrite(physicalPin, state ? HIGH : LOW);
+        if (state < 0)
+            updateTurnoffTime();
+    }
 }
 #else // ! LED
 

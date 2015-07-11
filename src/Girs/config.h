@@ -14,7 +14,9 @@
 #define LISTEN
 
 // Additional modules
-#define NON_MOD
+//#define NON_MOD
+
+#define CONFIGURABLE_LEDS
 
 // Reset command
 #define RESET
@@ -26,7 +28,7 @@
 #define LED
 
 // Light this led when transmission is taking place
-#define TRANSMITLED 4
+#define TRANSMITLED 8
 
 // Light this when receive is pending
 #define RECEIVELED 7
@@ -47,7 +49,7 @@
 //#define LCD_4BIT
 
 // LCD display with I2C connection. Defines a command "lcd".
-//#define LCD_I2C
+#define LCD_I2C
 
 //#define ETHERNET
 

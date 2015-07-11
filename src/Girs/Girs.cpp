@@ -70,6 +70,26 @@ LCD_DEFINE(lcd);
 #include <LedFuncs.inc> // Must come after lcd
 #include <LcdFuncs.inc>
 
+#if defined(CONFIGURABLE_LEDS) & (! defined(PARAMETERS) | !defined(LED))
+#error CONFIGURABLE_LEDS defined but not PARAMETERS and LED, aborting.
+#endif
+
+#ifdef LED
+#ifdef TRANSMIT
+static LED_PARAMETER_CONST uint8_t transmitled = TRANSMITLED;
+#endif
+
+#ifdef RECEIVE
+static LED_PARAMETER_CONST uint8_t receiveled = RECEIVELED;
+#endif
+
+#ifdef CAPTURE
+static LED_PARAMETER_CONST uint8_t captureled = CAPTURELED;
+#endif
+
+static LED_PARAMETER_CONST uint8_t commandled = COMMANDLED;
+#endif // LED
+
 static PARAMETER_CONST unsigned long beginTimeout = DEFAULT_BEGINTIMEOUT;
 #if defined(RECEIVE) || defined(CAPTURE)
 static PARAMETER_CONST unsigned long endingTimeout = DEFAULT_ENDINGTIMEOUT;
@@ -120,9 +140,12 @@ void sendIrSignal(IRsendRaw *irSender, unsigned int noSends, unsigned int freque
         unsigned int introLength, unsigned int repeatLength, unsigned int endingLength,
         /*const*/ unsigned int intro[], /*const*/ unsigned int repeat[], /*const*/ unsigned int ending[]) {
 #ifdef TRANSMITLED
-    setLogicLed(TRANSMITLED, HIGH);
+    setLogicLed(transmitled, HIGH);
 #endif
 #ifdef NON_MOD
+#ifndef NON_MOD_PIN
+#error NON_MOD defined but not NON_MOD_PIN, aborting
+#endif
     if (frequency == 0) {
         NonModIrSender irSender(NON_MOD_PIN);
         if (introLength > 0)
@@ -143,7 +166,7 @@ void sendIrSignal(IRsendRaw *irSender, unsigned int noSends, unsigned int freque
     }
 #endif
 #ifdef TRANSMITLED
-    setLogicLed(TRANSMITLED, LOW);
+    setLogicLed(transmitled, LOW);
 #endif
 }
 #endif
@@ -168,6 +191,31 @@ void flushIn(Stream &stream) {
     while (stream.available())
         stream.read();
 }
+
+#ifdef LED
+// First time, turn off all but commandled (was the self test)
+static uint8_t initialized = 0;
+static void allLedsOff() {
+    for (uint8_t i = 1; i <= MAX_LED; i++) {
+        if (!(
+#ifdef TRANSMITLED
+                (initialized && i == transmitled) ||
+#endif
+#ifdef CAPTURELED
+                (initialized && i == captureled) ||
+#endif
+#ifdef RECEIVELED
+                (initialized && i == receiveled) ||
+#endif
+#ifdef COMMANDLED
+                i == commandled ||
+#endif
+                false))
+            setLogicLed(i, LOW);
+    }
+    initialized = 0;
+}
+#endif
 
 #ifdef FREEMEM
 // http://playground.arduino.cc/Code/AvailableMemory#.U0EnzKogTzs
@@ -221,7 +269,7 @@ void receive(Stream& stream) {
     irReceiver->enableIRIn();
     flushIn(stream);
 #ifdef RECEIVELED
-    setLogicLed(RECEIVELED, HIGH);
+    setLogicLed(receiveled, HIGH);
 #endif
     boolean interrupted = false;
     while (!(irReceiver->GetResults(&decoder)) && !interrupted) {
@@ -229,7 +277,7 @@ void receive(Stream& stream) {
         interrupted = stream.available();
     }
 #ifdef RECEIVELED
-     setLogicLed(RECEIVELED, LOW);
+     setLogicLed(receiveled, LOW);
 #endif
      if (interrupted) {
          stream.println(F(timeoutString));
@@ -285,12 +333,12 @@ void capture(Stream& stream) {
     irWidget->setBeginningTimeout(beginTimeout);
     irWidget->reset();
 #ifdef CAPTURELED
-    setLogicLed(CAPTURELED, HIGH);
+    setLogicLed(captureled, HIGH);
 #endif
     flushIn(stream);
     irWidget->capture();
 #ifdef CAPTURELED
-    setLogicLed(CAPTURELED, LOW); // FIXME
+    setLogicLed(captureled, LOW); // FIXME
 #endif
     if (irWidget->hasContent()) {
         // Do not try to decode, that is what "receive" is for.
@@ -389,7 +437,7 @@ boolean work(Stream& stream) {
     boolean quit = false;
 #endif
 #ifdef COMMANDLED
-    setLogicLed(COMMANDLED, HIGH);
+    setLogicLed(commandled, HIGH);
 #endif
     //stream.println(F(okString));
     flushIn(stream);
@@ -405,7 +453,7 @@ boolean work(Stream& stream) {
     Tokenizer tokenizer(line);
     String cmd = tokenizer.getToken();
 #ifdef COMMANDLED
-    setLogicLed(COMMANDLED, LOW);
+    setLogicLed(commandled, LOW);
 #endif
 
     if (cmd.length() == 0) {
@@ -468,11 +516,33 @@ boolean work(Stream& stream) {
             else
 #endif
 #ifdef CAPTURE
-                if (variableName.startsWith(F("cap")))
+                if (variableName.startsWith(F("captures")))
                     captureSize = value;
             else
 #endif
 #ifdef LED
+#ifdef CONFIGURABLE_LEDS
+#ifdef TRANSMITLED
+                if (variableName.startsWith(F("transmitl")))
+                    transmitled = (uint8_t) value;
+                else
+#endif
+#ifdef CAPTURELED
+                if (variableName.startsWith(F("capturel")))
+                    captureled = (uint8_t) value;
+                else
+#endif
+#ifdef RECEIVELED
+                if (variableName.startsWith(F("receivel")))
+                    receiveled = (uint8_t) value;
+                else
+#endif
+#ifdef COMMANDLED
+                if (variableName.startsWith(F("commandl")))
+                    commandled = (uint8_t) value;
+                else
+#endif
+#endif
                 if (variableName.startsWith(F("bli")))
                     blinkTime = value;
             else

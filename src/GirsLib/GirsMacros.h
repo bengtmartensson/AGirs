@@ -85,6 +85,7 @@
 #define DEFINE_IRSENSOR_VSS
 #endif
 
+#define MAX_LED 8
 
 #define DEFINE_LED_1 DEFINE_LED_PIN_1 DEFINE_LED_GND_1
 
@@ -374,6 +375,12 @@
 #else
 #define PARAMETERS_NAME
 #define PARAMETER_CONST const
+#endif
+
+#ifdef CONFIGURABLE_LEDS 
+#define LED_PARAMETER_CONST
+#else
+#define LED_PARAMETER_CONST const
 #endif
 
 #define QUOTE(str) #str

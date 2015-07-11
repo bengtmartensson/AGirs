@@ -59,6 +59,17 @@ Leonardo/Micro (ATmega32U4)    9             4
 Mega2560 (ATmega2560)          9            49
 </pre>
 
+## Sending non-modulated signals.
+RF signals (433 MHz and other carrier frequencies) do not use the IR
+typical modulation. Also there are a few IR protocols (like [Revox, Barco,
+Archer](http://www.hifi-remote.com/forums/viewtopic.php?t=14186&start=40))
+not using modulation. These signals can be sent by defining the symbol
+__NON_MOD__, and connecting
+some hardware capable of sending non-modulated signals (IR- _or_ RF-)
+to the GPIO pin defined as NON_MOD_PIN. Then transmitted signals
+having frequency 0 will be directed to that device. (Later versions
+may use different syntax and semantic.)
+
 ## Dependencies
 
 * [IRLib](https://github.com/bengtmartensson/IRLib.git), my fork adding begin- and ending timeouts ([Pull request](https://github.com/cyborg5/IRLib/pull/11))
@@ -72,7 +83,9 @@ Needed if defining LCD_I2C, i.e. connecting an LCD display with an I2C interface
 
 ## Questions and answers
 
-* What is the difference between ["receive"](http://www.harctoolbox.org/Glossary.html#ReceivingIrSignals),   ["capture"](http://www.harctoolbox.org/Glossary.html#Capturing)?
+* What is the difference between
+  ["receive"](http://www.harctoolbox.org/Glossary.html#ReceivingIrSignals)
+  and   ["capture"](http://www.harctoolbox.org/Glossary.html#Capturing)?
 
 Please follow the links given. Differently put, "receive" uses a
 demodulating receiver, "capure" a non-demodulating decoder. Note that

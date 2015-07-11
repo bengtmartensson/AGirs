@@ -17,7 +17,9 @@
 #define SIGNAL_LED_5 A0
 #define SIGNAL_LED_6 6
 #define SIGNAL_LED_7 7
+#ifndef NON_MOD
 #define SIGNAL_LED_8 9
+#endif
 #endif
 
 #if defined(CAPTURE)
@@ -33,6 +35,10 @@
 
 #ifdef TRANSMIT
 // Send pin 3/9
+#endif
+
+#ifdef NON_MOD
+#define NON_MOD_PIN 9
 #endif
 
 #endif // ! GIRS_PINS_DEFAULT_H

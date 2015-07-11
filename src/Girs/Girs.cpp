@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2014,2015,2016 Bengt Martensson.
+Copyright (C) 2014,2015 Bengt Martensson.
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -45,7 +45,11 @@ this program. If not, see http://www.gnu.org/licenses/.
 #endif
 
 #ifdef CAPTURE
-#include "IrWidgetAggregating.h"
+#include <IrWidgetAggregating.h>
+#endif
+
+#ifdef NON_MOD
+#include <NonModIrSender.h>
 #endif
 
 #ifdef DECODER
@@ -118,12 +122,26 @@ void sendIrSignal(IRsendRaw *irSender, unsigned int noSends, unsigned int freque
 #ifdef TRANSMITLED
     setLogicLed(TRANSMITLED, HIGH);
 #endif
-    if (introLength > 0)
-        irSender->send(intro, introLength, hz2khz(frequency));
-    for (unsigned int i = 0; i < noSends - (introLength > 0); i++)
-        irSender->send(repeat, repeatLength, hz2khz(frequency));
-    if (endingLength > 0)
-        irSender->send(ending, endingLength, hz2khz(frequency));
+#ifdef NON_MOD
+    if (frequency == 0) {
+        NonModIrSender irSender(NON_MOD_PIN);
+        if (introLength > 0)
+            irSender.send(intro, introLength);
+        for (unsigned int i = 0; i < noSends - (introLength > 0); i++)
+            irSender.send(repeat, repeatLength);
+        if (endingLength > 0)
+            irSender.send(ending, endingLength);
+    } else {
+#endif
+        if (introLength > 0)
+            irSender->send(intro, introLength, hz2khz(frequency));
+        for (unsigned int i = 0; i < noSends - (introLength > 0); i++)
+            irSender->send(repeat, repeatLength, hz2khz(frequency));
+        if (endingLength > 0)
+            irSender->send(ending, endingLength, hz2khz(frequency));
+#ifdef NON_MOD
+    }
+#endif
 #ifdef TRANSMITLED
     setLogicLed(TRANSMITLED, LOW);
 #endif

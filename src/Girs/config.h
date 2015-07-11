@@ -4,7 +4,7 @@
 #define CONFIG_H
 
 // Properties
-// Girs modules, see http://www.harctoolbox.org/Girs.html
+// Girs modules to implement, see http://www.harctoolbox.org/Girs.html
 #define TRANSMIT
 #define RENDERER
 #define CAPTURE
@@ -36,7 +36,8 @@
 // Light this when listening for command on the input stream
 #define COMMANDLED 5
 
-// Define as an expression that takes MultiDecoder decodes to logical leds.
+// Define as an expression that takes MultiDecoder decodes (as per enum Type
+// in Multidecoder.h) to logical leds.
 #define DECODELED(decode) ((decode)+1)
 
 // Other properties
@@ -47,7 +48,7 @@
 // LCD display with I2C connection. Defines a command "lcd".
 #define LCD_I2C
 
-#define ETHERNET
+//#define ETHERNET
 
 #ifdef ETHERNET
 
@@ -64,9 +65,10 @@
                // If not the Arduino tries to establish a connection to PEER_IP at port PEER_PORT
 // NOTE: do NOT use UDP as preprocessor symbol, it makes Ethernet.h go haywire.
 //#define USEUDP
-//#define ETHER_W5100 // Use normal Arduino Ethernet library, usin W5100 and pin 10
-//#define SDCARD_ON_ETHERSHIELD // there is a pin4 to be selected low
-//#define ETHER_ENC28J60 // Cheapie ENC 28J60 chip, not yet supported
+//#define ETHER_W5100 
+//#define SDCARD_ON_ETHERSHIELD_PIN 4 // there is a pin4 to be selected low
+//#define ETHER_ENC28J60 // Cheapie ENC 28J60 chip, not yet supported, otherwise
+                         // use normal Arduino Ethernet library, using W5100 and pin 10.
 #define ETHERNET_SESSION // multi-command session, otherwise close after one command
 //#define DHCP // Consumes rather much memory
 #endif // ETHERNET
@@ -109,5 +111,34 @@
 #endif // ! DHCP
 #define PORT       33333
 #endif // ETHERNET
+
+// Defaults
+
+// Character that ends the command lines
+#define EOLCHAR '\r'
+
+#define DEFAULT_BEGINTIMEOUT 10000000UL
+
+#if !defined(ETHERNET) | defined(SERIAL_DEBUG)
+#define serialBaud 115200
+#define serialTimeout 5000L
+#endif // !defined(ETHERNET) | defined(SERIAL_DEBUG)
+
+#ifdef DECODER
+// If using the decoder, be sure to end a capture before the repeat sequence.
+#define DEFAULT_ENDINGTIMEOUT 30000L
+#else
+#define DEFAULT_ENDINGTIMEOUT 100000L;
+#endif
+
+#ifdef CAPTURE
+// Size of capture array
+#define DEFAULT_CAPTURESIZE 201U // must be odd
+#endif
+
+#ifdef RECEIVE
+// See Chris' docs.
+#define IRRECEIVER_MARK_EXCESS 50U
+#endif
 
 #endif // ! CONFIG_H

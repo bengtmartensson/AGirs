@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2014,2015 Bengt Martensson.
+Copyright (C) 2014,2015,2016 Bengt Martensson.
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -29,10 +29,6 @@ this program. If not, see http://www.gnu.org/licenses/.
 #include <IPAddress.h>
 
 #endif // ETHERNET
-#if !defined(ETHERNET) | defined(SERIAL_DEBUG)
-#define serialBaud 115200
-#define serialTimeout 5000L
-#endif // !defined(ETHERNET) | defined(SERIAL_DEBUG)
 
 #ifdef LCD_4BIT
 #include <LiquidCrystal.h>
@@ -57,6 +53,9 @@ this program. If not, see http://www.gnu.org/licenses/.
 #endif
 
 #ifdef RENDERER
+#ifndef TRANSMIT
+#error RENDER without TRANSMIT is nonsensical, aborting.
+#endif
 #include <IrSignal.h>
 #include <Nec1Renderer.h>
 #include <Rc5Renderer.h>
@@ -67,16 +66,9 @@ LCD_DEFINE(lcd);
 #include <LedFuncs.inc> // Must come after lcd
 #include <LcdFuncs.inc>
 
-static const char EOLCHAR = '\r';
-static PARAMETER_CONST unsigned long beginTimeout = 10000000UL;
+static PARAMETER_CONST unsigned long beginTimeout = DEFAULT_BEGINTIMEOUT;
 #if defined(RECEIVE) || defined(CAPTURE)
-static PARAMETER_CONST unsigned long endingTimeout =
-#ifdef DECODER
-// If using the decoder, be sure to end a capture before the repeat sequence.
-30000L;
-#else
-100000L;
-#endif
+static PARAMETER_CONST unsigned long endingTimeout = DEFAULT_ENDINGTIMEOUT;
 #endif
 
 #ifdef RECEIVE
@@ -88,7 +80,7 @@ IRsendRaw *irSender = NULL;
 #endif
 #ifdef CAPTURE
 IrWidget *irWidget = NULL;
-static PARAMETER_CONST unsigned int captureSize = 201;
+static PARAMETER_CONST unsigned int captureSize = DEFAULT_CAPTURESIZE;
 #endif
 
 #ifdef ETHERNET
@@ -113,7 +105,12 @@ String ip2string(IPAddress ip) {
 }
 #endif // ETHERNET
 
-#if defined(TRANSMIT) | defined(RENDERER)
+#if defined(TRANSMIT)
+
+inline unsigned int hz2khz(unsigned int freq) {
+    // prefer speed over accuracy...
+    return freq/1000;
+}
 
 void sendIrSignal(IRsendRaw *irSender, unsigned int noSends, unsigned int frequency,
         unsigned int introLength, unsigned int repeatLength, unsigned int endingLength,
@@ -122,11 +119,11 @@ void sendIrSignal(IRsendRaw *irSender, unsigned int noSends, unsigned int freque
     setLogicLed(TRANSMITLED, HIGH);
 #endif
     if (introLength > 0)
-        irSender->send(intro, introLength, frequency / 1000);
+        irSender->send(intro, introLength, hz2khz(frequency));
     for (unsigned int i = 0; i < noSends - (introLength > 0); i++)
-        irSender->send(repeat, repeatLength, frequency / 1000);
+        irSender->send(repeat, repeatLength, hz2khz(frequency));
     if (endingLength > 0)
-        irSender->send(ending, endingLength, frequency / 1000);
+        irSender->send(ending, endingLength, hz2khz(frequency));
 #ifdef TRANSMITLED
     setLogicLed(TRANSMITLED, LOW);
 #endif
@@ -143,7 +140,7 @@ void sendIrSignal(IRsendRaw *irSender, unsigned int noSends, const IrSignal *sig
 
 #define modulesSupported EXPAND_AND_QUOTE(Base TRANSMIT_NAME CAPTURE_NAME RENDERER_NAME RECEIVE_NAME DECODER_NAME LED_NAME LCD_NAME PARAMETERS_NAME)
 #define PROGNAME "AGirs"
-#define VERSION "2015-07-05"
+#define VERSION "2015-07-10"
 #define welcomeString "Welcome to " PROGNAME
 #define okString "OK"
 #define errorString "ERROR"
@@ -202,7 +199,7 @@ void receive(Stream& stream) {
         irReceiver = new IRrecv(IRRECEIVER_PIN);
     irReceiver->setEndingTimeout(endingTimeout);
     irReceiver->setBeginningTimeout(beginTimeout);
-    irReceiver->Mark_Excess = 50;
+    irReceiver->Mark_Excess = IRRECEIVER_MARK_EXCESS;
     irReceiver->enableIRIn();
     flushIn(stream);
 #ifdef RECEIVELED
@@ -320,10 +317,10 @@ void setup() {
 #endif
 
 #ifdef ETHERNET
-#ifdef SDCARD_ON_ETHERSHIELD
+#ifdef SDCARD_ON_ETHERSHIELD_PIN
     // disable the SD card, as recommended in the doc
-    pinMode(4, OUTPUT);
-    digitalWrite(4, LOW);
+    pinMode(SDCARD_ON_ETHERSHIELD_PIN, OUTPUT);
+    digitalWrite(SDCARD_ON_ETHERSHIELD_PIN, LOW);
 #endif
 #ifdef ARDUINO_AVR_MEGA2560
     //pinMode(53, OUTPUT);

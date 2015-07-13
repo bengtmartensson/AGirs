@@ -2,8 +2,7 @@
 #define	NEC1DECODER_H
 
 #include "Decoder.h"
-#include "IrCapturer.h"
-#include "IrReceiver.h"
+#include "IrReader.h"
 #include "IrReceiverSampler.h"
 //#include "IrReceiver.h"
 #include <IRLib.h>
@@ -23,7 +22,7 @@ private:
 public:
     Nec1Decoder();
     //Nec1Decoder(uint16_t* irSequence, unsigned int length);
-    Nec1Decoder(const IrCapturer& irCapturer);
+    Nec1Decoder(const IrReader& irCapturer);
     //Nec1Decoder(const IrReceiver& irReceiver);
     Nec1Decoder(const IRdecodeBase& iRdecodeBase);
     Nec1Decoder(const IrReceiverSampler& irReceiverSampler);
@@ -48,14 +47,14 @@ public:
 
     String toString() const;
     unsigned int decodeFlashGap(uint32_t flash, uint32_t gap) const;
-    unsigned int decode(const IrCapturer& irCapturer, unsigned int index) const;
+    unsigned int decode(const IrReader &irCapturer, unsigned int index) const;
     //unsigned int decode(const IrReceiver& irCapturer, unsigned int index) const;
-    unsigned int decode(const IRdecodeBase& irCapturer, unsigned int index) const;
-    unsigned int decode(const IrReceiverSampler& irReceiverSampler, unsigned int index) const;
+    unsigned int decode(const IRdecodeBase &irCapturer, unsigned int index) const;
+    unsigned int decode(const IrReceiverSampler &irReceiverSampler, unsigned int index) const;
     uint16_t     decode(const IrReceiver::duration_t *data, uint16_t index) const;
     
-    static boolean tryDecode(const IRdecodeBase& iRdecodeBase, Stream& string);
-    static boolean tryDecode(const IrCapturer& irCapturer, Stream& string);
+    static boolean tryDecode(const IRdecodeBase &iRdecodeBase, Stream& string);
+    static boolean tryDecode(const IrReader &irCapturer, Stream& string);
 };
 
 #endif	/* NEC1DECODER_H */

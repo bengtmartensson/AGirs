@@ -25,7 +25,7 @@ http://arduino.cc/en/Hacking/PinMapping2560
 
 #include "IrWidget.h"
 
-IrWidget::IrWidget(uint16_t bufSize_, Stream* stream_) : IrCapturer(bufSize_) {
+IrWidget::IrWidget(uint16_t bufSize_, Stream* stream_) : IrReader(bufSize_) {
     stream = stream_;
     bufSize = bufSize_;
     captureData = new uint16_t[bufSize];
@@ -55,7 +55,7 @@ void IrWidget::dump(Stream &stream) const {
         stream.print(getFrequency(), DEC);
         stream.write(' ');
     }
-    IrCapturer::dump(stream);
+    IrReader::dump(stream);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

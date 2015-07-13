@@ -29,12 +29,12 @@ bool Rc5Decoder::tryDecode(const IRdecodeBase& iRdecodeBase, Stream& stream) {
     return decoder.printDecode(stream);
 }
 
-bool Rc5Decoder::tryDecode(const IrCapturer& irCapturer, Stream& stream) {
+bool Rc5Decoder::tryDecode(const IrReader& irCapturer, Stream& stream) {
     Rc5Decoder decoder(irCapturer);
     return decoder.printDecode(stream);
 }
 
-Rc5Decoder::Rc5Decoder(const IrCapturer& irCapturer) {
+Rc5Decoder::Rc5Decoder(const IrReader& irCapturer) {
     //super(irSequence);
     unsigned int index = 0U;
     unsigned int sum = 0U;

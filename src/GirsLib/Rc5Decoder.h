@@ -2,8 +2,7 @@
 #define	RC5DECODER_H
 
 #include "Decoder.h"
-#include "IrCapturer.h"
-#include "IrReceiver.h"
+#include "IrReader.h"
 #include "IrReceiverSampler.h"
 #include <IRLib.h>
 
@@ -11,7 +10,7 @@ class Rc5Decoder : public Decoder {
 public:
     //Rc5Decoder();
     //Rc5Decoder(const Rc5Decoder& orig);
-    Rc5Decoder(const IrCapturer& irCapturer);
+    Rc5Decoder(const IrReader& irReader);
     //Rc5Decoder(IrReceiver& irReceiver);
     Rc5Decoder(const IRdecodeBase& irReceiver);
     Rc5Decoder(const IrReceiverSampler &irReceiverSampler);
@@ -30,7 +29,7 @@ public:
         return T;
     }
     static boolean tryDecode(const IRdecodeBase& iRdecodeBase, Stream& string);
-    static boolean tryDecode(const IrCapturer& irCapturer, Stream& string);
+    static boolean tryDecode(const IrReader& irReader, Stream& string);
 private:
     const static uint32_t timebase = 889;
     const static uint32_t timebaseLower = 800;

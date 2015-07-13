@@ -1,4 +1,5 @@
 #include "Nec1Decoder.h"
+#include "IrReader.h"
 #include "IrReceiver.h"
 
 //Nec1Decoder::~Nec1Decoder() {
@@ -21,7 +22,7 @@ unsigned int Nec1Decoder::decodeFlashGap(uint32_t flash, uint32_t gap) const {
             : invalid;
 }
 
-unsigned int Nec1Decoder::decode(const IrCapturer& irCapturer, unsigned int index) const {
+unsigned int Nec1Decoder::decode(const IrReader& irCapturer, unsigned int index) const {
     unsigned int sum = 0;
     for (int i = 7; i >= 0; i--) {
         unsigned int result = decodeFlashGap(irCapturer.getTime(2 * i + index), irCapturer.getTime(2 * i + 1 + index));
@@ -49,7 +50,7 @@ boolean Nec1Decoder::tryDecode(const IRdecodeBase& iRdecodeBase, Stream& stream)
     return decoder.printDecode(stream);
 }
 
-boolean Nec1Decoder::tryDecode(const IrCapturer& irCapturer, Stream& stream) {
+boolean Nec1Decoder::tryDecode(const IrReader& irCapturer, Stream& stream) {
     Nec1Decoder decoder(irCapturer);
     return decoder.printDecode(stream);
 }
@@ -206,7 +207,7 @@ Nec1Decoder::Nec1Decoder(const IrReceiver& irCapturer) : Decoder() {
     }
 }
 #endif
-Nec1Decoder::Nec1Decoder(const IrCapturer& irCapturer) : Decoder() {
+Nec1Decoder::Nec1Decoder(const IrReader &irCapturer) : Decoder() {
     unsigned int index = 0;
     boolean success;
     if (irCapturer.getCaptureCount() == 4U) {

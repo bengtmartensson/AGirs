@@ -15,11 +15,16 @@ You should have received a copy of the GNU General Public License along with
 this program. If not, see http://www.gnu.org/licenses/.
 */
 
-#ifndef IRCAPTURER_H
-#define	IRCAPTURER_H
+#ifndef IRREADER_H
+#define	IRREADER_H
 #include <Arduino.h>
 
-class IrCapturer {
+/**
+ * This is an abstact base class for all IR readers, capturing or receiving.
+ * It should also serve as an interface that can be printed and decoded.
+ */
+
+class IrReader {
 protected:
     //unsigned int frequency;
     //uint32_t beginningTimeout; // unit milli seconds
@@ -31,10 +36,10 @@ protected:
 public:
     //IrCapturer(uint16_t bufSize, Stream* stream);
 
-    IrCapturer(uint16_t bufSize_) : bufSize(bufSize_) {
+    IrReader(uint16_t bufSize_) : bufSize(bufSize_) {
     }
 
-    virtual ~IrCapturer() {
+    virtual ~IrReader() {
     };
     virtual void reset() = 0;
     //unsigned int getFrequency() const { return frequency; };

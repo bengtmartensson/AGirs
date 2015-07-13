@@ -28,7 +28,7 @@ http://arduino.cc/en/Hacking/PinMapping2560
 #define	IRWIDGET_H
 
 #include <Arduino.h>
-#include "IrCapturer.h"
+#include "IrReader.h"
 
 #define ENABLE_PULL_UP
 //#define DEBUG_PORT D
@@ -37,7 +37,7 @@ http://arduino.cc/en/Hacking/PinMapping2560
 
 #define USE_PRESCALER_FACTOR_8 1
 
-class IrWidget : public IrCapturer {
+class IrWidget : public IrReader {
 protected:
     uint32_t beginningTimeout; // unit milli seconds
     Stream *stream;

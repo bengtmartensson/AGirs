@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2014 Bengt Martensson.
+Copyright (C) 2014, 2015 Bengt Martensson.
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -15,26 +15,9 @@ You should have received a copy of the GNU General Public License along with
 this program. If not, see http://www.gnu.org/licenses/.
 */
 
-#include "IrCapturer.h"
-#if 0
-IrCapturer::IrCapturer(unsigned int bufSize_, Stream* stream_) {
-    bufSize = bufSize_;
-    stream = stream_;
-    frequency = (unsigned int) -1;
-    beginningTimeout = 10000L;
-}
+#include "IrReader.h"
 
-const char IrCapturer::fEqualsString[] = "f=";
-#endif
-
-void IrCapturer::dump(Stream &stream) const {
-#if 0
-    if (getFrequency() > 0 && getFrequency() != (unsigned int) - 1) {
-        stream.print(fEqualsString);
-        stream.print(getFrequency(), DEC);
-        stream.write(' ');
-    }
-#endif
+void IrReader::dump(Stream &stream) const {
     uint16_t count = getCaptureCount();
     for (uint16_t i = 0; i < count; i++) {
         stream.write((i & 1U) ? '-' : '+');

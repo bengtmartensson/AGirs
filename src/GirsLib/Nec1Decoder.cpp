@@ -1,4 +1,5 @@
 #include "Nec1Decoder.h"
+#include "IrReceiver.h"
 
 //Nec1Decoder::~Nec1Decoder() {
 //}
@@ -64,55 +65,85 @@ unsigned int Nec1Decoder::decode(const IRdecodeBase& irCapturer, unsigned int in
     return sum;
 }
 
-Nec1Decoder::Nec1Decoder(const IRdecodeBase& iRdecodeBase) : Decoder() {
+uint16_t Nec1Decoder::decode(const IrReceiver::duration_t *data, uint16_t index) const {
+    uint16_t sum = 0;
+    for (int i = 7; i >= 0; i--) {
+        uint16_t result = decodeFlashGap(data[2 * i + index], data[2 * i + 1 + index]);
+        if (result == invalid)
+            return invalid;
+        sum = (sum << 1) + result;
+    }
+    return sum;
+}
+
+uint16_t Nec1Decoder::decode(const IrReceiverSampler& irReceiverSampler, uint16_t index) const {
+    uint16_t sum = 0;
+    for (int i = 7; i >= 0; i--) {
+        uint16_t result = decodeFlashGap(irReceiverSampler.getDuration(2 * i + index), irReceiverSampler.getDuration(2 * i + 1 + index));
+        if (result == invalid)
+            return invalid;
+        sum = (sum << 1) + result;
+    }
+    return sum;
+}
+
+//Nec1Decoder::Nec1Decoder(const IRdecodeBase& iRdecodeBase) : Decoder() {
+//    init(iRdecodeBase.rawlen - 1, (const IrReceiver::duration_t *) (iRdecodeBase.rawbuf + 1));
+//}
+
+//Nec1Decoder::Nec1Decoder(uint16_t length, const IrReceiver::duration_t *data) : Decoder() {
+//    init(length, data);
+//}
+
+Nec1Decoder::Nec1Decoder(const IrReceiverSampler &irReceiverSampler) {
     //super(irSequence);
-    unsigned int index = 1;
+    unsigned int index = 0;
     boolean success;
-    if (iRdecodeBase.rawlen - 1 == 4) {
-        success = getDuration(iRdecodeBase.rawbuf[index++], 16U);
+    if (irReceiverSampler.getDataLength() == 4) {
+        success = getDuration(irReceiverSampler.getDuration(index++), 16U);
         if (!success)
             return;
-        success = getDuration(iRdecodeBase.rawbuf[index++], 4U);
+        success = getDuration(irReceiverSampler.getDuration(index++), 4U);
         if (!success)
             return;
-        success = getDuration(iRdecodeBase.rawbuf[index++], 1U);
+        success = getDuration(irReceiverSampler.getDuration(index++), 1U);
         if (!success)
             return;
-        success = getEnding(iRdecodeBase.rawbuf[index]);
+        success = getEnding(irReceiverSampler.getDuration(index));
         if (!success)
             return;
         ditto = true;
         setValid(true);
-    } else if (iRdecodeBase.rawlen - 1 == 34 * 2) {
-        success = getDuration(iRdecodeBase.rawbuf[index++], 16U);
+    } else if (irReceiverSampler.rawlen == 34 * 2) {
+        success = getDuration(irReceiverSampler.getDuration(index++), 16U);
         if (!success)
             return;
-        success = getDuration(iRdecodeBase.rawbuf[index++], 8U);
+        success = getDuration(irReceiverSampler.getDuration(index++), 8U);
         if (!success)
             return;
-        D = decode(iRdecodeBase, index);
+        D = decode(irReceiverSampler, index);
         if (D == invalid)
             return;
         index += 16;
-        S = decode(iRdecodeBase, index);
+        S = decode(irReceiverSampler, index);
         if (S == invalid)
             return;
         index += 16;
-        F = decode(iRdecodeBase, index);
+        F = decode(irReceiverSampler, index);
         if (F == invalid)
             return;
         index += 16;
-        int invF = decode(iRdecodeBase, index);
+        int invF = decode(irReceiverSampler, index);
         if (invF < 0)
             return;
         if ((F ^ invF) != 0xFF)
             return;
         index += 16;
 
-        success = getDuration(iRdecodeBase.rawbuf[index++], 1U);
+        success = getDuration(irReceiverSampler.getDuration(index++), 1U);
         if (!success)
             return;
-        success = getEnding(iRdecodeBase.rawbuf[index]);
+        success = getEnding(irReceiverSampler.getDuration(index));
         if (!success)
             return;
         ditto = false;

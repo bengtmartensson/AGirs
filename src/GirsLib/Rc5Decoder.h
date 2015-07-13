@@ -3,7 +3,8 @@
 
 #include "Decoder.h"
 #include "IrCapturer.h"
-//#include "IrReceiver.h"
+#include "IrReceiver.h"
+#include "IrReceiverSampler.h"
 #include <IRLib.h>
 
 class Rc5Decoder : public Decoder {
@@ -13,6 +14,7 @@ public:
     Rc5Decoder(const IrCapturer& irCapturer);
     //Rc5Decoder(IrReceiver& irReceiver);
     Rc5Decoder(const IRdecodeBase& irReceiver);
+    Rc5Decoder(const IrReceiverSampler &irReceiverSampler);
     //virtual ~Rc5Decoder();
     String toString() const;
 

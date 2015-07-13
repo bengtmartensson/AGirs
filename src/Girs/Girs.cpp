@@ -19,6 +19,7 @@ this program. If not, see http://www.gnu.org/licenses/.
 #include "config.h"
 #include <GirsMacros.h>
 #include "Tokenizer.h"
+#include "../GirsLib/IrReceiverSampler.h"
 
 #ifdef ETHERNET
 #ifdef ETHER_ENC28J60
@@ -35,6 +36,10 @@ this program. If not, see http://www.gnu.org/licenses/.
 #endif
 #ifdef LCD_I2C
 #include <LiquidCrystal_I2C.h>
+#endif
+
+#ifdef RECEIVE
+#include <IrReceiverSampler.h>
 #endif
 
 #if defined(RECEIVE) | defined(TRANSMIT)
@@ -96,8 +101,9 @@ static PARAMETER_CONST unsigned long endingTimeout = DEFAULT_ENDINGTIMEOUT;
 #endif
 
 #ifdef RECEIVE
-IRrecv *irReceiver = NULL;
-TrivialIrDecoder decoder;
+IrReceiverSampler *irReceiver = NULL;
+///IRrecv *irReceiver = NULL;
+///TrivialIrDecoder decoder;
 #endif
 #if defined(TRANSMIT) | defined(RENDERER)
 IRsendRaw *irSender = NULL;
@@ -181,7 +187,7 @@ void sendIrSignal(IRsendRaw *irSender, unsigned int noSends, const IrSignal *sig
 
 #define modulesSupported EXPAND_AND_QUOTE(Base TRANSMIT_NAME CAPTURE_NAME RENDERER_NAME RECEIVE_NAME DECODER_NAME LED_NAME LCD_NAME PARAMETERS_NAME)
 #define PROGNAME "AGirs"
-#define VERSION "2015-07-10"
+#define VERSION "2015-07-13"
 #define welcomeString "Welcome to " PROGNAME
 #define okString "OK"
 #define errorString "ERROR"
@@ -244,7 +250,7 @@ void softwareReset() {
 
 #ifdef RECEIVE
 
-void dump(IRdecodeBase& decoder, Stream& stream) {
+void dump(const IRdecodeBase& decoder, Stream& stream) {
     // First entry is introductory silence, therefore start at 1, not 0
     for (unsigned int i = 1; i < decoder.rawlen; i++) {
         stream.write((i & 0x01) ? '+' : '-');
@@ -254,6 +260,19 @@ void dump(IRdecodeBase& decoder, Stream& stream) {
     stream.println();
 }
 
+void dump(const IrReceiverSampler &irReceiverSampler, Stream& stream) {
+    for (uint16_t i = 0; i < irReceiverSampler.rawlen; i++) {
+        stream.write((i & 0x01) ? '-' : '+');
+        stream.print(irReceiverSampler.getDuration(i), DEC);
+        stream.print(" ");
+    }
+    stream.println();
+}
+
+//void dump(const MultiDecoder &decoder, Stream& stream) {
+//    dump(decoder.getRawDataLength(), decoder.getRawData(), stream);
+//}
+
 void receive(Stream& stream) {
 #ifdef CAPTURE
     if (irWidget != NULL) {
@@ -262,17 +281,18 @@ void receive(Stream& stream) {
     }
 #endif // CAPTURE
     if (irReceiver == NULL)
-        irReceiver = new IRrecv(IRRECEIVER_PIN);
+        irReceiver = IrReceiverSampler::newIrReceiverSampler(IRRECEIVER_PIN);
     irReceiver->setEndingTimeout(endingTimeout);
     irReceiver->setBeginningTimeout(beginTimeout);
-    irReceiver->Mark_Excess = IRRECEIVER_MARK_EXCESS;
+    irReceiver->setMarkExcess(IRRECEIVER_MARK_EXCESS);
     irReceiver->enableIRIn();
     flushIn(stream);
 #ifdef RECEIVELED
     setLogicLed(receiveled, HIGH);
 #endif
     boolean interrupted = false;
-    while (!(irReceiver->GetResults(&decoder)) && !interrupted) {
+    while (!(irReceiver->isReady()/*Results(&decoder)*/) && !interrupted) {
+        //Serial.println(irReceiver->rcvstate);
         checkTurnoff();
         interrupted = stream.available();
     }
@@ -284,10 +304,10 @@ void receive(Stream& stream) {
          return;
      }
     // Setup decoder
-    decoder.decode();
+    //decoder.decode();
 #ifdef DECODER
     // Do actual decode
-    MultiDecoder multiDecoder(decoder);
+    MultiDecoder multiDecoder(*irReceiver); // multiDecoder(decoder);
 #ifdef LCD
     if (multiDecoder.getType() > MultiDecoder::noise) {
         lcdPrint(multiDecoder.getType() == MultiDecoder::nec_ditto
@@ -305,7 +325,7 @@ void receive(Stream& stream) {
             // ignore
             break;
         case MultiDecoder::undecoded:
-            dump(decoder, stream); // report data of undecoded signals
+            dump(*irReceiver, stream); // report data of undecoded signals
             break;
         default:
             stream.println(multiDecoder.getDecode()); // also for timeout
@@ -323,7 +343,8 @@ void receive(Stream& stream) {
 void capture(Stream& stream) {
 #ifdef RECEIVE
     if (irReceiver != NULL) {
-        delete irReceiver;
+        //delete irReceiver;
+        IrReceiverSampler::deleteInstance();
         irReceiver = NULL;
     }
 #endif

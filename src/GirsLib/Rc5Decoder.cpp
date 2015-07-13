@@ -86,3 +86,29 @@ Rc5Decoder::Rc5Decoder(const IRdecodeBase& iRdecodeBase) {
 
     setValid(true);
 }
+
+Rc5Decoder::Rc5Decoder(const IrReceiverSampler &irReceiverSampler) {
+    unsigned int index = 0U;
+    unsigned int sum = 0U;
+    int doublet = -1;
+
+    while (doublet < 25) {
+        Length length = decode(irReceiverSampler.getDuration(index++));
+        if (length == invalid)
+            return;
+        doublet += (int) length;
+        if (doublet % 2 == 1)
+            sum = (sum << 1U) + (index & 1U);
+    }
+    sum = ~sum & 0x1FFFU;
+
+    boolean success = getEnding(irReceiverSampler.getDuration(irReceiverSampler.getDataLength() - 1));
+    if (!success)
+        return;
+
+    F = (sum & 0x3FU) | ((~sum & 0x1000U) >> 6U);
+    D = (sum & 0x7C0U) >> 6U;
+    T = (sum & 0x0800U) >> 11U;
+
+    setValid(true);
+}

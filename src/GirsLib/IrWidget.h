@@ -38,6 +38,11 @@ http://arduino.cc/en/Hacking/PinMapping2560
 #define USE_PRESCALER_FACTOR_8 1
 
 class IrWidget : public IrCapturer {
+protected:
+    uint32_t beginningTimeout; // unit milli seconds
+    Stream *stream;
+    uint32_t frequency;
+
 public:
     IrWidget(unsigned int bufSize, Stream* stream);
     virtual ~IrWidget();
@@ -47,7 +52,7 @@ public:
     //    return bufSize;
     //}
 
-    unsigned int getCaptureCount() const {
+    uint16_t getCaptureCount() const {
         return captureCount;
     }
 
@@ -55,19 +60,27 @@ public:
         captureCount = 0;
     }
 
-    uint32_t inline getTime(unsigned int i) const {
+    uint16_t inline getTime(uint16_t i) const {
         return timerValueToNanoSeconds(unpackTimeVal(captureData[i])) / 1000;
     }
+    
+    void setBeginningTimeout(uint16_t timeOut) { beginningTimeout = timeOut; }
+    
+    uint16_t getBeginningTimeout() const { return beginningTimeout; }
 
-    void setEndingTimeout(uint32_t timeout);
+    void setEndingTimeout(uint16_t timeout);
 
-    uint32_t getEndingTimeout() const;
+    uint16_t getEndingTimeout() const;
 
     bool getSensorIsInverting() const {
         return sensorIsInverting;
     }
+    
+    uint32_t getFrequency() const {
+        return frequency;
+    }
 
-
+    void dump(Stream &stream) const;
 
 private:
     void setup();

@@ -95,9 +95,9 @@ static LED_PARAMETER_CONST uint8_t captureled = CAPTURELED;
 static LED_PARAMETER_CONST uint8_t commandled = COMMANDLED;
 #endif // LED
 
-static PARAMETER_CONST unsigned long beginTimeout = DEFAULT_BEGINTIMEOUT;
+static PARAMETER_CONST unsigned long beginTimeout = DEFAULT_BEGINTIMEOUT; // milliseconds
 #if defined(RECEIVE) || defined(CAPTURE)
-static PARAMETER_CONST unsigned long endingTimeout = DEFAULT_ENDINGTIMEOUT;
+static PARAMETER_CONST unsigned long endingTimeout = DEFAULT_ENDINGTIMEOUT; // milliseconds
 #endif
 
 #ifdef RECEIVE

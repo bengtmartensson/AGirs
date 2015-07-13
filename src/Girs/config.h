@@ -120,7 +120,7 @@
 // Character that ends the command lines
 #define EOLCHAR '\r'
 
-#define DEFAULT_BEGINTIMEOUT 10000000UL
+#define DEFAULT_BEGINTIMEOUT 10000UL // milliseconds
 
 #if !defined(ETHERNET) | defined(SERIAL_DEBUG)
 #define serialBaud 115200
@@ -129,9 +129,9 @@
 
 #ifdef DECODER
 // If using the decoder, be sure to end a capture before the repeat sequence.
-#define DEFAULT_ENDINGTIMEOUT 30000L
+#define DEFAULT_ENDINGTIMEOUT 30L // milliseconds
 #else
-#define DEFAULT_ENDINGTIMEOUT 100000L;
+#define DEFAULT_ENDINGTIMEOUT 100L // milliseconds
 #endif
 
 #ifdef CAPTURE

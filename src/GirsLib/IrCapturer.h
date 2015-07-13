@@ -21,29 +21,40 @@ this program. If not, see http://www.gnu.org/licenses/.
 
 class IrCapturer {
 protected:
-    unsigned int frequency;
-    uint32_t beginningTimeout; // unit milli seconds
+    //unsigned int frequency;
+    //uint32_t beginningTimeout; // unit milli seconds
 
     // Used only for the available() function, to check for interruption
-    Stream* stream;
-    unsigned int bufSize;
+    //Stream* stream;
+    uint16_t bufSize;
 
-private:
-    static const char fEqualsString[];
 public:
-    IrCapturer(unsigned int bufSize, Stream* stream);
-    virtual ~IrCapturer() {};
+    //IrCapturer(uint16_t bufSize, Stream* stream);
+
+    IrCapturer(uint16_t bufSize_) : bufSize(bufSize_) {
+    }
+
+    virtual ~IrCapturer() {
+    };
     virtual void reset() = 0;
-    unsigned int getFrequency() const { return frequency; };
+    //unsigned int getFrequency() const { return frequency; };
     virtual unsigned int getCaptureCount() const = 0;
-    virtual uint32_t getTime(unsigned int index) const = 0;
-    void dump(Stream &stream) const;
-    boolean hasContent() const { return getCaptureCount() > 0; }
-    virtual void setEndingTimeout(uint32_t) = 0;
-    virtual uint32_t getEndingTimeout() const = 0;
-    void setBeginningTimeout(uint32_t timeOut) { beginningTimeout = timeOut/1000L; }
-    uint32_t getBeginningTimeout() const { return 1000L * beginningTimeout; }
-    unsigned int getBufSize() const { return bufSize; }
+    virtual uint16_t getTime(uint16_t index) const = 0;
+    virtual void dump(Stream &stream) const;
+
+    boolean hasContent() const {
+        return getCaptureCount() > 0;
+    }
+
+    // These take and return values in milliseconds
+    virtual void setEndingTimeout(uint16_t) = 0;
+    virtual uint16_t getEndingTimeout() const = 0;
+    virtual void setBeginningTimeout(uint16_t timeOut) = 0; //{ beginningTimeout = timeOut/1000L; }
+    virtual uint16_t getBeginningTimeout() const = 0; //{ return 1000L * beginningTimeout; }
+
+    uint16_t getBufSize() const {
+        return bufSize;
+    }
 };
 
 #endif	/* IRCAPTURER_H */

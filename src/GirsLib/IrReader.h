@@ -19,6 +19,8 @@ this program. If not, see http://www.gnu.org/licenses/.
 #define	IRREADER_H
 #include <Arduino.h>
 
+#include "GirsTypes.h"
+
 /**
  * This is an abstact base class for all IR readers, capturing or receiving.
  * It should also serve as an interface that can be printed and decoded.
@@ -31,34 +33,38 @@ protected:
 
     // Used only for the available() function, to check for interruption
     //Stream* stream;
-    uint16_t bufSize;
+    uint16_t bufferSize;
 
 public:
     //IrCapturer(uint16_t bufSize, Stream* stream);
 
-    IrReader(uint16_t bufSize_) : bufSize(bufSize_) {
+    IrReader(uint16_t bufSize_) : bufferSize(bufSize_) {
+    }
+    
+    IrReader() {
     }
 
     virtual ~IrReader() {
     };
     virtual void reset() = 0;
     //unsigned int getFrequency() const { return frequency; };
-    virtual unsigned int getCaptureCount() const = 0;
-    virtual uint16_t getTime(uint16_t index) const = 0;
+    virtual uint16_t getDataLength() const = 0; // was getCaptureCount())
+    virtual microseconds_t getDuration(uint16_t index) const = 0;
     virtual void dump(Stream &stream) const;
 
-    boolean hasContent() const {
-        return getCaptureCount() > 0;
+    // was hasContent())
+    virtual boolean isReady() const {
+        return getDataLength() > 0;
     }
 
     // These take and return values in milliseconds
-    virtual void setEndingTimeout(uint16_t) = 0;
-    virtual uint16_t getEndingTimeout() const = 0;
-    virtual void setBeginningTimeout(uint16_t timeOut) = 0; //{ beginningTimeout = timeOut/1000L; }
-    virtual uint16_t getBeginningTimeout() const = 0; //{ return 1000L * beginningTimeout; }
+    virtual void setEndingTimeout(milliseconds_t timeOut) = 0;
+    virtual milliseconds_t getEndingTimeout() const = 0;
+    virtual void setBeginningTimeout(milliseconds_t timeOut) = 0; //{ beginningTimeout = timeOut/1000L; }
+    virtual milliseconds_t getBeginningTimeout() const = 0; //{ return 1000L * beginningTimeout; }
 
-    uint16_t getBufSize() const {
-        return bufSize;
+    uint16_t getBufferSize() const {
+        return bufferSize;
     }
 };
 

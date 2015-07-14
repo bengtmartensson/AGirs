@@ -18,10 +18,10 @@ this program. If not, see http://www.gnu.org/licenses/.
 #include "IrReader.h"
 
 void IrReader::dump(Stream &stream) const {
-    uint16_t count = getCaptureCount();
+    uint16_t count = getDataLength();
     for (uint16_t i = 0; i < count; i++) {
         stream.write((i & 1U) ? '-' : '+');
-        stream.print(getTime(i), DEC);
+        stream.print(getDuration(i), DEC);
         stream.print(" ");
     }
     stream.println();

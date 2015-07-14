@@ -25,9 +25,9 @@ http://arduino.cc/en/Hacking/PinMapping2560
 
 #include "IrWidget.h"
 
-IrWidget::IrWidget(uint16_t bufSize_, Stream* stream_) : IrReader(bufSize_) {
+IrWidget::IrWidget(uint16_t bufSize, Stream* stream_) : IrReader(bufSize) {
     stream = stream_;
-    bufSize = bufSize_;
+    //bufSize = bufSize_;
     captureData = new uint16_t[bufSize];
     endingTimeout = _BV(RANGE_EXTENSION_BITS) - 1;
     setup();
@@ -40,11 +40,11 @@ IrWidget::~IrWidget() {
     delete[] captureData;
 }
 
-void IrWidget::setEndingTimeout(uint16_t timeout) {
-    endingTimeout = (ovlBitsDataType) ((timeout/* /1000*/ + 16)/32);
+void IrWidget::setEndingTimeout(milliseconds_t timeOut) {
+    endingTimeout = (ovlBitsDataType) ((timeOut/* /1000*/ + 16)/32);
 }
 
-uint16_t IrWidget::getEndingTimeout() const {
+milliseconds_t IrWidget::getEndingTimeout() const {
     //return (uint16_t) (timerValueToNanoSeconds((((uint32_t) endingTimeout)*CAPTURE_PRESCALER_FACTOR)) / 1000);
     return (uint16_t) 1000 * (endingTimeout << 15);
 }

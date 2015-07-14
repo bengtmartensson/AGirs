@@ -62,7 +62,7 @@ void IrWidgetAggregating::capture() {
 
     /////////////////////////////////////////
     // wait for all following edges
-    for (; pCapDat <= &captureData[bufSize - sampleSize];) // 2 values are stored in each loop, TODO: change to 3 when adding the aggCount
+    for (; pCapDat <= &captureData[bufferSize - sampleSize];) // 2 values are stored in each loop, TODO: change to 3 when adding the aggCount
     {
         debugPinToggle();
         // wait for edge or overflow (output compare match)

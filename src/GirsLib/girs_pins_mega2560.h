@@ -24,10 +24,12 @@
 
 #if defined(CAPTURE)
 // capture pin (ICP) 49
+//#ifdef IRSENSOR_PIN_PULLUP
 #endif
 
 #ifdef RECEIVE
 #define IRRECEIVER_PIN 5
+//#define IRRECEIVER_PIN_PULLUP
 #endif
 #ifdef RECEIVER_2
 //#define IRRECEIVER_2_PIN 12

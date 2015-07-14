@@ -28,25 +28,26 @@ public:
         STATE_RUNNING
     };
     
-    unsigned long GAP_TICKS;
-    unsigned long TIMEOUT_TICKS;
+    uint32_t GAP_TICKS;
+    uint32_t TIMEOUT_TICKS;
     
     // information for the interrupt handler
     //typedef struct {
     //    unsigned char recvpin; // pin for IR data from detector
     volatile rcvstate_t rcvstate; // state machine
     // bool blinkflag; // TRUE to enable blinking of pin 13 on IR processing
-    volatile unsigned long timer; // state timer, counts 50uS ticks.(and other uses)
-    volatile duration_t *rawbuf; //[RAWBUF]; // raw data
+    volatile uint32_t timer; // state timer, counts 50uS ticks.(and other uses)
+    volatile uint16_t *rawbuf; //[RAWBUF]; // raw data
     volatile uint16_t rawlen; // counter of entries in rawbuf
     //}
     //irparams_t;
 
     //static volatile irparams_t irparams;
 
-    static const unsigned long defaultBeginningTimeout = 2000000UL; // 2 seconds
-    static const unsigned long defaultEndingTimeout = 30000UL; // 30 milliseconds
+    static const milliseconds_t defaultBeginningTimeout = 2000UL; // 2 seconds
+    static const milliseconds_t defaultEndingTimeout = 30UL; // 30 milliseconds
     static const uint16_t defaultCaptureLength = 100U;
+    static const pin_t defaultPin = 5;
     
 private:
     static IrReceiverSampler *instance; // Singleton class due to ISP
@@ -54,20 +55,21 @@ private:
 public: // FIXME
     //unsigned long endingTimeout;
     //unsigned long beginningTimeout;
-    uint16_t captureLength;
+    ///uint16_t captureLength;
 
-    IrReceiverSampler(pin_t pin, boolean pullup = false, duration_t markExcess = defaultMarkExcess,
-            unsigned long beginningTimeout = defaultBeginningTimeout,
-            uint16_t captureLength = defaultCaptureLength,
-            unsigned long endingTimeout = defaultEndingTimeout);
+    IrReceiverSampler(uint16_t captureLength = defaultCaptureLength, pin_t pin = defaultPin, boolean pullup = false,
+            microseconds_t markExcess = defaultMarkExcess,
+            milliseconds_t beginningTimeout = defaultBeginningTimeout,
+            milliseconds_t endingTimeout = defaultEndingTimeout);
     virtual ~IrReceiverSampler();
 
 public:
     // factory method
-    static IrReceiverSampler *newIrReceiverSampler(pin_t pin, boolean pullup = false, duration_t markExcess = defaultMarkExcess,
-            unsigned long beginningTimeout = defaultBeginningTimeout,
-            uint16_t captureLength = defaultCaptureLength,
-            unsigned long endingTimeout = defaultEndingTimeout);
+    static IrReceiverSampler *newIrReceiverSampler(uint16_t captureLength = defaultCaptureLength,
+            pin_t pin = defaultPin, boolean pullup = false,
+            microseconds_t markExcess = defaultMarkExcess,
+            milliseconds_t beginningTimeout = defaultBeginningTimeout,
+            milliseconds_t endingTimeout = defaultEndingTimeout);
     
     static void deleteInstance();
     
@@ -76,25 +78,25 @@ public:
     }
 public:
     //bool GetResults(IRdecodeBase *decoder);
-    void enableIRIn();
-    void disableIRIn();
-    void resume();
+    void enableIrIn();
+    void disableIrIn();
+    void reset(); //resume();
     //const IrReceiver::duration_t *getData() const;
     //uint16_t getDataLength() const;
 
-    void setEndingTimeout(unsigned long timeOut);
+    void setEndingTimeout(milliseconds_t timeOut);
 
-    unsigned long getEndingTimeout() const;
+    milliseconds_t getEndingTimeout() const;
 
-    void setBeginningTimeout(unsigned long timeOut);
+    void setBeginningTimeout(milliseconds_t timeOut);
 
-    unsigned long getBeginningTimeout() const;
+    milliseconds_t getBeginningTimeout() const;
 
     //static unsigned long GAP_TICKS; //must be public & static for the ISR
     //static unsigned long TIMEOUT_TICKS; //must be public & static for the ISR
     //const duration_t *getRawData() const { return (const duration_t *) rawbuf; }
     uint16_t getDataLength() const { return rawlen; }
-    duration_t getDuration(uint16_t i) const { return USECPERTICK * rawbuf[i]; }
+    microseconds_t getDuration(uint16_t i) const { return USECPERTICK * rawbuf[i] + (i&1 ? markExcess : -markExcess); }
     boolean isReady() const { return rcvstate == STATE_STOP; }
 
 };

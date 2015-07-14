@@ -52,7 +52,7 @@ public:
     //    return bufSize;
     //}
 
-    uint16_t getCaptureCount() const {
+    uint16_t getDataLength() const { // was: getCaptureCount()
         return captureCount;
     }
 
@@ -60,17 +60,17 @@ public:
         captureCount = 0;
     }
 
-    uint16_t inline getTime(uint16_t i) const {
+    microseconds_t inline getDuration(uint16_t i) const {
         return timerValueToNanoSeconds(unpackTimeVal(captureData[i])) / 1000;
     }
     
-    void setBeginningTimeout(uint16_t timeOut) { beginningTimeout = timeOut; }
+    void setBeginningTimeout(milliseconds_t timeOut) { beginningTimeout = timeOut; }
     
-    uint16_t getBeginningTimeout() const { return beginningTimeout; }
+    milliseconds_t getBeginningTimeout() const { return beginningTimeout; }
 
-    void setEndingTimeout(uint16_t timeout);
+    void setEndingTimeout(milliseconds_t timeout);
 
-    uint16_t getEndingTimeout() const;
+    milliseconds_t getEndingTimeout() const;
 
     bool getSensorIsInverting() const {
         return sensorIsInverting;
@@ -104,7 +104,7 @@ protected:
     typedef uint8_t ovlBitsDataType;
 #endif
     //static const uint16_t bufSize = ((RAMEND - 0x100 - projectRamUsage) / sizeof (uint16_t)); // use as much RAM as possible
-    uint16_t bufSize;
+    //uint16_t bufSize;
     static const uint8_t RANGE_EXTENSION_BITS = 4; // factor for upper measurement range = 2^(RANGE_EXTENSION_BITS+1)
 
     //public: // FIXME

@@ -68,6 +68,12 @@
 #define DEFINE_IRRECEIVER_VSS
 #endif
 
+#ifdef IRRECEIVER_PIN_PULLUP
+#define IRRECEIVER_PIN_PULLUP_VALUE true
+#else
+#define IRRECEIVER_PIN_PULLUP_VALUE false
+#endif
+
 #define DEFINE_IRSENSOR DEFINE_IRSENSOR_GND DEFINE_IRSENSOR_VSS
 #ifdef SENSOR_GND
 #define DEFINE_IRSENSOR_GND \
@@ -83,6 +89,12 @@
      digitalWrite(SENSOR_VSS, HIGH);
 #else
 #define DEFINE_IRSENSOR_VSS
+#endif
+
+#ifdef IRSENSOR_PIN_PULLUP
+#define IRSENSOR_PIN_PULLUP_VALUE true
+#else
+#define IRSENSOR_PIN_PULLUP_VALUE false
 #endif
 
 #define MAX_LED 8

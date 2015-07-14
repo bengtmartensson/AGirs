@@ -19,70 +19,61 @@
 
 #include <IRLibTimer.h>
 
-
 IrReceiverSampler *IrReceiverSampler::instance = NULL;
 
-//unsigned long IrReceiverSampler::endingTimeout;
-//unsigned long IrReceiverSampler::beginningTimeout;
-//IrReceiver::duration_t *IrReceiverSampler::data;
-//uint16_t IrReceiverSampler::dataLength;
-
-
-IrReceiverSampler::IrReceiverSampler(pin_t pin_, boolean pullup, duration_t markExcess,
-            unsigned long beginningTimeout, uint16_t captureLength_,
-            unsigned long endingTimeout) : IrReceiver(pin_, pullup, markExcess) {
+IrReceiverSampler::IrReceiverSampler(uint16_t captureLength, pin_t pin_, boolean pullup,
+        microseconds_t markExcess,
+        milliseconds_t beginningTimeout, 
+        milliseconds_t endingTimeout) : IrReceiver(captureLength, pin_, pullup, markExcess) {
     setBeginningTimeout(beginningTimeout);
-    captureLength = captureLength_;
     setEndingTimeout(endingTimeout);
-    rawbuf = new duration_t[captureLength];
+    rawbuf = new uint16_t[captureLength];
     rawlen = 0;
+    timer = 0;
+    rcvstate = STATE_IDLE;
 }
 
-IrReceiverSampler *IrReceiverSampler::newIrReceiverSampler(pin_t pin, boolean pullup, duration_t markExcess,
-            unsigned long beginningTimeout, uint16_t captureLength,
-            unsigned long endingTimeout) {
+IrReceiverSampler *IrReceiverSampler::newIrReceiverSampler(uint16_t captureLength, pin_t pin, boolean pullup,
+        microseconds_t markExcess,
+        milliseconds_t beginningTimeout,
+        milliseconds_t endingTimeout) {
     if (instance != NULL)
         return NULL;
-    instance = new IrReceiverSampler(pin, pullup, markExcess, beginningTimeout, captureLength, endingTimeout);
+    instance = new IrReceiverSampler(captureLength, pin, pullup, markExcess, beginningTimeout, endingTimeout);
     return instance;
 }
 
 void IrReceiverSampler::deleteInstance() {
     delete instance;
+    instance = NULL;
 }
 
 IrReceiverSampler::~IrReceiverSampler() {
     delete [] rawbuf;
 }
 
-//void IrReceiverSampler::enableIRIn() {
-    
-//}
-
-//void IrReceiverSampler::disableIRIn() {
-
-//}
 /*
  * The original IRrecv which uses 50us timer driven interrupts to sample input pin.
+ * was: resume()
  */
-void IrReceiverSampler::resume() {
+void IrReceiverSampler::reset() {
     // initialize state machine variables
     rcvstate = STATE_IDLE;
     rawlen = 0;
     //IRrecvBase::resume();
 }
 
-void IrReceiverSampler::enableIRIn(void) {
+void IrReceiverSampler::enableIrIn(void) {
+    reset();
     //IRrecvBase::enableIRIn();
     // setup pulse clock timer interrupt
     cli();
     IR_RECV_CONFIG_TICKS();
     IR_RECV_ENABLE_INTR;
     sei();
-    resume();
 }
 
-void IrReceiverSampler::disableIRIn(void) {
+void IrReceiverSampler::disableIrIn(void) {
     IR_RECV_DISABLE_INTR;
 }
 
@@ -92,20 +83,20 @@ void IrReceiverSampler::disableIRIn(void) {
 //    return true;
 //}
 
-void IrReceiverSampler::setEndingTimeout(unsigned long timeOut) {
-    GAP_TICKS = timeOut / USECPERTICK;
+void IrReceiverSampler::setEndingTimeout(milliseconds_t timeOut) {
+    GAP_TICKS = (1000UL  * (uint32_t)timeOut) / USECPERTICK;
 }
 
-void IrReceiverSampler::setBeginningTimeout(unsigned long timeOut) {
-    TIMEOUT_TICKS = timeOut / USECPERTICK;
+void IrReceiverSampler::setBeginningTimeout(milliseconds_t timeOut) {
+    TIMEOUT_TICKS = (1000UL * (uint32_t)timeOut) / USECPERTICK;
 }
 
-unsigned long IrReceiverSampler::getEndingTimeout() const {
-    return (unsigned long) (GAP_TICKS * USECPERTICK);
+milliseconds_t IrReceiverSampler::getEndingTimeout() const {
+    return (milliseconds_t) (GAP_TICKS * USECPERTICK)/1000UL;
 }
 
-unsigned long IrReceiverSampler::getBeginningTimeout() const {
-    return (unsigned long) (TIMEOUT_TICKS * USECPERTICK);
+milliseconds_t IrReceiverSampler::getBeginningTimeout() const {
+    return (milliseconds_t) (TIMEOUT_TICKS * USECPERTICK)/1000U;
 }
 
 /*
@@ -117,7 +108,7 @@ unsigned long IrReceiverSampler::getBeginningTimeout() const {
  * As soon as first MARK arrives, gap width is recorded, ready is cleared, and new logging starts.
  */
 ISR(IR_RECV_INTR_NAME) {
-    digitalWrite(29, HIGH);
+    //digitalWrite(29, HIGH);
     enum irdata_t {
         IR_MARK = 0,
         IR_SPACE = 1
@@ -125,8 +116,8 @@ ISR(IR_RECV_INTR_NAME) {
     IrReceiverSampler *recv = IrReceiverSampler::getInstance();
     irdata_t irdata = (irdata_t) digitalRead(recv->getPin());
     recv->timer++; // One more 50us tick
-    if (recv->rawlen >= recv->captureLength) {
-        // Buffer overflow
+    if (recv->rawlen >= recv->getBufferSize()) {
+        // Buffer full
         recv->rcvstate = IrReceiverSampler::STATE_STOP;
     }
     switch (recv->rcvstate) {
@@ -185,5 +176,5 @@ ISR(IR_RECV_INTR_NAME) {
             break;
     }
     //do_Blink();
-    digitalWrite(29, LOW);
+    //digitalWrite(29, LOW);
 }

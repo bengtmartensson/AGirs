@@ -18,8 +18,8 @@ this program. If not, see http://www.gnu.org/licenses/.
 #include <Arduino.h>
 #include "config.h"
 #include <GirsMacros.h>
+#include <IrReceiverSampler.h>
 #include "Tokenizer.h"
-#include "../GirsLib/IrReceiverSampler.h"
 
 #ifdef ETHERNET
 #ifdef ETHER_ENC28J60
@@ -42,7 +42,7 @@ this program. If not, see http://www.gnu.org/licenses/.
 #include <IrReceiverSampler.h>
 #endif
 
-#if defined(RECEIVE) | defined(TRANSMIT)
+#ifdef TRANSMIT
 #include <IRLib.h>
 #endif
 #if defined(RECEIVE)
@@ -101,16 +101,16 @@ static PARAMETER_CONST unsigned long endingTimeout = DEFAULT_ENDINGTIMEOUT; // m
 #endif
 
 #ifdef RECEIVE
-IrReceiverSampler *irReceiver = NULL;
+//IrReceiverSampler *irReceiver = NULL;
 ///IRrecv *irReceiver = NULL;
 ///TrivialIrDecoder decoder;
 #endif
-#if defined(TRANSMIT) | defined(RENDERER)
+#if defined(TRANSMIT)
 IRsendRaw *irSender = NULL;
 #endif
 #ifdef CAPTURE
 IrWidget *irWidget = NULL;
-static PARAMETER_CONST unsigned int captureSize = DEFAULT_CAPTURESIZE;
+static PARAMETER_CONST uint16_t captureSize = DEFAULT_CAPTURESIZE;
 #endif
 
 #ifdef ETHERNET
@@ -187,7 +187,7 @@ void sendIrSignal(IRsendRaw *irSender, unsigned int noSends, const IrSignal *sig
 
 #define modulesSupported EXPAND_AND_QUOTE(Base TRANSMIT_NAME CAPTURE_NAME RENDERER_NAME RECEIVE_NAME DECODER_NAME LED_NAME LCD_NAME PARAMETERS_NAME)
 #define PROGNAME "AGirs"
-#define VERSION "2015-07-13"
+#define VERSION "2015-07-14"
 #define welcomeString "Welcome to " PROGNAME
 #define okString "OK"
 #define errorString "ERROR"
@@ -280,22 +280,24 @@ void receive(Stream& stream) {
         irWidget = NULL;
     }
 #endif // CAPTURE
+    IrReceiverSampler *irReceiver = IrReceiverSampler::getInstance();
     if (irReceiver == NULL)
-        irReceiver = IrReceiverSampler::newIrReceiverSampler(IRRECEIVER_PIN);
+        irReceiver = IrReceiverSampler::newIrReceiverSampler(captureSize, IRRECEIVER_PIN, IRRECEIVER_PIN_PULLUP_VALUE);
     irReceiver->setEndingTimeout(endingTimeout);
     irReceiver->setBeginningTimeout(beginTimeout);
     irReceiver->setMarkExcess(IRRECEIVER_MARK_EXCESS);
-    irReceiver->enableIRIn();
     flushIn(stream);
 #ifdef RECEIVELED
     setLogicLed(receiveled, HIGH);
 #endif
     boolean interrupted = false;
+    irReceiver->enableIrIn();
     while (!(irReceiver->isReady()/*Results(&decoder)*/) && !interrupted) {
         //Serial.println(irReceiver->rcvstate);
         checkTurnoff();
         interrupted = stream.available();
     }
+    irReceiver->disableIrIn();
 #ifdef RECEIVELED
      setLogicLed(receiveled, LOW);
 #endif
@@ -331,9 +333,8 @@ void receive(Stream& stream) {
             stream.println(multiDecoder.getDecode()); // also for timeout
             break;
     }
-    irReceiver->disableIRIn();
 #else // ! DECODE
-    dump(decoder, stream);
+    dump(*irReceiver, stream);
 #endif // !DECODE
 }
 #endif // RECEIVE
@@ -342,11 +343,7 @@ void receive(Stream& stream) {
 
 void capture(Stream& stream) {
 #ifdef RECEIVE
-    if (irReceiver != NULL) {
-        //delete irReceiver;
-        IrReceiverSampler::deleteInstance();
-        irReceiver = NULL;
-    }
+    IrReceiverSampler::deleteInstance();
 #endif
     if (irWidget == NULL)
         irWidget = new IrWidgetAggregating(captureSize, &stream);
@@ -361,7 +358,7 @@ void capture(Stream& stream) {
 #ifdef CAPTURELED
     setLogicLed(captureled, LOW); // FIXME
 #endif
-    if (irWidget->hasContent()) {
+    if (irWidget->isReady()) {
         // Do not try to decode, that is what "receive" is for.
         irWidget->dump(stream);
     } else

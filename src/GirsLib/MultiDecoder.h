@@ -2,8 +2,7 @@
 #define _MULTIDECODER_H
 
 #include <Arduino.h>
-#include <IRLib.h>
-#include "IrReceiverSampler.h"
+#include "IrReader.h"
 
 class MultiDecoder {
  public:
@@ -23,12 +22,8 @@ class MultiDecoder {
  public:
   Type getType() const { return type; }
   const String& getDecode() const { return decode; }
-  //const IrReceiver::duration_t *getRawData() const;
-  //uint16_t getRawDataLength() const;
-
-  MultiDecoder(const IRdecodeBase& decoder);
-  MultiDecoder(const IrReceiverSampler &irReceiverSampler);
-  ~MultiDecoder() { }
+  MultiDecoder(const IrReader &irReader);
+  virtual ~MultiDecoder() { }
 };
 
 #endif // ! _MULTIDECODER_H

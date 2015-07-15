@@ -20,13 +20,15 @@ http://arduino.cc/en/Hacking/PinMapping2560
 
 // Copyright (c) 2012 Michael Dreher  <michael(at)5dot1.de>
 // this code may be distributed under the terms of the General Public License V2 (GPL V2)
+// NOTE(BM) Michael agrees to "or later", see
+// http://www.hifi-remote.com/forums/viewtopic.php?p=112586#112586
 
 // Code slighty reorganized by Bengt Martensson
 
 #include "IrWidget.h"
 
-IrWidget::IrWidget(uint16_t bufSize, Stream* stream_) : IrReader(bufSize) {
-    stream = stream_;
+IrWidget::IrWidget(uint16_t bufSize, Stream& stream_) : IrReader(bufSize),stream(stream_) {
+    //stream = stream_;
     //bufSize = bufSize_;
     captureData = new uint16_t[bufSize];
     endingTimeout = _BV(RANGE_EXTENSION_BITS) - 1;

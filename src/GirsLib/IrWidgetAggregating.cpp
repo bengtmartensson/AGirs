@@ -5,6 +5,20 @@
 
 #include "IrWidgetAggregating.h"
 
+IrWidgetAggregating *IrWidgetAggregating::instance = NULL;
+
+IrWidgetAggregating *IrWidgetAggregating::newIrWidgetAggregating(uint16_t captureSize, Stream& stream) {
+    if (instance != NULL)
+        return NULL;
+    instance = new IrWidgetAggregating(captureSize, stream);
+    return instance;
+}
+
+void IrWidgetAggregating::deleteInstance() {
+    delete instance;
+    instance = NULL;
+}
+
 // Wait for a signal on pin ICP1 and store the captured time values in the array 'captureData'
 void IrWidgetAggregating::capture() {
     uint32_t timeForBeginTimeout = millis() + beginningTimeout;
@@ -46,7 +60,7 @@ void IrWidgetAggregating::capture() {
     while (!(tifr = (CAT2(TIFR, CAP_TIM) & (_BV(CAT2(ICF, CAP_TIM)))))) {
         if (millis() >= timeForBeginTimeout)
             goto endCapture;
-        if (stream->available()) // abort the capture when any character is received // FIXME
+        if (stream.available()) // abort the capture when any character is received // FIXME
             goto endCapture;
     }
     TCCR0B &= ~(_BV(CS02) | _BV(CS01) | _BV(CS00)); // stop timer0 (disables timer IRQs)

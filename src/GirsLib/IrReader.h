@@ -35,9 +35,6 @@ protected:
     //Stream* stream;
     uint16_t bufferSize;
 
-public:
-    //IrCapturer(uint16_t bufSize, Stream* stream);
-
     IrReader(uint16_t bufSize_) : bufferSize(bufSize_) {
     }
     
@@ -46,6 +43,10 @@ public:
 
     virtual ~IrReader() {
     };
+
+public:
+    //IrCapturer(uint16_t bufSize, Stream* stream);
+
     virtual void reset() = 0;
     //unsigned int getFrequency() const { return frequency; };
     virtual uint16_t getDataLength() const = 0; // was getCaptureCount())

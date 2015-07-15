@@ -14,6 +14,7 @@
 #define LISTEN
 
 // Additional modules
+// Support sending signals without modulation
 #define NON_MOD
 
 #define CONFIGURABLE_LEDS

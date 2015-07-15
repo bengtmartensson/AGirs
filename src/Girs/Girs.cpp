@@ -102,9 +102,6 @@ static PARAMETER_CONST unsigned long beginTimeout = DEFAULT_BEGINTIMEOUT; // mil
 static PARAMETER_CONST unsigned long endingTimeout = DEFAULT_ENDINGTIMEOUT; // milliseconds
 #endif
 
-#ifdef CAPTURE
-IrWidget *irWidget = NULL;
-#endif
 #if defined(RECEIVE) | defined(CAPTURE)
 static PARAMETER_CONST uint16_t captureSize = DEFAULT_CAPTURESIZE;
 #endif
@@ -233,10 +230,7 @@ void softwareReset() {
 
 void receive(Stream& stream) {
 #ifdef CAPTURE
-    if (irWidget != NULL) {
-        delete irWidget;
-        irWidget = NULL;
-    }
+    IrWidgetAggregating::deleteInstance();
 #endif // CAPTURE
     IrReceiverSampler *irReceiver = IrReceiverSampler::getInstance();
     if (irReceiver == NULL)
@@ -263,8 +257,6 @@ void receive(Stream& stream) {
          stream.println(F(timeoutString));
          return;
      }
-    // Setup decoder
-    //decoder.decode();
 #ifdef DECODER
     // Do actual decode
     MultiDecoder multiDecoder(*irReceiver); // multiDecoder(decoder);
@@ -305,8 +297,9 @@ void capture(Stream& stream) {
 #ifdef RECEIVE
     IrReceiverSampler::deleteInstance();
 #endif
+    IrWidget *irWidget = IrWidgetAggregating::getInstance();
     if (irWidget == NULL)
-        irWidget = new IrWidgetAggregating(captureSize, &stream);
+        irWidget = IrWidgetAggregating::newIrWidgetAggregating(captureSize, stream);
     irWidget->setEndingTimeout(endingTimeout);
     irWidget->setBeginningTimeout(beginTimeout);
     irWidget->reset();

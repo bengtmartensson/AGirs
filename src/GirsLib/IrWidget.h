@@ -40,17 +40,14 @@ http://arduino.cc/en/Hacking/PinMapping2560
 class IrWidget : public IrReader {
 protected:
     uint32_t beginningTimeout; // unit milli seconds
-    Stream *stream;
+    Stream& stream;
     uint32_t frequency;
 
-public:
-    IrWidget(unsigned int bufSize, Stream* stream);
+    IrWidget(unsigned int bufSize, Stream& stream);
     virtual ~IrWidget();
+public:
     virtual void capture() = 0;
 
-    //unsigned int getBufSize() {
-    //    return bufSize;
-    //}
 
     uint16_t getDataLength() const { // was: getCaptureCount()
         return captureCount;

@@ -9,12 +9,23 @@
 #include "IrWidget.h"
 
 class IrWidgetAggregating : public IrWidget {
+private:
+    static IrWidgetAggregating *instance;
+
 public:
-    IrWidgetAggregating(unsigned int captureSize, Stream* stream) : IrWidget(captureSize, stream) {
-    }
     void capture();
+    static void deleteInstance();
+    static IrWidgetAggregating *getInstance() { return instance; }
+    static IrWidgetAggregating *newIrWidgetAggregating(uint16_t captureSize, Stream& stream);
+
+protected:
+
+    IrWidgetAggregating(unsigned int captureSize, Stream& stream) : IrWidget(captureSize, stream) {
+    }
+
 
 private:
+
     inline uint16_t packTimeVal/*Normal*/(uint32_t val) const {
         if (val >= 0x8000) {
             val = val >> (RANGE_EXTENSION_BITS + 1);

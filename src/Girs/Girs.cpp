@@ -226,40 +226,9 @@ void softwareReset() {
 #endif
 #endif
 
-#ifdef RECEIVE
-
-void receive(Stream& stream) {
-#ifdef CAPTURE
-    IrWidgetAggregating::deleteInstance();
-#endif // CAPTURE
-    IrReceiverSampler *irReceiver = IrReceiverSampler::getInstance();
-    if (irReceiver == NULL)
-        irReceiver = IrReceiverSampler::newIrReceiverSampler(captureSize, IRRECEIVER_PIN, IRRECEIVER_PIN_PULLUP_VALUE);
-    irReceiver->setEndingTimeout(endingTimeout);
-    irReceiver->setBeginningTimeout(beginTimeout);
-    irReceiver->setMarkExcess(IRRECEIVER_MARK_EXCESS);
-    flushIn(stream);
-#ifdef RECEIVELED
-    setLogicLed(receiveled, HIGH);
-#endif
-    boolean interrupted = false;
-    irReceiver->enableIrIn();
-    while (!(irReceiver->isReady()/*Results(&decoder)*/) && !interrupted) {
-        //Serial.println(irReceiver->rcvstate);
-        checkTurnoff();
-        interrupted = stream.available();
-    }
-    irReceiver->disableIrIn();
-#ifdef RECEIVELED
-     setLogicLed(receiveled, LOW);
-#endif
-     if (interrupted) {
-         stream.println(F(timeoutString));
-         return;
-     }
+void decodeOrDump(IrReader *irReader, Stream& stream) {
 #ifdef DECODER
-    // Do actual decode
-    MultiDecoder multiDecoder(*irReceiver); // multiDecoder(decoder);
+    MultiDecoder multiDecoder(*irReader); // multiDecoder(decoder);
 #ifdef LCD
     if (multiDecoder.getType() > MultiDecoder::noise) {
         lcdPrint(multiDecoder.getType() == MultiDecoder::nec_ditto
@@ -277,17 +246,48 @@ void receive(Stream& stream) {
             // ignore
             break;
         case MultiDecoder::undecoded:
-            //dump(*irReceiver, stream); // report data of undecoded signals
-            irReceiver->dump(stream);
+            irReader->dump(stream); // report data of undecoded signals
             break;
         default:
             stream.println(multiDecoder.getDecode()); // also for timeout
             break;
     }
-#else // ! DECODER
-    //dump(*irReceiver, stream);
-    irReceiver->dump(stream);
+#else  // !DECODER
+    irReader->dump(stream);
 #endif // !DECODER
+}
+
+#ifdef RECEIVE
+
+void receive(Stream& stream) {
+#ifdef CAPTURE
+    IrWidgetAggregating::deleteInstance(); // save memory
+#endif // CAPTURE
+    IrReceiverSampler *irReceiver = IrReceiverSampler::getInstance();
+    if (irReceiver == NULL)
+        irReceiver = IrReceiverSampler::newIrReceiverSampler(captureSize, IRRECEIVER_PIN, IRRECEIVER_PIN_PULLUP_VALUE);
+    irReceiver->setEndingTimeout(endingTimeout);
+    irReceiver->setBeginningTimeout(beginTimeout);
+    irReceiver->setMarkExcess(IRRECEIVER_MARK_EXCESS);
+    flushIn(stream);
+#ifdef RECEIVELED
+    setLogicLed(receiveled, HIGH);
+#endif
+    boolean interrupted = false;
+    irReceiver->enableIrIn();
+    while (!irReceiver->isReady() && !interrupted) {
+        checkTurnoff();
+        interrupted = stream.available();
+    }
+    irReceiver->disableIrIn();
+#ifdef RECEIVELED
+     setLogicLed(receiveled, LOW);
+#endif
+     if (interrupted) {
+         stream.println(F(timeoutString));
+         return;
+     }
+     decodeOrDump(irReceiver, stream);
 }
 #endif // RECEIVE
 
@@ -313,7 +313,11 @@ void capture(Stream& stream) {
 #endif
     if (irWidget->isReady()) {
         // Do not try to decode, that is what "receive" is for.
+#ifdef DECODE_CAPTURES
+        decodeOrDump(irWidget, stream);
+#else
         irWidget->dump(stream);
+#endif
     } else
         stream.println(F(timeoutString));
 }

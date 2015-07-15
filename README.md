@@ -7,12 +7,12 @@ for interact with other programs. communicating over a serial line
 (likely in USB disguise), TCP-, or UDP sockets, acting as server
 (accepting incoming requests) or client (initiating connections).
 
-It uses a forked version of [Chris Young's
+It implements some of the functionallity of [Chris Young's
 IRLib](http://tech.cyborg5.com/irlib/, 
 https://github.com/cyborg5/IRLib), which is a major
 rewrite of a previous library called IRremote, published by
-Ken Shirriff in [his blog](http://www.righto.com/2009/08/multi-protocol-infrared-remote-library.html). 
-The second component is Michael Dreher's
+Ken Shirriff in [his blog](http://www.righto.com/2009/08/multi-protocol-infrared-remote-library.html), but does not use it directly. 
+It uses Michael Dreher's
 IrWidget [(article in
 German)](http://www.mikrocontroller.net/articles/High-Speed_capture_mit_ATmega_Timer),
 see also [this forum
@@ -72,7 +72,6 @@ may use different syntax and semantic.)
 
 ## Dependencies
 
-* [IRLib](https://github.com/bengtmartensson/IRLib.git), my fork adding begin- and ending timeouts ([Pull request](https://github.com/cyborg5/IRLib/pull/11))
 * Ethernet (if enabling the ETHERNET configure option). Contanied in the Arduino IDE. 
 * SPI (if enabling the ETHERNET or LCD_I2C configure option). Contanied in the Arduino IDE. 
 * Wire (if enabling the LCD_I2C configure option). Contanied in the Arduino IDE.
@@ -102,12 +101,6 @@ ENC28J60 module. The W5100 is the better chip anyhow.) I did some test
 with the [Arduino uip
 library](https://github.com/ntruchsess/arduino_uip), but it was
 just too memory hungry on an AtMega328. Contributed code is welcome.
-
-* Why didn't you use the decoding/encoding stuff of IRLib instead of
-  writing your own?
-
-Basically since I intend to generate this sort of code automatically
-in the future.
 
 * What about "GirsLite".
 

@@ -17,6 +17,10 @@
 // Support sending signals without modulation
 #define NON_MOD
 
+// Try to decode also captures, normally not sensible
+//#define DECODE_CAPTURES
+
+// Have parameters for transmitled etc.
 #define CONFIGURABLE_LEDS
 
 // Reset command

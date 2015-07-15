@@ -43,8 +43,10 @@ LCD_DEFINE(lcd);
 #include <LedFuncs.inc> // Must come after lcd
 #include <LcdFuncs.inc>
 
-static const unsigned long beginTimeout = 10000U;
-static const unsigned long endingTimeout = 35U;
+static const milliseconds_t beginTimeout = 10000U;
+static const milliseconds_t endingTimeout = 35U;
+static const int16_t captureSize = 200U;
+static const microseconds_t markExcess = 50U;
 
 IrReceiverSampler *irReceiver = NULL;
 
@@ -65,7 +67,7 @@ static void allLedsOff() {
 #endif
 
 void receive(Stream& stream) {
-    irReceiver->enableIrIn();
+    irReceiver->enable();
     // Wait until something arrives
     while (!irReceiver->isReady())
         checkTurnoff();
@@ -84,7 +86,7 @@ void receive(Stream& stream) {
     setLogicLed(DECODELED(multiDecoder.getType()), BLINK);
 #endif
     stream.println(multiDecoder.getDecode());
-    irReceiver->disableIrIn();
+    irReceiver->disable();
 }
 
 void setup() {
@@ -105,8 +107,8 @@ void setup() {
     Serial.println(F(PROGNAME " " VERSION));
     Serial.setTimeout(serialTimeout);
 
-    irReceiver = IrReceiverSampler::newIrReceiverSampler(200, IRRECEIVER_PIN,
-            false, 50, beginTimeout, endingTimeout);
+    irReceiver = IrReceiverSampler::newIrReceiverSampler(captureSize, IRRECEIVER_PIN,
+            IRRECEIVER_PIN_PULLUP_VALUE, markExcess, beginTimeout, endingTimeout);
 }
 
 // Read one IR signal.

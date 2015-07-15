@@ -47,7 +47,7 @@ IrSenderPwm::IrSenderPwm() : IrSender(IR_SEND_PWM_PIN) {
 
 void IrSenderPwm::send(const microseconds_t buf[], uint16_t len, frequency_t frequency) {
 
-    enableIrOut(frequency/1000);
+    enable(frequency/1000);
     for (uint16_t i = 0; i < len; i++) {
         digitalWrite(outputPin, (i & 1) ? LOW : HIGH);
         if (i & 1) {
@@ -79,7 +79,7 @@ IrSenderPwm *IrSenderPwm::getInstance(boolean create) {
 //}
 
 // Copied from IrLib.c, renamed from IRsendBase::enableIROut
-void IrSenderPwm::enableIrOut(unsigned char khz) {
+void IrSenderPwm::enable(unsigned char khz) {
     //NOTE: the comments on this routine accompanied the original early version of IRremote library
     //which only used TIMER2. The parameters defined in IRLibTimer.h may or may not work this way.
     // Enables IR output.  The khz value controls the modulation frequency in kilohertz.

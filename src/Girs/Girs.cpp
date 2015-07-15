@@ -274,12 +274,12 @@ void receive(Stream& stream) {
     setLogicLed(receiveled, HIGH);
 #endif
     boolean interrupted = false;
-    irReceiver->enableIrIn();
+    irReceiver->enable();
     while (!irReceiver->isReady() && !interrupted) {
         checkTurnoff();
         interrupted = stream.available();
     }
-    irReceiver->disableIrIn();
+    irReceiver->disable();
 #ifdef RECEIVELED
      setLogicLed(receiveled, LOW);
 #endif

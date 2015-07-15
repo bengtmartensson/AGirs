@@ -17,8 +17,8 @@ public:
     static const microseconds_t defaultMarkExcess = 50U;
     IrReceiver(uint16_t bufSize, pin_t pin, boolean pullup = false, microseconds_t markExcess = defaultMarkExcess);
     virtual ~IrReceiver() {};    
-    virtual void enableIrIn() = 0;
-    virtual void disableIrIn() = 0;
+    virtual void enable() = 0;
+    virtual void disable() = 0;
     // Use reset() instead
     // virtual void resume() = 0;
     pin_t getPin() const { return pin; }

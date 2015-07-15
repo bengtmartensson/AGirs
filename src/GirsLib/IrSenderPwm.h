@@ -31,7 +31,7 @@ private:
     IrSenderPwm();
     ~IrSenderPwm() {}
     static IrSenderPwm *instance;
-    void enableIrOut(unsigned char khz);
+    void enable(unsigned char khz);
 
 public:
     /**

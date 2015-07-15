@@ -78,8 +78,8 @@ public:
     }
 public:
     //bool GetResults(IRdecodeBase *decoder);
-    void enableIrIn();
-    void disableIrIn();
+    void enable();
+    void disable();
     void reset(); //resume();
     //const IrReceiver::duration_t *getData() const;
     //uint16_t getDataLength() const;

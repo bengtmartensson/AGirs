@@ -63,7 +63,7 @@ void IrReceiverSampler::reset() {
     //IRrecvBase::resume();
 }
 
-void IrReceiverSampler::enableIrIn(void) {
+void IrReceiverSampler::enable() {
     reset();
     //IRrecvBase::enableIRIn();
     // setup pulse clock timer interrupt
@@ -73,7 +73,7 @@ void IrReceiverSampler::enableIrIn(void) {
     sei();
 }
 
-void IrReceiverSampler::disableIrIn(void) {
+void IrReceiverSampler::disable() {
     IR_RECV_DISABLE_INTR;
 }
 

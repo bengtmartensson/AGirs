@@ -15,12 +15,12 @@ You should have received a copy of the GNU General Public License along with
 this program. If not, see http://www.gnu.org/licenses/.
 */
 
-#include "NonModIrSender.h"
+#include "IrSenderNonMod.h"
 
-NonModIrSender::NonModIrSender(pin_t pin) : IrSender(pin) {
+IrSenderNonMod::IrSenderNonMod(pin_t pin) : IrSender(pin) {
 }
 
-void NonModIrSender::send(const microseconds_t buf[], uint16_t len) {
+void IrSenderNonMod::send(const microseconds_t buf[], uint16_t len) {
     for (uint16_t i = 0; i < len; i++) {
         digitalWrite(outputPin, (i & 1) ? LOW : HIGH);
         delayUSecs(buf[i]);

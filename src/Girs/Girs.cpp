@@ -53,7 +53,7 @@ this program. If not, see http://www.gnu.org/licenses/.
 #endif
 
 #ifdef NON_MOD
-#include <NonModIrSender.h>
+#include <IrSenderNonMod.h>
 #endif
 
 #ifdef DECODER
@@ -141,7 +141,7 @@ void sendIrSignal(uint16_t noSends, frequency_t frequency,
 #endif
     IrSender *irSender =
 #ifdef NON_MOD
-            (frequency == 0) ? (IrSender*) new NonModIrSender(NON_MOD_PIN) :
+            (frequency == 0) ? (IrSender*) new IrSenderNonMod(NON_MOD_PIN) :
 #endif
             (IrSender*) IrSenderPwm::getInstance(true);
 

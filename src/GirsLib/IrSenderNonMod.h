@@ -15,16 +15,16 @@ You should have received a copy of the GNU General Public License along with
 this program. If not, see http://www.gnu.org/licenses/.
 */
 
-#ifndef NONDEMODIRSENDER_H
-#define	NONDEMODIRSENDER_H
+#ifndef IRSENDERNONMOD_H
+#define	IRSENDERNONMOD_H
 
 #include <Arduino.h>
 #include "GirsTypes.h"
 #include "IrSender.h"
 
-class NonModIrSender : public IrSender {
+class IrSenderNonMod : public IrSender {
 public:
-    NonModIrSender(pin_t pin);
+    IrSenderNonMod(pin_t pin);
     
     // Use three parameter form just to be compatible with the super class
     void send(const microseconds_t buf[], uint16_t len, frequency_t frequency) {
@@ -35,5 +35,5 @@ public:
     void send(const microseconds_t buf[], uint16_t len);
 };
 
-#endif	/* ! NONDEMODIRSENDER_H */
+#endif	/* ! IRSENDERNONMOD_H */
 

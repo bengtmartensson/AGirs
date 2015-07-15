@@ -18,6 +18,7 @@ this program. If not, see http://www.gnu.org/licenses/.
 #include <Arduino.h>
 #include "config.h"
 #include <GirsMacros.h>
+#include <IrReceiverSampler.h>
 
 #ifdef ETHERNET
 #error Ethernet not supported (yet?)
@@ -33,9 +34,6 @@ this program. If not, see http://www.gnu.org/licenses/.
 #include <LiquidCrystal_I2C.h>
 #endif
 
-#include <IRLib.h>
-#include <TrivialDecoder.h>
-
 #ifdef DECODER
 #include <MultiDecoder.h>
 #endif
@@ -45,30 +43,34 @@ LCD_DEFINE(lcd);
 #include <LedFuncs.inc> // Must come after lcd
 #include <LcdFuncs.inc>
 
-static const unsigned long beginTimeout = 10000000UL;
-static const unsigned long endingTimeout = 35000UL;
+static const unsigned long beginTimeout = 10000U;
+static const unsigned long endingTimeout = 35U;
 
-IRrecv *irReceiver = NULL;
-TrivialIrDecoder decoder;
+IrReceiverSampler *irReceiver = NULL;
 
 #define PROGNAME "Listener"
-#define VERSION "2015-07-05"
+#define VERSION "2015-07-15"
 
 void flushIn(Stream &stream) {
     while (stream.available())
         stream.read();
 }
 
+#ifdef LED
+
+static void allLedsOff() {
+    for (uint8_t i = 1; i <= MAX_LED; i++)
+        setLogicLed(i, LOW);
+}
+#endif
+
 void receive(Stream& stream) {
-    irReceiver->enableIRIn();
+    irReceiver->enableIrIn();
     // Wait until something arrives
-    while (!(irReceiver->GetResults(&decoder))) {
+    while (!irReceiver->isReady())
         checkTurnoff();
-    }
-    // Setup decoder
-    decoder.decode();
-    // Do actual decode
-    MultiDecoder multiDecoder(decoder);
+
+    MultiDecoder multiDecoder(*irReceiver);
 #ifdef LCD
     if (multiDecoder.getType() > MultiDecoder::noise) {
         lcdPrint(multiDecoder.getType() == MultiDecoder::nec_ditto
@@ -82,7 +84,7 @@ void receive(Stream& stream) {
     setLogicLed(DECODELED(multiDecoder.getType()), BLINK);
 #endif
     stream.println(multiDecoder.getDecode());
-    irReceiver->disableIRIn();
+    irReceiver->disableIrIn();
 }
 
 void setup() {
@@ -103,10 +105,8 @@ void setup() {
     Serial.println(F(PROGNAME " " VERSION));
     Serial.setTimeout(serialTimeout);
 
-    irReceiver = new IRrecv(IRRECEIVER_PIN);
-    irReceiver->setEndingTimeout(endingTimeout);
-    irReceiver->setBeginningTimeout(beginTimeout);
-    irReceiver->Mark_Excess = 50;
+    irReceiver = IrReceiverSampler::newIrReceiverSampler(200, IRRECEIVER_PIN,
+            false, 50, beginTimeout, endingTimeout);
 }
 
 // Read one IR signal.

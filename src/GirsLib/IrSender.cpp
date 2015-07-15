@@ -15,25 +15,32 @@ You should have received a copy of the GNU General Public License along with
 this program. If not, see http://www.gnu.org/licenses/.
 */
 
-#ifndef NONDEMODIRSENDER_H
-#define	NONDEMODIRSENDER_H
-
-#include <Arduino.h>
-#include "GirsTypes.h"
 #include "IrSender.h"
 
-class NonModIrSender : public IrSender {
-public:
-    NonModIrSender(pin_t pin);
-    
-    // Use three parameter form just to be compatible with the super class
-    void send(const microseconds_t buf[], uint16_t len, frequency_t frequency) {
-        if (frequency == 0U)
-            send(buf, len);
-    }
-    
-    void send(const microseconds_t buf[], uint16_t len);
-};
+// From IRLib.cpp, renamed from My_delay_uSecs.
 
-#endif	/* ! NONDEMODIRSENDER_H */
+//The Arduino built in function delayMicroseconds has limits we wish to exceed
+//Therefore we have created this alternative
+void IrSender::delayUSecs(microseconds_t T) {
+    if (T) {
+        if (T > 16000) {
+            delayMicroseconds(T % 1000);
+            delay(T / 1000);
+        } else
+            delayMicroseconds(T);
+    };
+}
 
+IrSender::IrSender(pin_t pin) {
+    outputPin = pin;
+    pinMode(pin, OUTPUT);
+    digitalWrite(pin, LOW);
+}
+
+IrSender::~IrSender() {
+    digitalWrite(outputPin, LOW); // ?
+}
+
+void IrSender::mute() {
+    digitalWrite(outputPin, LOW);
+}

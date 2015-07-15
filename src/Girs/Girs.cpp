@@ -18,7 +18,6 @@ this program. If not, see http://www.gnu.org/licenses/.
 #include <Arduino.h>
 #include "config.h"
 #include <GirsMacros.h>
-#include <IrReceiverSampler.h>
 #include "Tokenizer.h"
 
 #ifdef ETHERNET
@@ -43,10 +42,10 @@ this program. If not, see http://www.gnu.org/licenses/.
 #endif
 
 #ifdef TRANSMIT
-#include <IRLib.h>
+#include <IrSenderPwm.h>
 #endif
 #if defined(RECEIVE)
-#include <TrivialDecoder.h>
+#include <IrReceiverSampler.h>
 #endif
 
 #ifdef CAPTURE
@@ -58,6 +57,9 @@ this program. If not, see http://www.gnu.org/licenses/.
 #endif
 
 #ifdef DECODER
+#ifndef RECEIVE
+#error DECODER without RECEIVE is nonsensical, aborting.
+#endif
 #include <MultiDecoder.h>
 #endif
 
@@ -81,18 +83,18 @@ LCD_DEFINE(lcd);
 
 #ifdef LED
 #ifdef TRANSMIT
-static LED_PARAMETER_CONST uint8_t transmitled = TRANSMITLED;
+static LED_PARAMETER_CONST pin_t transmitled = TRANSMITLED;
 #endif
 
 #ifdef RECEIVE
-static LED_PARAMETER_CONST uint8_t receiveled = RECEIVELED;
+static LED_PARAMETER_CONST pin_t receiveled = RECEIVELED;
 #endif
 
 #ifdef CAPTURE
-static LED_PARAMETER_CONST uint8_t captureled = CAPTURELED;
+static LED_PARAMETER_CONST pin_t captureled = CAPTURELED;
 #endif
 
-static LED_PARAMETER_CONST uint8_t commandled = COMMANDLED;
+static LED_PARAMETER_CONST pin_t commandled = COMMANDLED;
 #endif // LED
 
 static PARAMETER_CONST unsigned long beginTimeout = DEFAULT_BEGINTIMEOUT; // milliseconds
@@ -100,16 +102,10 @@ static PARAMETER_CONST unsigned long beginTimeout = DEFAULT_BEGINTIMEOUT; // mil
 static PARAMETER_CONST unsigned long endingTimeout = DEFAULT_ENDINGTIMEOUT; // milliseconds
 #endif
 
-#ifdef RECEIVE
-//IrReceiverSampler *irReceiver = NULL;
-///IRrecv *irReceiver = NULL;
-///TrivialIrDecoder decoder;
-#endif
-#if defined(TRANSMIT)
-IRsendRaw *irSender = NULL;
-#endif
 #ifdef CAPTURE
 IrWidget *irWidget = NULL;
+#endif
+#if defined(RECEIVE) | defined(CAPTURE)
 static PARAMETER_CONST uint16_t captureSize = DEFAULT_CAPTURESIZE;
 #endif
 
@@ -137,40 +133,25 @@ String ip2string(IPAddress ip) {
 
 #if defined(TRANSMIT)
 
-inline unsigned int hz2khz(unsigned int freq) {
-    // prefer speed over accuracy...
-    return freq/1000;
-}
-
-void sendIrSignal(IRsendRaw *irSender, unsigned int noSends, unsigned int frequency,
-        unsigned int introLength, unsigned int repeatLength, unsigned int endingLength,
-        /*const*/ unsigned int intro[], /*const*/ unsigned int repeat[], /*const*/ unsigned int ending[]) {
+void sendIrSignal(uint16_t noSends, frequency_t frequency,
+        uint16_t introLength, uint16_t repeatLength, uint16_t endingLength,
+        const microseconds_t intro[], const microseconds_t repeat[], const microseconds_t ending[]) {
 #ifdef TRANSMITLED
     setLogicLed(transmitled, HIGH);
 #endif
+    IrSender *irSender =
 #ifdef NON_MOD
-#ifndef NON_MOD_PIN
-#error NON_MOD defined but not NON_MOD_PIN, aborting
+            (frequency == 0) ? (IrSender*) new NonModIrSender(NON_MOD_PIN) :
 #endif
-    if (frequency == 0) {
-        NonModIrSender irSender(NON_MOD_PIN);
-        if (introLength > 0)
-            irSender.send(intro, introLength);
-        for (unsigned int i = 0; i < noSends - (introLength > 0); i++)
-            irSender.send(repeat, repeatLength);
-        if (endingLength > 0)
-            irSender.send(ending, endingLength);
-    } else {
-#endif
-        if (introLength > 0)
-            irSender->send(intro, introLength, hz2khz(frequency));
-        for (unsigned int i = 0; i < noSends - (introLength > 0); i++)
-            irSender->send(repeat, repeatLength, hz2khz(frequency));
-        if (endingLength > 0)
-            irSender->send(ending, endingLength, hz2khz(frequency));
-#ifdef NON_MOD
-    }
-#endif
+            (IrSender*) IrSenderPwm::getInstance(true);
+
+    if (introLength > 0)
+        irSender->send(intro, introLength, frequency);
+    for (unsigned int i = 0; i < noSends - (introLength > 0); i++)
+        irSender->send(repeat, repeatLength, frequency);
+    if (endingLength > 0)
+        irSender->send(ending, endingLength, frequency);
+
 #ifdef TRANSMITLED
     setLogicLed(transmitled, LOW);
 #endif
@@ -178,16 +159,16 @@ void sendIrSignal(IRsendRaw *irSender, unsigned int noSends, unsigned int freque
 #endif
 
 #ifdef RENDERER
-void sendIrSignal(IRsendRaw *irSender, unsigned int noSends, const IrSignal *signal) {
-    sendIrSignal(irSender, noSends, signal->getFrequency(),
+void sendIrSignal(unsigned int noSends, const IrSignal *signal) {
+    sendIrSignal(noSends, signal->getFrequency(),
             signal->getLengthIntro(), signal->getLengthRepeat(), signal->getLengthEnding(),
-        (unsigned int*) signal->getIntro(), (unsigned int*) signal->getRepeat(), (unsigned int*) signal->getEnding());
+        signal->getIntro(), signal->getRepeat(), signal->getEnding());
 }
 #endif
 
 #define modulesSupported EXPAND_AND_QUOTE(Base TRANSMIT_NAME CAPTURE_NAME RENDERER_NAME RECEIVE_NAME DECODER_NAME LED_NAME LCD_NAME PARAMETERS_NAME)
 #define PROGNAME "AGirs"
-#define VERSION "2015-07-14"
+#define VERSION "2015-07-15"
 #define welcomeString "Welcome to " PROGNAME
 #define okString "OK"
 #define errorString "ERROR"
@@ -250,29 +231,6 @@ void softwareReset() {
 
 #ifdef RECEIVE
 
-void dump(const IRdecodeBase& decoder, Stream& stream) {
-    // First entry is introductory silence, therefore start at 1, not 0
-    for (unsigned int i = 1; i < decoder.rawlen; i++) {
-        stream.write((i & 0x01) ? '+' : '-');
-        stream.print(decoder.rawbuf[i], DEC);
-        stream.print(" ");
-    }
-    stream.println();
-}
-
-void dump(const IrReceiverSampler &irReceiverSampler, Stream& stream) {
-    for (uint16_t i = 0; i < irReceiverSampler.rawlen; i++) {
-        stream.write((i & 0x01) ? '-' : '+');
-        stream.print(irReceiverSampler.getDuration(i), DEC);
-        stream.print(" ");
-    }
-    stream.println();
-}
-
-//void dump(const MultiDecoder &decoder, Stream& stream) {
-//    dump(decoder.getRawDataLength(), decoder.getRawData(), stream);
-//}
-
 void receive(Stream& stream) {
 #ifdef CAPTURE
     if (irWidget != NULL) {
@@ -327,15 +285,17 @@ void receive(Stream& stream) {
             // ignore
             break;
         case MultiDecoder::undecoded:
-            dump(*irReceiver, stream); // report data of undecoded signals
+            //dump(*irReceiver, stream); // report data of undecoded signals
+            irReceiver->dump(stream);
             break;
         default:
             stream.println(multiDecoder.getDecode()); // also for timeout
             break;
     }
-#else // ! DECODE
-    dump(*irReceiver, stream);
-#endif // !DECODE
+#else // ! DECODER
+    //dump(*irReceiver, stream);
+    irReceiver->dump(stream);
+#endif // !DECODER
 }
 #endif // RECEIVE
 
@@ -370,6 +330,10 @@ void setup() {
     DEFINE_IRRECEIVER;
     DEFINE_IRSENSOR;
     DEFINE_LEDS;
+#if defined(TRANSMIT) | defined(RECEIVE)
+    // Make sure that sender is quiet
+    IrSenderPwm::getInstance(true)->mute();
+#endif
     BLINK_ALL_LEDS; // as self test
 #ifdef LCD
     LCD_INIT(lcd);
@@ -394,11 +358,6 @@ void setup() {
     lcdPrint(F("Serial"), false, 0, 2);
 #endif // ! ETHERNET
 #endif // LCD
-
-#if defined(TRANSMIT) | defined(RECEIVE)
-    // Make sure that sender is quiet
-    IRsendBase::No_Output();
-#endif
 
 #ifdef ETHERNET
 #ifdef SDCARD_ON_ETHERSHIELD_PIN
@@ -509,7 +468,7 @@ boolean work(Stream& stream) {
 
 #ifdef LED
         if (cmd.startsWith("l")) {
-        int8_t no = (int8_t) tokenizer.getInt();
+        pin_t no = (pin_t) tokenizer.getInt();
         int8_t value = (int8_t) tokenizer.getInt();
         setLogicLed(no, value);
     } else
@@ -593,56 +552,51 @@ boolean work(Stream& stream) {
             if (cmd.startsWith("s")) { // send
             // TODO: handle unparsable data gracefully
             uint16_t noSends = (uint16_t) tokenizer.getInt();
-            uint16_t frequency = (uint16_t) tokenizer.getInt();
+            frequency_t frequency = tokenizer.getFrequency();
             uint16_t introLength = (uint16_t) tokenizer.getInt();
             uint16_t repeatLength = (uint16_t) tokenizer.getInt();
             uint16_t endingLength = (uint16_t) tokenizer.getInt();
-            uint16_t intro[introLength];
-            uint16_t repeat[repeatLength];
-            uint16_t ending[endingLength];
-            // FIXME: Should take care of overflows, if a duration > 65536us
+            microseconds_t intro[introLength];
+            microseconds_t repeat[repeatLength];
+            microseconds_t ending[endingLength];
             for (uint16_t i = 0; i < introLength; i++)
-                intro[i] = (uint16_t) tokenizer.getInt();
+                intro[i] = tokenizer.getMicroseconds();
             for (uint16_t i = 0; i < repeatLength; i++)
-                repeat[i] = (uint16_t) tokenizer.getInt();
+                repeat[i] = tokenizer.getMicroseconds();
             for (uint16_t i = 0; i < endingLength; i++)
-                ending[i] = (uint16_t) tokenizer.getInt();
-            if (irSender == NULL)
-                irSender = new IRsendRaw();
-            sendIrSignal(irSender, noSends, frequency, introLength, repeatLength, endingLength, intro, repeat, ending); // waits
+                ending[i] = tokenizer.getMicroseconds();
+            sendIrSignal(noSends, frequency, introLength, repeatLength, endingLength, intro, repeat, ending); // waits
             stream.println(okString);
         } else
 #endif // TRANSMIT
 
 #ifdef RENDERER
-            if (cmd.startsWith("t")) { // transmit
-            // TODO: handle unparseable data gracefully
-            uint16_t noSends = (uint16_t) tokenizer.getInt();
-                    String protocol = tokenizer.getToken();
-                    IrSignal* signal = NULL;
-            if (protocol == "nec1") {
-                unsigned int D = (unsigned) tokenizer.getInt();
-                        unsigned int S = (unsigned) tokenizer.getInt(); // TODO: Implement default S = 255-D;
-                        unsigned int F = (unsigned) tokenizer.getInt();
-                        signal = Nec1Renderer::render(D, S, F);
-            } else if (protocol == "rc5") {
-                unsigned int D = (unsigned) tokenizer.getInt();
-                        unsigned int F = (unsigned) tokenizer.getInt();
-                        unsigned int T = 0U; // FIXME?
-                        signal = Rc5Renderer::render(D, F, T);
-            } else {
-                stream.println(errorString);
-                        signal = NULL;
-            }
-            if (signal != NULL) {
-                if (irSender == NULL)
-                        irSender = new IRsendRaw();
-                        sendIrSignal(irSender, noSends, signal); // waits, blinks
-                }
-            stream.println(okString);
-        } else
+        if (cmd.startsWith("t")) { // transmit
+        // TODO: handle unparseable data gracefully
+        uint16_t noSends = (uint16_t) tokenizer.getInt();
+        String protocol = tokenizer.getToken();
+        IrSignal *signal = NULL;
+        if (protocol == "nec1") {
+            unsigned int D = (unsigned) tokenizer.getInt();
+            unsigned int S = (unsigned) tokenizer.getInt(); // TODO: Implement default S = 255-D;
+            unsigned int F = (unsigned) tokenizer.getInt();
+            signal = Nec1Renderer::render(D, S, F);
+        } else if (protocol == "rc5") {
+            unsigned int D = (unsigned) tokenizer.getInt();
+            unsigned int F = (unsigned) tokenizer.getInt();
+            unsigned int T = 0U; // FIXME?
+            signal = Rc5Renderer::render(D, F, T);
+        } else {
+            stream.println(errorString);
+            signal = NULL;
+        }
+        if (signal != NULL) {
+            sendIrSignal(noSends, signal); // waits, blinks
+        }
+        stream.println(okString);
+    } else
 #endif // RENDERER
-    if (cmd.startsWith("v")) { // version
+        if (cmd.startsWith("v")) { // version
         stream.println(F(PROGNAME " " VERSION));
     } else {
         stream.println(F(errorString));

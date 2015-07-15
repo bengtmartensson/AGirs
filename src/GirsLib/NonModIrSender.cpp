@@ -17,22 +17,13 @@ this program. If not, see http://www.gnu.org/licenses/.
 
 #include "NonModIrSender.h"
 
-extern void  My_delay_uSecs(unsigned int T); // from IRLib.c, not really exported, just sloppy encapsulation :-)
-
-NonModIrSender::NonModIrSender(uint8_t pin) {
-    outputPin = pin;
-    pinMode(pin, OUTPUT);
-    digitalWrite(pin, LOW);
+NonModIrSender::NonModIrSender(pin_t pin) : IrSender(pin) {
 }
 
-NonModIrSender::~NonModIrSender() {
-    digitalWrite(outputPin, LOW); // ?
-}
-
-void NonModIrSender::send(const unsigned int buf[], uint8_t len) {
-    for (unsigned int i = 0; i < len; i++) {
+void NonModIrSender::send(const microseconds_t buf[], uint16_t len) {
+    for (uint16_t i = 0; i < len; i++) {
         digitalWrite(outputPin, (i & 1) ? LOW : HIGH);
-        My_delay_uSecs(buf[i]);
+        delayUSecs(buf[i]);
     }
     digitalWrite(outputPin, LOW);
 }

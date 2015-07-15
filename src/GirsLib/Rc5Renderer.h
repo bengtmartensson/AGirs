@@ -8,19 +8,19 @@
 
 class Rc5Renderer {
 public:
-    static const unsigned int frequency = 36000;
-    static const unsigned int introLength = 0;
-    static const unsigned int endingLength = 0;
+    static const frequency_t frequency = 36000;
+    static const uint16_t introLength = 0;
+    static const uint16_t endingLength = 0;
     Rc5Renderer(unsigned int D, unsigned int F, unsigned int T);
     virtual ~Rc5Renderer();
     IrSignal* getSignal();
 
     static IrSignal* render(unsigned int D, unsigned int F, unsigned int T);
 private:
-    unsigned int index;
-    uint16_t repeat[28];
+    uint16_t index;
+    microseconds_t repeat[28];
     int pending;
-    static const uint16_t timebase = 889;
+    static const microseconds_t timebase = 889;
     void emit(unsigned int t);
     void emitMsb(unsigned int x, unsigned int length);
     void emitEnd();

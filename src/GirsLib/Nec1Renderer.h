@@ -8,10 +8,10 @@
 
 class Nec1Renderer {
 public:
-    static const unsigned int frequency = 38400;
-    static const unsigned int introLength = 68;
-    static const unsigned int repeatLength = 4;
-    static const unsigned int endingLength = 0;
+    static const frequency_t frequency = 38400U;
+    static const uint16_t introLength = 68U;
+    static const uint16_t repeatLength = 4U;
+    static const uint16_t endingLength = 0U;
     //Nec1Renderer();
     //Nec1Renderer(const Nec1Renderer& orig);
     Nec1Renderer(unsigned int D, unsigned int S, unsigned int F);
@@ -21,8 +21,8 @@ public:
 
     static IrSignal* render(unsigned int D, unsigned int S, unsigned int F);
 private:
-    uint16_t intro[introLength];
-    static const uint16_t repeat[repeatLength];
+    microseconds_t intro[introLength];
+    static const microseconds_t repeat[repeatLength];
     void lsbByte(int& i, uint32_t& sum, unsigned int D);
     void process(int& i, uint32_t& sum, int data);
 

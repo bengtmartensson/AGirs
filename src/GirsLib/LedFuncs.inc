@@ -5,7 +5,7 @@
 static void allLedsOff();
 
 static unsigned long turnoffTime = 0L; // millis() semantic (ms since progarm start)
-static bool somethingTurnedOn = false;
+static boolean somethingTurnedOn = false;
 
 static PARAMETER_CONST unsigned long blinkTime =
 #ifdef LCD
@@ -28,12 +28,12 @@ static void checkTurnoff() {
     }
 }
 
-void blinkAck(uint8_t pin) {
+void blinkAck(pin_t pin) {
     digitalWrite(pin, HIGH);
     updateTurnoffTime();
 }
 
-void setLogicLed(uint8_t pin, int state) {
+void setLogicLed(pin_t pin, int state) {
     uint8_t physicalPin = LED2PIN(pin);
     if (physicalPin > 0 && physicalPin < 255) {
         digitalWrite(physicalPin, state ? HIGH : LOW);

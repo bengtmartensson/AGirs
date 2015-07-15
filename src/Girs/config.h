@@ -14,7 +14,7 @@
 #define LISTEN
 
 // Additional modules
-//#define NON_MOD
+#define NON_MOD
 
 #define CONFIGURABLE_LEDS
 

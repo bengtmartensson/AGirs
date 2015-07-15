@@ -15,25 +15,29 @@ You should have received a copy of the GNU General Public License along with
 this program. If not, see http://www.gnu.org/licenses/.
 */
 
-#ifndef NONDEMODIRSENDER_H
-#define	NONDEMODIRSENDER_H
+#ifndef IRSENDER_H
+#define	IRSENDER_H
 
 #include <Arduino.h>
 #include "GirsTypes.h"
-#include "IrSender.h"
 
-class NonModIrSender : public IrSender {
+/**
+ * Common base class for all sending classes.
+ */
+class IrSender {
+protected:
+    void delayUSecs(microseconds_t T);
+
 public:
-    NonModIrSender(pin_t pin);
+    IrSender(pin_t pin);
+    virtual ~IrSender();
     
-    // Use three parameter form just to be compatible with the super class
-    void send(const microseconds_t buf[], uint16_t len, frequency_t frequency) {
-        if (frequency == 0U)
-            send(buf, len);
-    }
-    
-    void send(const microseconds_t buf[], uint16_t len);
+    virtual void send(const microseconds_t buf[], uint16_t len, frequency_t frequency) = 0;
+    virtual void mute();
+
+protected:
+    pin_t outputPin;
 };
 
-#endif	/* ! NONDEMODIRSENDER_H */
+#endif	/* ! IRSENDER_H */
 

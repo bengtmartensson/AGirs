@@ -3,7 +3,6 @@
 
 #include "config.h"
 
-#include <IRLib.h>
 #include <GirsMacros.h>
 
 #ifdef ETHERNET

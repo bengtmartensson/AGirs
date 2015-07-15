@@ -39,4 +39,8 @@
 // Send pin 9
 #endif
 
+#ifdef NON_MOD
+#define NON_MOD_PIN 7
+#endif
+
 #endif // ! GIRS_PINS_MEGA2560_H

@@ -23,3 +23,13 @@ String Tokenizer::getToken() {
 long Tokenizer::getInt() {
     return getToken().toInt();
 }
+
+microseconds_t Tokenizer::getMicroseconds() {
+    long t = getToken().toInt();
+    return (microseconds_t) ((t < MICROSECONDS_T_MAX) ? t : MICROSECONDS_T_MAX);
+}
+
+frequency_t Tokenizer::getFrequency() {
+    long t = getToken().toInt();
+    return (frequency_t) ((t < FREQUENCY_T_MAX) ? t : FREQUENCY_T_MAX);
+}

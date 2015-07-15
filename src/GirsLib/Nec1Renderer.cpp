@@ -1,15 +1,9 @@
 #include "Nec1Renderer.h"
 
-//Nec1Renderer::Nec1Renderer() {
-//}
-
-//Nec1Renderer::Nec1Renderer(const Nec1Renderer& orig) {
-//}
-
 Nec1Renderer::~Nec1Renderer() {
 }
 
-const uint16_t Nec1Renderer::repeat[repeatLength] = { 9024, 2256, 564, 65535 };
+const microseconds_t Nec1Renderer::repeat[repeatLength] = { 9024, 2256, 564, 65535 };
 
 Nec1Renderer::Nec1Renderer(unsigned int D, unsigned int S, unsigned int F) {
     int i = 0;

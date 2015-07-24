@@ -406,6 +406,7 @@ void setup() {
 }
 
 // Process one command.
+
 boolean work(Stream& stream) {
 #ifdef ETHERNET_SESSION
     boolean quit = false;
@@ -459,8 +460,8 @@ boolean work(Stream& stream) {
 
 #ifdef LCD
         if (cmd.startsWith("lc")) { //LCD
-            lcdPrint(tokenizer.getRest(), true, 0, 0);
-        } else
+        lcdPrint(tokenizer.getRest(), true, 0, 0);
+    } else
 #endif // LCD
 
 #ifdef LED
@@ -471,100 +472,100 @@ boolean work(Stream& stream) {
     } else
 #endif // LED
 
-            if (cmd.startsWith("m")) {
-            stream.println(F(modulesSupported));
-        } else
+        if (cmd.startsWith("m")) {
+        stream.println(F(modulesSupported));
+    } else
 
 #ifdef PARAMETERS
-            if (cmd.startsWith("p")) { // parameter
-            String variableName = tokenizer.getToken();
-                    long value = tokenizer.getInt();
-            if (!value) // parse error
-                    stream.println(errorString);
-            else
+        if (cmd.startsWith("p")) { // parameter
+        String variableName = tokenizer.getToken();
+        long value = tokenizer.getInt();
+        if (!value) // parse error
+            stream.println(errorString);
+        else
 #if defined(RECEIVE) || defined(CAPTURE)
-                if (variableName.startsWith(F("end")))
-                    endingTimeout = value;
-            else if (variableName.startsWith(F("beg")))
-                    beginTimeout = value;
-            else
+            if (variableName.startsWith(F("end")))
+            endingTimeout = value;
+        else if (variableName.startsWith(F("beg")))
+            beginTimeout = value;
+        else
 #endif
 #ifdef CAPTURE
-                if (variableName.startsWith(F("captures")))
-                    captureSize = value;
-            else
+            if (variableName.startsWith(F("captures")))
+            captureSize = value;
+        else
 #endif
 #ifdef LED
 #ifdef CONFIGURABLE_LEDS
 #ifdef TRANSMITLED
-                if (variableName.startsWith(F("transmitl")))
-                    transmitled = (uint8_t) value;
-                else
+            if (variableName.startsWith(F("transmitl")))
+            transmitled = (uint8_t) value;
+        else
 #endif
 #ifdef CAPTURELED
-                if (variableName.startsWith(F("capturel")))
-                    captureled = (uint8_t) value;
-                else
+            if (variableName.startsWith(F("capturel")))
+            captureled = (uint8_t) value;
+        else
 #endif
 #ifdef RECEIVELED
-                if (variableName.startsWith(F("receivel")))
-                    receiveled = (uint8_t) value;
-                else
+            if (variableName.startsWith(F("receivel")))
+            receiveled = (uint8_t) value;
+        else
 #endif
 #ifdef COMMANDLED
-                if (variableName.startsWith(F("commandl")))
-                    commandled = (uint8_t) value;
-                else
+            if (variableName.startsWith(F("commandl")))
+            commandled = (uint8_t) value;
+        else
 #endif
 #endif
-                if (variableName.startsWith(F("bli")))
-                    blinkTime = value;
-            else
+            if (variableName.startsWith(F("bli")))
+            blinkTime = value;
+        else
 #endif
-                stream.println(errorString);
-            } else
+            stream.println(errorString);
+    } else
 #endif // PARAMETERS
 
 #ifdef ETHERNET_SESSION
-                if (cmd.startsWith("q")) { // quit
-            quit = true;
-                } else
+        if (cmd.startsWith("q")) { // quit
+        quit = true;
+    } else
 #endif
 
 #ifdef RESET
-            if (cmd == "reset") {
-            reset = true;
-        } else
+        if (cmd == "reset") {
+        reset = true;
+    } else
 #endif
 #ifdef RECEIVE
-            // TODO: force no-decode
-            if (cmd.startsWith("r")) {
+        // TODO: force no-decode
+        if (cmd.startsWith("r")) {
 
-            // receive
-            receive(stream);
-        } else
+        // receive
+        receive(stream);
+    } else
 #endif // RECEIVE
 
 #ifdef TRANSMIT
-            if (cmd.startsWith("s")) { // send
-            // TODO: handle unparsable data gracefully
-            uint16_t noSends = (uint16_t) tokenizer.getInt();
-            frequency_t frequency = tokenizer.getFrequency();
-            uint16_t introLength = (uint16_t) tokenizer.getInt();
-            uint16_t repeatLength = (uint16_t) tokenizer.getInt();
-            uint16_t endingLength = (uint16_t) tokenizer.getInt();
-            microseconds_t intro[introLength];
-            microseconds_t repeat[repeatLength];
-            microseconds_t ending[endingLength];
-            for (uint16_t i = 0; i < introLength; i++)
-                intro[i] = tokenizer.getMicroseconds();
-            for (uint16_t i = 0; i < repeatLength; i++)
-                repeat[i] = tokenizer.getMicroseconds();
-            for (uint16_t i = 0; i < endingLength; i++)
-                ending[i] = tokenizer.getMicroseconds();
-            sendIrSignal(noSends, frequency, introLength, repeatLength, endingLength, intro, repeat, ending); // waits
-            stream.println(okString);
-        } else
+        if (cmd.startsWith("s")) { // send
+        // TODO: handle unparsable data gracefully
+        uint16_t noSends = (uint16_t) tokenizer.getInt();
+        frequency_t frequency = tokenizer.getFrequency();
+        uint16_t introLength = (uint16_t) tokenizer.getInt();
+        uint16_t repeatLength = (uint16_t) tokenizer.getInt();
+        uint16_t endingLength = (uint16_t) tokenizer.getInt();
+        microseconds_t intro[introLength];
+        microseconds_t repeat[repeatLength];
+        microseconds_t ending[endingLength];
+        for (uint16_t i = 0; i < introLength; i++)
+            intro[i] = tokenizer.getMicroseconds();
+        for (uint16_t i = 0; i < repeatLength; i++)
+            repeat[i] = tokenizer.getMicroseconds();
+        for (uint16_t i = 0; i < endingLength; i++)
+            ending[i] = tokenizer.getMicroseconds();
+        sendIrSignal(noSends, frequency, introLength, repeatLength, endingLength, intro, repeat, ending); // waits
+        stream.println(okString);
+    } else
 #endif // TRANSMIT
 
 #ifdef RENDERER

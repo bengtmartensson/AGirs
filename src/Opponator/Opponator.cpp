@@ -74,13 +74,13 @@ void action(IrReader *irReader) {
                 send("POW");
                 break;
             case 18: // Goto
-                sendReceiveDisplay("QEL", "Tot elapsed"); // Query firmware version
+                sendReceiveDisplay("QEL", "Tot elapsed");
                 break;
             case 26: // Eject
                 send("EJT");
                 break;
             case 64: // Title
-                sendReceiveDisplay("QTK", "Title playing"); // Query firmware version
+                sendReceiveDisplay("QTK", "Title playing");
                 break;
             case 80: // Display
                 sendReceiveDisplay("QVR", "FW version"); // Query firmware version
@@ -107,9 +107,6 @@ void loop() {
 
 void setup() {
     DEFINE_IRRECEIVER;
-    //DEFINE_LEDS;
-
-    //BLINK_ALL_LEDS; // as self test
 #ifdef LCD
     LCD_INIT(lcd);
     lcdPrint(F(PROGNAME), true, 0, 0);

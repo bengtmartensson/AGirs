@@ -27,10 +27,10 @@ public:
         STATE_STOP,
         STATE_RUNNING
     };
-    
+
     uint32_t GAP_TICKS;
     uint32_t TIMEOUT_TICKS;
-    
+
     // information for the interrupt handler
     //typedef struct {
     //    unsigned char recvpin; // pin for IR data from detector
@@ -48,10 +48,12 @@ public:
     static const milliseconds_t defaultEndingTimeout = 30UL; // 30 milliseconds
     static const uint16_t defaultCaptureLength = 100U;
     static const pin_t defaultPin = 5;
-    
+
 private:
     static IrReceiverSampler *instance; // Singleton class due to ISP
     //static const unsigned int USECPERTICK = 50;   // microseconds per clock interrupt tick
+protected:
+    virtual ~IrReceiverSampler();
 public: // FIXME
     //unsigned long endingTimeout;
     //unsigned long beginningTimeout;
@@ -61,23 +63,19 @@ public: // FIXME
             microseconds_t markExcess = defaultMarkExcess,
             milliseconds_t beginningTimeout = defaultBeginningTimeout,
             milliseconds_t endingTimeout = defaultEndingTimeout);
-    virtual ~IrReceiverSampler();
 
-public:
     // factory method
     static IrReceiverSampler *newIrReceiverSampler(uint16_t captureLength = defaultCaptureLength,
             pin_t pin = defaultPin, boolean pullup = false,
             microseconds_t markExcess = defaultMarkExcess,
             milliseconds_t beginningTimeout = defaultBeginningTimeout,
             milliseconds_t endingTimeout = defaultEndingTimeout);
-    
+
     static void deleteInstance();
-    
+
     static IrReceiverSampler *getInstance() {
         return instance;
     }
-public:
-    //bool GetResults(IRdecodeBase *decoder);
     void enable();
     void disable();
     void reset(); //resume();

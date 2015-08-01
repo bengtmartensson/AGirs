@@ -24,15 +24,19 @@
 
 #if defined(CAPTURE)
 // capture pin (ICP) 49
+#define IRSENSOR_PIN 49
 //#ifdef IRSENSOR_PIN_PULLUP
+#define IRSENSOR_2_PIN 48
+#define IRSENSOR_2_PIN_PULLUP
 #endif
 
 #ifdef RECEIVE
-#define IRRECEIVER_PIN 5
-//#define IRRECEIVER_PIN_PULLUP
-#endif
-#ifdef RECEIVER_2
-//#define IRRECEIVER_2_PIN 12
+#define IRRECEIVER_1_PIN 5
+//#define IRRECEIVER_1_PIN_PULLUP
+#define IRRECEIVER_2_PIN 4
+#define IRRECEIVER_3_PIN 6
+#define IRRECEIVER_4_PIN 8
+#define IRRECEIVER_5_PIN IRSENSOR_PIN // Non-demodulating sensor
 #endif
 
 #ifdef TRANSMIT

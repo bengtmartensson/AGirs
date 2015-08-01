@@ -106,6 +106,12 @@ static PARAMETER_CONST unsigned long endingTimeout = DEFAULT_ENDINGTIMEOUT; // m
 static PARAMETER_CONST uint16_t captureSize = DEFAULT_CAPTURESIZE;
 #endif
 
+#if defined(RECEIVE) & defined(IRRECEIVER_2_PIN)
+static PARAMETER_CONST uint8_t receiverNo = 1;
+#else
+static const uint8_t receiverNo = 1;
+#endif
+
 #ifdef ETHERNET
 #ifdef USEUDP
 EthernetUDP udp;
@@ -144,7 +150,7 @@ void sendIrSignal(uint16_t noSends, frequency_t frequency,
 
     if (introLength > 0)
         irSender->send(intro, introLength, frequency);
-    for (unsigned int i = 0; i < noSends - (introLength > 0); i++)
+    for (unsigned int i = 0; i < noSends - ((introLength > 0) ? 1U : 0U); i++)
         irSender->send(repeat, repeatLength, frequency);
     if (endingLength > 0)
         irSender->send(ending, endingLength, frequency);
@@ -165,10 +171,11 @@ void sendIrSignal(unsigned int noSends, const IrSignal *signal) {
 
 #define modulesSupported EXPAND_AND_QUOTE(Base TRANSMIT_NAME CAPTURE_NAME RENDERER_NAME RECEIVE_NAME DECODER_NAME LED_NAME LCD_NAME PARAMETERS_NAME)
 #define PROGNAME "AGirs"
-#define VERSION "2015-07-15"
+#define VERSION "2015-07-27"
 #define welcomeString "Welcome to " PROGNAME
 #define okString "OK"
 #define errorString "ERROR"
+#define noSuchVariableError "NO-SUCH-VARAIBLE"
 #define timeoutString "."
 
 void flushIn(Stream &stream) {
@@ -213,7 +220,7 @@ int freeRam () {
 #ifdef RESET
 // TODO: This is somewhat suspect.
 // Works at least on atmega386 and atmega2560,
-#if defined(ARDUINO_AVR_LEONARDO) | defined(ARDUINO_AVR_MICRO)
+#if defined(ARDUINO_AVR_LEONARDO) | defined(ARDUINO_AVR_MICRO) | defined(ARDUINO_ARCH_SAMD)
 #warning RESET not working on this platform, ignored
 #undef RESET
 #else
@@ -265,7 +272,7 @@ void receive(Stream& stream) {
 #endif // CAPTURE
     IrReceiverSampler *irReceiver = IrReceiverSampler::getInstance();
     if (irReceiver == NULL)
-        irReceiver = IrReceiverSampler::newIrReceiverSampler(captureSize, IRRECEIVER_PIN, IRRECEIVER_PIN_PULLUP_VALUE);
+        irReceiver = IrReceiverSampler::newIrReceiverSampler(captureSize, RECEIVER2PIN(receiverNo), IRRECEIVER_PULLUP_VALUE(receiverNo));
     irReceiver->setEndingTimeout(endingTimeout);
     irReceiver->setBeginningTimeout(beginTimeout);
     irReceiver->setMarkExcess(IRRECEIVER_MARK_EXCESS);
@@ -288,6 +295,7 @@ void receive(Stream& stream) {
          return;
      }
      decodeOrDump(irReceiver, stream);
+     IrReceiverSampler::deleteInstance();
 }
 #endif // RECEIVE
 
@@ -445,7 +453,9 @@ boolean work(Stream& stream) {
 #ifdef FREEMEM
         if (cmd.startsWith("i")) {
         stream.println(freeRam());
+#ifdef RAMEND
         stream.println(RAMEND);
+#endif
     } else
 #endif
 
@@ -480,49 +490,77 @@ boolean work(Stream& stream) {
         if (cmd.startsWith("p")) { // parameter
         String variableName = tokenizer.getToken();
         long value = tokenizer.getInt();
-        if (!value) // parse error
-            stream.println(errorString);
-        else
+        unsigned long *variable32 = NULL;
+        uint16_t *variable16 = NULL;
+        uint8_t *variable8 = NULL;
+        //if (!value) // parse error
+        //    stream.println(errorString);
+        //else
 #if defined(RECEIVE) || defined(CAPTURE)
             if (variableName.startsWith(F("end")))
-            endingTimeout = value;
+            variable32 = &endingTimeout;
         else if (variableName.startsWith(F("beg")))
-            beginTimeout = value;
+            variable32 = &beginTimeout;
+        else
+#endif
+#if defined(RECEIVE) & defined(IRRECEIVER_2_PIN)
+            if (variableName.startsWith(F("receiver")))
+            variable8 = &receiverNo;
         else
 #endif
 #ifdef CAPTURE
             if (variableName.startsWith(F("captures")))
-            captureSize = value;
+            // TODO: check evenness of value
+            variable16 = &captureSize;
         else
 #endif
 #ifdef LED
 #ifdef CONFIGURABLE_LEDS
 #ifdef TRANSMITLED
             if (variableName.startsWith(F("transmitl")))
-            transmitled = (uint8_t) value;
+            variable8 = &transmitled;
         else
 #endif
 #ifdef CAPTURELED
             if (variableName.startsWith(F("capturel")))
-            captureled = (uint8_t) value;
+            variable8 = &captureled;
         else
 #endif
 #ifdef RECEIVELED
             if (variableName.startsWith(F("receivel")))
-            receiveled = (uint8_t) value;
+            variable8 = &receiveled;
         else
 #endif
 #ifdef COMMANDLED
             if (variableName.startsWith(F("commandl")))
-            commandled = (uint8_t) value;
+            variable8 = &commandled;
         else
 #endif
 #endif
             if (variableName.startsWith(F("bli")))
-            blinkTime = value;
+            variable32 = &blinkTime;
         else
 #endif
-            stream.println(errorString);
+        {
+        }
+
+        if (variable32 != NULL) {
+            if (value)
+                *variable32 = value;
+            else
+                stream.println(variableName + "=" + *variable32);
+        } else if (variable16 != NULL) {
+            if (value)
+                *variable16 = (uint16_t) value;
+            else
+                stream.println(variableName + "=" + *variable16);
+        } else if (variable8 != NULL) {
+            if (value)
+                *variable8 = (uint8_t) value;
+            else
+                stream.println(variableName + "=" + *variable8);
+        } else
+            stream.println(F(noSuchVariableError));
     } else
 #endif // PARAMETERS
 

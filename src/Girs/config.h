@@ -120,6 +120,10 @@
 #define PORT       33333
 #endif // ETHERNET
 
+#if defined(ARDUINO_AVR_MEGA2560)
+#define LARGE_RAM
+#endif
+
 // Defaults
 
 // Character that ends the command lines
@@ -140,8 +144,12 @@
 #endif
 
 #ifdef CAPTURE
-// Size of capture array
-#define DEFAULT_CAPTURESIZE 201U // must be odd
+// Size of capture and receive arrays
+#ifdef LARGE_RAM
+#define DEFAULT_CAPTURESIZE 500U // must be even
+#else
+#define DEFAULT_CAPTURESIZE 300U // must be even
+#endif
 #endif
 
 #ifdef RECEIVE

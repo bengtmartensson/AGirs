@@ -68,11 +68,119 @@
 #define DEFINE_IRRECEIVER_VSS
 #endif
 
-#ifdef IRRECEIVER_PIN_PULLUP
-#define IRRECEIVER_PIN_PULLUP_VALUE true
+#ifdef RECEIVE
+#ifdef IRRECEIVER_1_PIN
+#define TERNARY_RECEIVER_1(receiverNo)             (receiverNo) == 1 ? IRRECEIVER_1_PIN :
 #else
-#define IRRECEIVER_PIN_PULLUP_VALUE false
+#define TERNARY_RECEIVER_1(receiverNo)
 #endif
+#ifdef IRRECEIVER_2_PIN
+#define TERNARY_RECEIVER_2(receiverNo)         (receiverNo) == 2 ? IRRECEIVER_2_PIN :
+#else
+#define TERNARY_RECEIVER_2(receiverNo)
+#endif
+#ifdef IRRECEIVER_3_PIN
+#define TERNARY_RECEIVER_3(receiverNo)         (receiverNo) == 3 ? IRRECEIVER_3_PIN :
+#else
+#define TERNARY_RECEIVER_3(receiverNo)
+#endif
+#ifdef IRRECEIVER_4_PIN
+#define TERNARY_RECEIVER_4(receiverNo)           (receiverNo) == 4 ? IRRECEIVER_4_PIN :
+#else
+#define TERNARY_RECEIVER_4(receiverNo)
+#endif
+#ifdef IRRECEIVER_5_PIN
+#define TERNARY_RECEIVER_5(receiverNo)               (receiverNo) == 5 ? IRRECEIVER_5_PIN :
+#else
+#define TERNARY_RECEIVER_5(receiverNo)
+#endif
+#ifdef IRRECEIVER_6_PIN
+#define TERNARY_RECEIVER_6(receiverNo)               (receiverNo) == 6 ? IRRECEIVER_6_PIN :
+#else
+#define TERNARY_RECEIVER_6(receiverNo)
+#endif
+#ifdef IRRECEIVER_7_PIN
+#define TERNARY_RECEIVER_7(receiverNo)               (receiverNo) == 7 ? IRRECEIVER_7_PIN :
+#else
+#define TERNARY_RECEIVER_7(receiverNo)
+#endif
+#ifdef IRRECEIVER_8_PIN
+#define TERNARY_RECEIVER_8(receiverNo)               (receiverNo) == 8 ? IRRECEIVER_8_PIN :
+#else
+#define TERNARY_RECEIVER_8(receiverNo)
+#endif
+
+#define RECEIVER2PIN(no) ( \
+	      TERNARY_RECEIVER_1(no) \
+              TERNARY_RECEIVER_2(no) \
+              TERNARY_RECEIVER_3(no) \
+              TERNARY_RECEIVER_4(no) \
+              TERNARY_RECEIVER_5(no) \
+              TERNARY_RECEIVER_6(no) \
+              TERNARY_RECEIVER_7(no) \
+              TERNARY_RECEIVER_8(no) \
+              -1)
+
+#ifdef IRRECEIVER_1_PULLUP
+#define IRRECEIVER_1_PULLUP_VALUE true
+#else
+#define IRRECEIVER_1_PULLUP_VALUE false
+#endif
+
+#ifdef IRRECEIVER_2_PULLUP
+#define IRRECEIVER_2_PULLUP_VALUE true
+#else
+#define IRRECEIVER_2_PULLUP_VALUE false
+#endif
+
+#ifdef IRRECEIVER_3_PULLUP
+#define IRRECEIVER_3_PULLUP_VALUE true
+#else
+#define IRRECEIVER_3_PULLUP_VALUE false
+#endif
+
+#ifdef IRRECEIVER_4_PULLUP
+#define IRRECEIVER_4_PULLUP_VALUE true
+#else
+#define IRRECEIVER_4_PULLUP_VALUE false
+#endif
+
+#ifdef IRRECEIVER_5_PULLUP
+#define IRRECEIVER_5_PULLUP_VALUE true
+#else
+#define IRRECEIVER_5_PULLUP_VALUE false
+#endif
+
+#ifdef IRRECEIVER_6_PULLUP
+#define IRRECEIVER_6_PULLUP_VALUE true
+#else
+#define IRRECEIVER_6_PULLUP_VALUE false
+#endif
+
+#ifdef IRRECEIVER_7_PULLUP
+#define IRRECEIVER_7_PULLUP_VALUE true
+#else
+#define IRRECEIVER_7_PULLUP_VALUE false
+#endif
+
+#ifdef IRRECEIVER_8_PULLUP
+#define IRRECEIVER_8_PULLUP_VALUE true
+#else
+#define IRRECEIVER_8_PULLUP_VALUE false
+#endif
+
+#define IRRECEIVER_PULLUP_VALUE(receiverNo) ( \
+              (receiverNo) == 1 ? IRRECEIVER_1_PULLUP_VALUE : \
+              (receiverNo) == 2 ? IRRECEIVER_2_PULLUP_VALUE : \
+              (receiverNo) == 3 ? IRRECEIVER_3_PULLUP_VALUE : \
+              (receiverNo) == 4 ? IRRECEIVER_4_PULLUP_VALUE : \
+              (receiverNo) == 5 ? IRRECEIVER_5_PULLUP_VALUE : \
+              (receiverNo) == 6 ? IRRECEIVER_6_PULLUP_VALUE : \
+              (receiverNo) == 7 ? IRRECEIVER_7_PULLUP_VALUE : \
+              (receiverNo) == 8 ? IRRECEIVER_8_PULLUP_VALUE : \
+                  -1)
+
+#endif // RECEIVE
 
 #define DEFINE_IRSENSOR DEFINE_IRSENSOR_GND DEFINE_IRSENSOR_VSS
 #ifdef SENSOR_GND
@@ -80,7 +188,7 @@
      pinMode(SENSOR_GND, OUTPUT); \
      digitalWrite(SENSOR_GND, LOW);
 #else
-#define DEFINE_IRSENSOR_GND 
+#define DEFINE_IRSENSOR_GND
 #endif
 
 #ifdef SENSOR_VSS
@@ -389,7 +497,7 @@
 #define PARAMETER_CONST const
 #endif
 
-#ifdef CONFIGURABLE_LEDS 
+#ifdef CONFIGURABLE_LEDS
 #define LED_PARAMETER_CONST
 #else
 #define LED_PARAMETER_CONST const
@@ -398,4 +506,4 @@
 #define QUOTE(str) #str
 #define EXPAND_AND_QUOTE(str) QUOTE(str)
 
-#endif
+#endif // ! _GIRS_MACROS_H

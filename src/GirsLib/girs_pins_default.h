@@ -24,6 +24,7 @@
 
 #if defined(CAPTURE)
 // capture pin (ICP) 8/4/49
+#define IRSENSOR_PIN_PULLUP
 #endif
 
 #ifdef RECEIVE

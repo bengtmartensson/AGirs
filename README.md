@@ -8,10 +8,10 @@ for interact with other programs. communicating over a serial line
 (accepting incoming requests) or client (initiating connections).
 
 It implements some of the functionallity of [Chris Young's
-IRLib](http://tech.cyborg5.com/irlib/, 
+IRLib](http://tech.cyborg5.com/irlib/,
 https://github.com/cyborg5/IRLib), which is a major
 rewrite of a previous library called IRremote, published by
-Ken Shirriff in [his blog](http://www.righto.com/2009/08/multi-protocol-infrared-remote-library.html), but does not use it directly. 
+Ken Shirriff in [his blog](http://www.righto.com/2009/08/multi-protocol-infrared-remote-library.html), but does not use it directly.
 It uses Michael Dreher's
 IrWidget [(article in
 German)](http://www.mikrocontroller.net/articles/High-Speed_capture_mit_ATmega_Timer),
@@ -22,7 +22,7 @@ IrWidget.[cpp,h] and IrWidgetAggregating.[cpp,h].
 
 The project contains a library, contained in the directory GirsLib,
 and two applications: Girs and Listener. The directory GirsLib should
-be copied to 
+be copied to
 the library area, typically <b>$HOME/Arduino/libraries/GirsLib</b>, while the
 application directories can be processed by the Arduino IDE
 directly. The directory Girr contains the AGirs application
@@ -34,11 +34,23 @@ possibly be discontinued in the future.)
 
 ## Configuration
 It is a modular program that is heavily based on CPP symbols, defined
-in the configuration file __config.h__. This determinines the capacities of the
+in the configuration file <code>config.h</code>. This determinines the capacities of the
 compiled program, and adapts the configuration to the underlying
-hardware. The options are (somewhat) documented in config.h.
+hardware. The options are (somewhat) documented in <code>Girs/config.h</code>.
 Not all combination are sensible or implemented. Some of the non-sensible
 combinations will be detected and will generate a compilation error.
+
+## Code organization
+There is a "library" (in the Arduino sense), <code>src/GirsLib</code>, which should be copied/moved/linked to the Arduino library area,
+typically <code>~/Arduino/libraries</code> or <code>C:\Arduino\libraries</code>.
+The other subdirectories of <code>src</code> contain different sketches that can
+be compiled and run on the Arduino.
+
+Due to the quirks of the preprocessor of the Arduino IDE, the following rule is used:
+The <code>_program_.ino</code> is kept empty, except for some dummy <code>#include</code>s,
+necessary for the IDE to find the libraries. The real code goes into <code>_program_.cpp</code>.
+For further motivation, see [this article](http://www.gammon.com.au/forum/?id=12625).
+(however, "__Third__" therein does not appear to be valid with current software.)
 
 ## Hardware configuration
 The hardware configuration is determined by including a suitable
@@ -72,11 +84,11 @@ may use different syntax and semantic.)
 
 ## Dependencies
 
-* Ethernet (if enabling the ETHERNET configure option). Contanied in the Arduino IDE. 
-* SPI (if enabling the ETHERNET or LCD_I2C configure option). Contanied in the Arduino IDE. 
+* Ethernet (if enabling the ETHERNET configure option). Contanied in the Arduino IDE.
+* SPI (if enabling the ETHERNET or LCD_I2C configure option). Contanied in the Arduino IDE.
 * Wire (if enabling the LCD_I2C configure option). Contanied in the Arduino IDE.
 * LiquidCrystal (if enabling the LCD_4BIT option, i.e. connecting an
-LCD display directly). Contanied in the Arduino IDE. 
+LCD display directly). Contanied in the Arduino IDE.
 * [Arduino-LiquidCrystal-I2C](https://github.com/fdebrabander/Arduino-LiquidCrystal-I2C-library.git)
 Needed if defining LCD_I2C, i.e. connecting an LCD display with an I2C interface card.
 
@@ -117,5 +129,5 @@ with only the CPP symbols TRANSMIT and CAPTURE defined.
 ## License
 The entire work is licensed under the GPL3 license. Chris' as well as Ken's
 code is licensed under the LGPL 2.1-license. Michael's code carries the
-GPL2-license, although he is [willing to agree to "or later 
+GPL2-license, although he is [willing to agree to "or later
 versions"](http://www.hifi-remote.com/forums/viewtopic.php?p=112586#112586).

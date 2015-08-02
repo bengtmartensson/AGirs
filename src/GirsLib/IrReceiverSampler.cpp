@@ -23,7 +23,7 @@ IrReceiverSampler *IrReceiverSampler::instance = NULL;
 
 IrReceiverSampler::IrReceiverSampler(uint16_t captureLength, pin_t pin_, boolean pullup,
         microseconds_t markExcess,
-        milliseconds_t beginningTimeout, 
+        milliseconds_t beginningTimeout,
         milliseconds_t endingTimeout) : IrReceiver(captureLength, pin_, pullup, markExcess) {
     setBeginningTimeout(beginningTimeout);
     setEndingTimeout(endingTimeout);
@@ -67,10 +67,10 @@ void IrReceiverSampler::enable() {
     reset();
     //IRrecvBase::enableIRIn();
     // setup pulse clock timer interrupt
-    cli();
+    noInterrupts();
     IR_RECV_CONFIG_TICKS();
     IR_RECV_ENABLE_INTR;
-    sei();
+    interrupts();
 }
 
 void IrReceiverSampler::disable() {

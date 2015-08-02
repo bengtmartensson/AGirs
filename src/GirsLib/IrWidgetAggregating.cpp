@@ -68,7 +68,7 @@ void IrWidgetAggregating::capture() {
     val = CAT2(ICR, CAP_TIM);
     CAT3(OCR, CAP_TIM, CAP_TIM_OC) = val; // timeout based on previous trigger time
 
-    cli(); // disable IRQs after the first edge
+    noInterrupts(); // disable IRQs after the first edge
 
     // clear input capture and output compare flag bit
     CAT2(TIFR, CAP_TIM) = _BV(CAT2(ICF, CAP_TIM)) | _BV(CAT3(OCF, CAP_TIM, CAP_TIM_OC));

@@ -24,8 +24,9 @@
 
 #if defined(CAPTURE)
 // capture pin (ICP) 49
-#define IRSENSOR_PIN 49
+#define IRSENSOR_1_PIN 49
 //#ifdef IRSENSOR_PIN_PULLUP
+// not presently implemented
 #define IRSENSOR_2_PIN 48
 #define IRSENSOR_2_PIN_PULLUP
 #endif
@@ -33,10 +34,10 @@
 #ifdef RECEIVE
 #define IRRECEIVER_1_PIN 5
 //#define IRRECEIVER_1_PIN_PULLUP
-#define IRRECEIVER_2_PIN 4
-#define IRRECEIVER_3_PIN 6
-#define IRRECEIVER_4_PIN 8
-#define IRRECEIVER_5_PIN IRSENSOR_PIN // Non-demodulating sensor
+#define IRRECEIVER_2_PIN 7 // 38kHz, ACG4
+#define IRRECEIVER_3_PIN 8 // 56kHz
+#define IRRECEIVER_4_PIN 6 // 433 MHz
+#define IRRECEIVER_5_PIN IRSENSOR_1_PIN // Non-demodulating sensor
 #endif
 
 #ifdef TRANSMIT
@@ -44,7 +45,7 @@
 #endif
 
 #ifdef NON_MOD
-#define NON_MOD_PIN 7
+#define NON_MOD_PIN 3
 #endif
 
 #endif // ! GIRS_PINS_MEGA2560_H

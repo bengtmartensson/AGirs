@@ -73,7 +73,7 @@
                // If not the Arduino tries to establish a connection to PEER_IP at port PEER_PORT
 // NOTE: do NOT use UDP as preprocessor symbol, it makes Ethernet.h go haywire.
 //#define USEUDP
-//#define ETHER_W5100 
+//#define ETHER_W5100
 //#define SDCARD_ON_ETHERSHIELD_PIN 4 // there is a pin4 to be selected low
 //#define ETHER_ENC28J60 // Cheapie ENC 28J60 chip, not yet supported, otherwise
                          // use normal Arduino Ethernet library, using W5100 and pin 10.
@@ -84,9 +84,13 @@
 // Hardware configuration
 
 // Include one file describing the pin configuration
+#ifdef ARDUINO_AVR_MEGA2560
+#include <girs_pins_mega2560_rear.h>
+#else
 //#include <girs_pins_lcdshield.h>
 //#include <girs_pins_nano_shield.h>
 #include <girs_pins.h> // Generic
+#endif
 
 // If LCD support desired, include appropriate hardware description
 #ifdef LCD_I2C

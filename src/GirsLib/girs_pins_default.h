@@ -18,17 +18,24 @@
 #define SIGNAL_LED_6 6
 #define SIGNAL_LED_7 7
 #ifndef NON_MOD
-#define SIGNAL_LED_8 9
+//#define SIGNAL_LED_8 9
 #endif
 #endif
 
 #if defined(CAPTURE)
+#define IRSENSOR_1_PIN 8
 // capture pin (ICP) 8/4/49
-#define IRSENSOR_PIN_PULLUP
+//#define IRSENSOR_1_PIN_PULLUP
 #endif
 
 #ifdef RECEIVE
-#define IRRECEIVER_PIN 5
+//#define IRRECEIVER_PIN 5
+#define IRRECEIVER_1_PIN 5
+//#define IRRECEIVER_1_PIN_PULLUP
+#define IRRECEIVER_2_PIN 4
+#define IRRECEIVER_3_PIN 9
+#define IRRECEIVER_4_PIN 8 // Non-demodulating sensor
+//#define IRRECEIVER_4_PIN IRSENSOR_1_PIN // Non-demodulating sensor
 #endif
 #ifdef RECEIVER_2
 #define IRRECEIVER_2_PIN 12

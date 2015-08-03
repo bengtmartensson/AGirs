@@ -171,7 +171,7 @@ void sendIrSignal(unsigned int noSends, const IrSignal *signal) {
 
 #define modulesSupported EXPAND_AND_QUOTE(Base TRANSMIT_NAME CAPTURE_NAME RENDERER_NAME RECEIVE_NAME DECODER_NAME LED_NAME LCD_NAME PARAMETERS_NAME)
 #define PROGNAME "AGirs"
-#define VERSION "2015-07-27"
+#define VERSION "2015-08-02"
 #define welcomeString "Welcome to " PROGNAME
 #define okString "OK"
 #define errorString "ERROR"

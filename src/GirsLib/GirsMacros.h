@@ -489,6 +489,12 @@
 #define LCD_NAME
 #endif
 
+#ifdef NAMED_COMMANDS
+#define NAMED_COMMANDS_NAME NamedCommands
+#else
+#define NAMED_COMMANDS_NAME
+#endif
+
 #ifdef PARAMETERS
 #define PARAMETERS_NAME Parameters
 #define PARAMETER_CONST

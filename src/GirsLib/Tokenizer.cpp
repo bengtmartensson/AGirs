@@ -21,7 +21,8 @@ String Tokenizer::getToken() {
 }
 
 long Tokenizer::getInt() {
-    return getToken().toInt();
+    String token = getToken();
+    return token.length() > 0 ? token.toInt() : (long) invalid;
 }
 
 microseconds_t Tokenizer::getMicroseconds() {

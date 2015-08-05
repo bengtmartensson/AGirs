@@ -12,6 +12,7 @@
 #define DECODER
 #define PARAMETERS
 #define LISTEN
+#define NAMED_COMMANDS
 
 // Additional modules
 // Support sending signals without modulation
@@ -74,11 +75,11 @@
 // NOTE: do NOT use UDP as preprocessor symbol, it makes Ethernet.h go haywire.
 //#define USEUDP
 //#define ETHER_W5100
-//#define SDCARD_ON_ETHERSHIELD_PIN 4 // there is a pin4 to be selected low
+#define SDCARD_ON_ETHERSHIELD_PIN 4 // there is a pin4 to be selected low
 //#define ETHER_ENC28J60 // Cheapie ENC 28J60 chip, not yet supported, otherwise
                          // use normal Arduino Ethernet library, using W5100 and pin 10.
 #define ETHERNET_SESSION // multi-command session, otherwise close after one command
-//#define DHCP // Consumes rather much memory
+#define DHCP // Consumes rather much memory
 #endif // ETHERNET
 
 // Hardware configuration

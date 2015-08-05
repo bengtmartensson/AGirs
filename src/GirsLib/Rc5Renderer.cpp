@@ -3,10 +3,17 @@
 #include "Rc5Renderer.h"
 #include <Arduino.h>
 
+uint8_t Rc5Renderer::T = 1;
+
 Rc5Renderer::~Rc5Renderer() {
 }
 
-Rc5Renderer::Rc5Renderer(uint16_t D, uint16_t F, uint16_t T) {
+Rc5Renderer::Rc5Renderer(uint16_t D, uint16_t F) {
+    T = ! T;
+    init(D, F, T);
+}
+
+void Rc5Renderer::init(unsigned int D, unsigned int F, unsigned int T) {
     index = 0;
     pending = 0;
     emit(1U);
@@ -17,7 +24,7 @@ Rc5Renderer::Rc5Renderer(uint16_t D, uint16_t F, uint16_t T) {
     emitEnd();
 }
 
-IrSignal* Rc5Renderer::getSignal() {
+const IrSignal* Rc5Renderer::toSignal() const {
     return new IrSignal(frequency, 0, index, 0, NULL, repeat, NULL);
 }
 
@@ -46,8 +53,4 @@ void Rc5Renderer::emitEnd() {
         repeat[index++] = timebase;
 
     repeat[index++] = 0xFFFF;
-}
-
-IrSignal* Rc5Renderer::render(uint16_t D, uint16_t F, uint16_t T) {
-    return (new Rc5Renderer(D, F, T))->getSignal();
 }

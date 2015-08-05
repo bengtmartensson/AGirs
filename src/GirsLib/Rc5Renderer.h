@@ -5,17 +5,18 @@
 
 #include <Arduino.h>
 #include "IrSignal.h"
+#include "Renderer.h"
 
-class Rc5Renderer {
+class Rc5Renderer : public Renderer {
 public:
     static const frequency_t frequency = 36000;
     static const uint16_t introLength = 0;
     static const uint16_t endingLength = 0;
-    Rc5Renderer(unsigned int D, unsigned int F, unsigned int T);
+    Rc5Renderer(unsigned int D, unsigned int F, unsigned int T) { init(D, F, T); }
+    Rc5Renderer(unsigned int D, unsigned int F);
     virtual ~Rc5Renderer();
-    IrSignal* getSignal();
+    const IrSignal* toSignal() const;
 
-    static IrSignal* render(unsigned int D, unsigned int F, unsigned int T);
 private:
     uint16_t index;
     microseconds_t repeat[28];
@@ -24,6 +25,9 @@ private:
     void emit(unsigned int t);
     void emitMsb(unsigned int x, unsigned int length);
     void emitEnd();
+    void init(unsigned int D, unsigned int F, unsigned int T);
+
+    static uint8_t T;
 };
 
 #endif	/* RC5RENDERER_H */

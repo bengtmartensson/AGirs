@@ -40,14 +40,14 @@ public:
      * (Yes, this is against the Arduino style...)
      */
     static IrSenderPwm *getInstance(boolean create = false);
-    
+
     /**
      *  Creates a new instance (if not existing) and returns it.
      *  Returns NULL if an instance already exists.
      */
     static IrSenderPwm *newInstance();
 
-    void deleteInstance() {
+    static void deleteInstance() {
         delete instance;
         instance = NULL;
     }

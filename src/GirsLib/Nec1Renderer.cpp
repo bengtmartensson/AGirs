@@ -5,7 +5,7 @@ Nec1Renderer::~Nec1Renderer() {
 
 const microseconds_t Nec1Renderer::repeat[repeatLength] = { 9024, 2256, 564, 65535 };
 
-Nec1Renderer::Nec1Renderer(unsigned int D, unsigned int S, unsigned int F) {
+void Nec1Renderer::init(unsigned int D, unsigned int S, unsigned int F) {
     int i = 0;
     uint32_t sum = 9024 + 4512 + 564;
     intro[i++] = 9024;
@@ -18,7 +18,7 @@ Nec1Renderer::Nec1Renderer(unsigned int D, unsigned int S, unsigned int F) {
     intro[i++] = (uint16_t) (108000L - sum);
 }
 
-IrSignal* Nec1Renderer::getSignal() const {
+IrSignal* Nec1Renderer::toSignal() const {
     return new IrSignal(frequency, introLength, repeatLength, endingLength, intro, repeat, NULL);
 }
 
@@ -34,8 +34,4 @@ void inline Nec1Renderer::process(int& i, uint32_t& sum, int data) {
     uint16_t gap = data ? 1692 : 564;
     intro[i++] = gap;
     sum += data ? 564+1692 : 564+564;
-}
-
-IrSignal* Nec1Renderer::render(unsigned int D, unsigned int S, unsigned int F) {
-    return (new Nec1Renderer(D, S, F))->getSignal();
 }

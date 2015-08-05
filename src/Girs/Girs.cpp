@@ -72,6 +72,12 @@ this program. If not, see http://www.gnu.org/licenses/.
 #include <Rc5Renderer.h>
 #endif
 
+#ifdef NAMED_COMMANDS
+#include "RemoteSet.h"
+#include "Nec1Command.h"
+#include "Rc5Command.h"
+#endif
+
 LCD_DEFINE(lcd);
 
 #include <LedFuncs.inc> // Must come after lcd
@@ -155,6 +161,13 @@ void sendIrSignal(uint16_t noSends, frequency_t frequency,
     if (endingLength > 0)
         irSender->send(ending, endingLength, frequency);
 
+#ifdef NON_MOD
+    if (frequency == 0)
+        delete irSender;
+    else
+#endif
+        IrSenderPwm::deleteInstance();
+
 #ifdef TRANSMITLED
     setLogicLed(transmitled, LOW);
 #endif
@@ -167,15 +180,21 @@ void sendIrSignal(unsigned int noSends, const IrSignal *signal) {
             signal->getLengthIntro(), signal->getLengthRepeat(), signal->getLengthEnding(),
         signal->getIntro(), signal->getRepeat(), signal->getEnding());
 }
+
+void sendIrSignal(unsigned int noSends, const Renderer* renderer) {
+    const IrSignal* signal = renderer->toSignal();
+    sendIrSignal(noSends, signal->getFrequency(),
+            signal->getLengthIntro(), signal->getLengthRepeat(), signal->getLengthEnding(),
+        signal->getIntro(), signal->getRepeat(), signal->getEnding());
+    delete signal;
+}
 #endif
 
-#define modulesSupported EXPAND_AND_QUOTE(Base TRANSMIT_NAME CAPTURE_NAME RENDERER_NAME RECEIVE_NAME DECODER_NAME LED_NAME LCD_NAME PARAMETERS_NAME)
+#define modulesSupported EXPAND_AND_QUOTE(Base TRANSMIT_NAME CAPTURE_NAME RENDERER_NAME RECEIVE_NAME DECODER_NAME LED_NAME LCD_NAME PARAMETERS_NAME NAMED_COMMANDS_NAME )
 #define PROGNAME "AGirs"
-#define VERSION "2015-08-02"
-#define welcomeString "Welcome to " PROGNAME
+#define VERSION "2015-08-05"
 #define okString "OK"
 #define errorString "ERROR"
-#define noSuchVariableError "NO-SUCH-VARAIBLE"
 #define timeoutString "."
 
 void flushIn(Stream &stream) {
@@ -267,9 +286,6 @@ void decodeOrDump(IrReader *irReader, Stream& stream) {
 #ifdef RECEIVE
 
 void receive(Stream& stream) {
-#ifdef CAPTURE
-    IrWidgetAggregating::deleteInstance(); // save memory
-#endif // CAPTURE
     IrReceiverSampler *irReceiver = IrReceiverSampler::getInstance();
     if (irReceiver == NULL)
         irReceiver = IrReceiverSampler::newIrReceiverSampler(captureSize, RECEIVER2PIN(receiverNo), IRRECEIVER_PULLUP_VALUE(receiverNo));
@@ -302,12 +318,9 @@ void receive(Stream& stream) {
 #ifdef CAPTURE
 
 void capture(Stream& stream) {
-#ifdef RECEIVE
-    IrReceiverSampler::deleteInstance();
-#endif
-    IrWidget *irWidget = IrWidgetAggregating::getInstance();
+    IrWidget *irWidget = IrWidgetAggregating::newIrWidgetAggregating(captureSize, stream);
     if (irWidget == NULL)
-        irWidget = IrWidgetAggregating::newIrWidgetAggregating(captureSize, stream);
+        stream.println(F("This cannot happen"));//    irWidget = IrWidgetAggregating::getInstance();
     irWidget->setEndingTimeout(endingTimeout);
     irWidget->setBeginningTimeout(beginTimeout);
     irWidget->reset();
@@ -328,8 +341,60 @@ void capture(Stream& stream) {
 #endif
     } else
         stream.println(F(timeoutString));
+    IrWidgetAggregating::deleteInstance();
 }
 #endif // CAPTURE
+
+#ifdef NAMED_COMMANDS
+const Command* yamaha_cmds[] = {
+    new Nec1Command("volume_up",    122, 26),
+    new Nec1Command("volume_down",  122, 27),
+    new Nec1Command("power_on",     122, 29),
+    new Nec1Command("power_off",    122, 30)
+};
+
+const Command* tv_cmds[] = {
+    new Rc5Command("0", 0, 0),
+    new Rc5Command("1", 0, 1),
+    new Rc5Command("2", 0, 2),
+    new Rc5Command("3", 0, 3),
+    new Rc5Command("4", 0, 4),
+    new Rc5Command("5", 0, 5),
+    new Rc5Command("6", 0, 6),
+    new Rc5Command("7", 0, 7),
+    new Rc5Command("8", 0, 8),
+    new Rc5Command("9", 0, 9),
+    new Rc5Command("power_toggle", 0, 12),
+};
+
+const Remote* remotes[] = {
+    new Remote("yamaha", yamaha_cmds, sizeof (yamaha_cmds) / sizeof (Command*)),
+    new Remote("tv",     tv_cmds,     sizeof (tv_cmds) / sizeof (Command*)),
+};
+
+RemoteSet remoteSet(remotes, sizeof (remotes) / sizeof (Remote*));
+
+boolean sendNamedCommand(Stream& stream, unsigned int noSends, String& remoteName, String& commandName) {
+    const Remote* remote = remoteSet.getRemote(remoteName);
+    if (remote == NULL) {
+        stream.println(F("No such remote"));
+        return false;
+    }
+
+    const Command* command = remote->getCommand(commandName);
+    if (command == NULL) {
+        stream.println(F("No such command"));
+        return false;
+    }
+    const Renderer *renderer = command->getRenderer();
+    if (renderer != NULL) {
+        sendIrSignal(noSends, renderer); // waits, blinks
+        delete renderer;
+    }
+    return true;
+}
+
+#endif
 
 void setup() {
     DEFINE_IRRECEIVER;
@@ -450,15 +515,6 @@ boolean work(Stream& stream) {
     } else
 #endif // CAPTURE
 
-#ifdef FREEMEM
-        if (cmd.startsWith("i")) {
-        stream.println(freeRam());
-#ifdef RAMEND
-        stream.println(RAMEND);
-#endif
-    } else
-#endif
-
 #ifdef LISTEN
         if (cmd == "listen") {
         do {
@@ -482,6 +538,14 @@ boolean work(Stream& stream) {
     } else
 #endif // LED
 
+#ifdef FREEMEM
+        if (cmd.startsWith("mem")) {
+        stream.println(freeRam());
+#ifdef RAMEND
+        stream.println(RAMEND);
+#endif
+    } else
+#endif
         if (cmd.startsWith("m")) {
         stream.println(F(modulesSupported));
     } else
@@ -560,13 +624,37 @@ boolean work(Stream& stream) {
             else
                 stream.println(variableName + "=" + *variable8);
         } else
-            stream.println(F(noSuchVariableError));
+            stream.println(F("No such variable"));
     } else
 #endif // PARAMETERS
 
 #ifdef ETHERNET_SESSION
         if (cmd.startsWith("q")) { // quit
         quit = true;
+    } else
+#endif
+
+#ifdef NAMED_COMMANDS
+        if (cmd == "remote") {
+        String name = tokenizer.getToken();
+        if (name.length() == 0) {
+            for (unsigned int i = 0; i < remoteSet.getNoRemotes(); i++) {
+                stream.print(remoteSet.getRemotes()[i]->getName());
+                stream.print(" ");
+            }
+            stream.println();
+        } else {
+            const Remote* remote = remoteSet.getRemote(name.c_str());
+            if (remote == NULL)
+                stream.println(F("No such remote"));
+            else {
+                for (unsigned int i = 0; i < remote->getNoCommands(); i++) {
+                    stream.print(remote->getCommands()[i]->getName());
+                    stream.print(" ");
+                }
+                stream.println();
+            }
+        }
     } else
 #endif
 
@@ -611,27 +699,44 @@ boolean work(Stream& stream) {
         // TODO: handle unparseable data gracefully
         uint16_t noSends = (uint16_t) tokenizer.getInt();
         String protocol = tokenizer.getToken();
-        IrSignal *signal = NULL;
+        Renderer *renderer = NULL;
         if (protocol == "nec1") {
             unsigned int D = (unsigned) tokenizer.getInt();
-            unsigned int S = (unsigned) tokenizer.getInt(); // TODO: Implement default S = 255-D;
+            unsigned int S = (unsigned) tokenizer.getInt();
             unsigned int F = (unsigned) tokenizer.getInt();
-            signal = Nec1Renderer::render(D, S, F);
+            renderer = (F == Tokenizer::invalid)
+                    ? new Nec1Renderer(D, S)
+                    : new Nec1Renderer(D, S, F);
         } else if (protocol == "rc5") {
             unsigned int D = (unsigned) tokenizer.getInt();
             unsigned int F = (unsigned) tokenizer.getInt();
-            unsigned int T = 0U; // FIXME?
-            signal = Rc5Renderer::render(D, F, T);
+            unsigned int T = (unsigned) tokenizer.getInt();
+            renderer = (T == Tokenizer::invalid)
+                    ? new Rc5Renderer(D, F)
+                    : new Rc5Renderer(D, F, T);
         } else {
-            stream.println(errorString);
-            signal = NULL;
+            stream.print(F("no such protocol: "));
+            stream.println(protocol);
         }
-        if (signal != NULL) {
-            sendIrSignal(noSends, signal); // waits, blinks
+        if (renderer != NULL) {
+            sendIrSignal(noSends, renderer); // waits, blinks
+            delete renderer;
         }
         stream.println(okString);
     } else
 #endif // RENDERER
+
+#ifdef NAMED_COMMANDS
+        if (cmd.startsWith("z")) {
+        uint16_t noSends = (uint16_t) tokenizer.getInt();
+        String remoteName = tokenizer.getToken();
+        String commandName = tokenizer.getToken();
+        boolean success = sendNamedCommand(stream, noSends, remoteName, commandName);
+        if (success)
+            stream.println(okString);
+    } else
+#endif
+
         if (cmd.startsWith("v")) { // version
         stream.println(F(PROGNAME " " VERSION));
     } else {

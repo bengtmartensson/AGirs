@@ -2,6 +2,7 @@
 #define _TOKENIZER_H
 
 #include <GirsTypes.h>
+#include <limits.h>
 
 class Tokenizer {
 private:
@@ -14,6 +15,8 @@ public:
     long getInt();
     microseconds_t getMicroseconds();
     frequency_t getFrequency();
+
+    static const int invalid = INT_MAX;
 };
 
 #endif // _TOKENIZER_H

@@ -487,12 +487,12 @@ boolean work(Stream& stream) {
 #ifdef COMMANDLED
     setLogicLed(commandled, HIGH);
 #endif
-    //stream.println(F(okString));
-    flushIn(stream);
-    while (stream.available() == 0) {
+    //flushIn(stream);
+    if (stream.available() == 0) {
 #ifdef LED
         checkTurnoff();
 #endif
+        return true;
     }
     String line = stream.readStringUntil(EOLCHAR);
 #if defined(DEBUG_CMD)
@@ -527,7 +527,8 @@ boolean work(Stream& stream) {
 #ifdef LCD
         if (cmd.startsWith("lc")) { //LCD
         lcdPrint(tokenizer.getRest(), true, 0, 0);
-    } else
+        stream.println(F(okString));
+        } else
 #endif // LCD
 
 #ifdef LED
@@ -535,15 +536,13 @@ boolean work(Stream& stream) {
         pin_t no = (pin_t) tokenizer.getInt();
         int8_t value = (int8_t) tokenizer.getInt();
         setLogicLed(no, value);
+        stream.println(F(okString));
     } else
 #endif // LED
 
 #ifdef FREEMEM
         if (cmd.startsWith("mem")) {
         stream.println(freeRam());
-#ifdef RAMEND
-        stream.println(RAMEND);
-#endif
     } else
 #endif
         if (cmd.startsWith("m")) {
@@ -557,9 +556,6 @@ boolean work(Stream& stream) {
         unsigned long *variable32 = NULL;
         uint16_t *variable16 = NULL;
         uint8_t *variable8 = NULL;
-        //if (!value) // parse error
-        //    stream.println(errorString);
-        //else
 #if defined(RECEIVE) || defined(CAPTURE)
             if (variableName.startsWith(F("end")))
             variable32 = &endingTimeout;
@@ -609,20 +605,20 @@ boolean work(Stream& stream) {
         }
 
         if (variable32 != NULL) {
-            if (value)
+            if (value != Tokenizer::invalid)
                 *variable32 = value;
-            else
-                stream.println(variableName + "=" + *variable32);
+
+            stream.println(variableName + "=" + *variable32);
         } else if (variable16 != NULL) {
-            if (value)
+            if (value != Tokenizer::invalid)
                 *variable16 = (uint16_t) value;
-            else
-                stream.println(variableName + "=" + *variable16);
+
+            stream.println(variableName + "=" + *variable16);
         } else if (variable8 != NULL) {
-            if (value)
+            if (value != Tokenizer::invalid)
                 *variable8 = (uint8_t) value;
-            else
-                stream.println(variableName + "=" + *variable8);
+
+            stream.println(variableName + "=" + *variable8);
         } else
             stream.println(F("No such variable"));
     } else
@@ -800,7 +796,7 @@ void loop() {
 #ifdef ETHERNET_SESSION
     while
 #endif
-        (work(client))
+        (work(client) && client.connected())
         ;
 #ifdef LCD
     lcdPrint(F("Connection closed!"), true, 0, 0);
@@ -822,10 +818,11 @@ void loop() {
 #ifdef ETHERNET_SESSION
     while
 #endif
-        (work(client))
+        (work(client) && client.connected())
         ;
 #endif // !SERVER
-    client.flush();
+    if (client.connected())
+        client.flush();
     client.stop();
 
 #endif // !USEUDP

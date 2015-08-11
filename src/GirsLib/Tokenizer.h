@@ -9,7 +9,7 @@ private:
     int index;
     String& payload;
 public:
-    Tokenizer(String& str) : index(0), payload(str) {};
+    Tokenizer(String& str) : index(0), payload(str) { payload.trim(); };
     String getToken();
     String getRest();
     long getInt();

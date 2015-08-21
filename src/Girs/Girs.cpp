@@ -88,19 +88,21 @@ LCD_DEFINE(lcd);
 #endif
 
 #ifdef LED
-#ifdef TRANSMIT
+#ifdef TRANSMITLED
 static LED_PARAMETER_CONST pin_t transmitled = TRANSMITLED;
 #endif
 
-#ifdef RECEIVE
+#ifdef RECEIVELED
 static LED_PARAMETER_CONST pin_t receiveled = RECEIVELED;
 #endif
 
-#ifdef CAPTURE
+#ifdef CAPTURELED
 static LED_PARAMETER_CONST pin_t captureled = CAPTURELED;
 #endif
 
+#ifdef COMMANDLED
 static LED_PARAMETER_CONST pin_t commandled = COMMANDLED;
+#endif
 #endif // LED
 
 static PARAMETER_CONST unsigned long beginTimeout = DEFAULT_BEGINTIMEOUT; // milliseconds
@@ -112,10 +114,12 @@ static PARAMETER_CONST unsigned long endingTimeout = DEFAULT_ENDINGTIMEOUT; // m
 static PARAMETER_CONST uint16_t captureSize = DEFAULT_CAPTURESIZE;
 #endif
 
-#if defined(RECEIVE) & defined(IRRECEIVER_2_PIN)
+#ifdef RECEIVE
+#ifdef IRRECEIVER_2_PIN
 static PARAMETER_CONST uint8_t receiverNo = 1;
 #else
 static const uint8_t receiverNo = 1;
+#endif
 #endif
 
 #ifdef ETHERNET
@@ -140,7 +144,7 @@ String ip2string(IPAddress ip) {
 }
 #endif // ETHERNET
 
-#if defined(TRANSMIT)
+#ifdef TRANSMIT
 
 void sendIrSignal(uint16_t noSends, frequency_t frequency,
         uint16_t introLength, uint16_t repeatLength, uint16_t endingLength,
@@ -172,7 +176,7 @@ void sendIrSignal(uint16_t noSends, frequency_t frequency,
     setLogicLed(transmitled, LOW);
 #endif
 }
-#endif
+#endif // TRANSMIT
 
 #ifdef RENDERER
 void sendIrSignal(unsigned int noSends, const IrSignal *signal) {
@@ -192,7 +196,7 @@ void sendIrSignal(unsigned int noSends, const Renderer* renderer) {
 
 #define modulesSupported EXPAND_AND_QUOTE(Base TRANSMIT_NAME CAPTURE_NAME RENDERER_NAME RECEIVE_NAME DECODER_NAME LED_NAME LCD_NAME PARAMETERS_NAME NAMED_COMMANDS_NAME )
 #define PROGNAME "AGirs"
-#define VERSION "2015-08-05"
+#define VERSION "2015-08-15"
 #define okString "OK"
 #define errorString "ERROR"
 #define timeoutString "."

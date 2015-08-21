@@ -18,7 +18,7 @@ this program. If not, see http://www.gnu.org/licenses/.
 #include <Arduino.h>
 #include "config.h"
 #include <GirsMacros.h>
-#include "Tokenizer.h"
+#include <Tokenizer.h>
 
 #if defined(RECEIVE) & defined(CAPTURE)
 #error only one of RECEIVE and CAPTURE may be defined!
@@ -39,19 +39,21 @@ this program. If not, see http://www.gnu.org/licenses/.
 #include <LedFuncs.inc> // Must come after lcd
 
 #ifdef LED
-#ifdef TRANSMIT
+#ifdef TRANSMITLED
 static LED_PARAMETER_CONST pin_t transmitled = TRANSMITLED;
 #endif
 
-#ifdef RECEIVE
+#ifdef RECEIVELED
 static LED_PARAMETER_CONST pin_t receiveled = RECEIVELED;
 #endif
 
-#ifdef CAPTURE
+#ifdef CAPTURELED
 static LED_PARAMETER_CONST pin_t captureled = CAPTURELED;
 #endif
 
+#ifdef COMMANDLED
 static LED_PARAMETER_CONST pin_t commandled = COMMANDLED;
+#endif
 #endif // LED
 
 static PARAMETER_CONST unsigned long beginTimeout = DEFAULT_BEGINTIMEOUT; // milliseconds
@@ -63,6 +65,8 @@ static PARAMETER_CONST unsigned long endingTimeout = DEFAULT_ENDINGTIMEOUT; // m
 static PARAMETER_CONST uint16_t captureSize = DEFAULT_CAPTURESIZE;
 #endif
 
+static const pin_t receiverNo = 1;
+
 #define stream STREAM
 
 #ifdef TRANSMIT
@@ -73,7 +77,11 @@ void sendIrSignal(uint16_t noSends, frequency_t frequency,
 #ifdef TRANSMITLED
     setLogicLed(transmitled, HIGH);
 #endif
-    IrSender *irSender = (IrSender*) IrSenderPwm::getInstance(true);
+    IrSender *irSender =
+#ifdef NON_MOD
+            (frequency == 0) ? (IrSender*) new IrSenderNonMod(NON_MOD_PIN) :
+#endif
+            (IrSender*) IrSenderPwm::getInstance(true);
 
     if (introLength > 0)
         irSender->send(intro, introLength, frequency);
@@ -82,16 +90,22 @@ void sendIrSignal(uint16_t noSends, frequency_t frequency,
     if (endingLength > 0)
         irSender->send(ending, endingLength, frequency);
 
+#ifdef NON_MOD
+    if (frequency == 0)
+        delete irSender;
+    else
+#endif
+        IrSenderPwm::deleteInstance();
+
 #ifdef TRANSMITLED
     setLogicLed(transmitled, LOW);
 #endif
 }
-#endif
-
+#endif // TRANSMIT
 
 #define modulesSupported EXPAND_AND_QUOTE(Base Capture TRANSMIT_NAME)
 #define PROGNAME "GirsLite"
-#define VERSION "2015-08-01"
+#define VERSION "2015-08-21"
 #define okString "OK"
 #define errorString "ERROR"
 #define timeoutString "."
@@ -131,7 +145,7 @@ static void allLedsOff() {
 void receive() {
     IrReceiverSampler *irReceiver = IrReceiverSampler::getInstance();
     if (irReceiver == NULL)
-        irReceiver = IrReceiverSampler::newIrReceiverSampler(captureSize, IRRECEIVER_PIN, IRRECEIVER_PULLUP_VALUE(1));
+        irReceiver = IrReceiverSampler::newIrReceiverSampler(captureSize, RECEIVER2PIN(receiverNo), IRRECEIVER_PULLUP_VALUE(receiverNo));
     irReceiver->setEndingTimeout(endingTimeout);
     irReceiver->setBeginningTimeout(beginTimeout);
     irReceiver->setMarkExcess(IRRECEIVER_MARK_EXCESS);
@@ -208,10 +222,11 @@ void loop() {
     setLogicLed(commandled, HIGH);
 #endif
     //stream.println(F(okString));
-    flushIn(stream);
-    while (stream.available() == 0) {
+    //flushIn(stream);
+    if (stream.available() == 0) {
 #ifdef LED
         checkTurnoff();
+	return;
 #endif
     }
     String line = stream.readStringUntil(EOLCHAR);

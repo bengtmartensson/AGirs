@@ -6,17 +6,17 @@
 // Properties
 // Girs modules to implement, see http://www.harctoolbox.org/Girs.html
 #define TRANSMIT
-#define RENDERER
+//#define RENDERER
 #define CAPTURE
 #define RECEIVE
 #define DECODER
 #define PARAMETERS
-#define LISTEN
-#define NAMED_COMMANDS
+//#define LISTEN
+//#define NAMED_COMMANDS
 
 // Additional modules
 // Support sending signals without modulation
-#define NON_MOD
+//#define NON_MOD
 
 // Try to decode also captures, normally not sensible
 //#define DECODE_CAPTURES
@@ -34,20 +34,24 @@
 #define LED
 
 // Light this led when transmission is taking place
-#define TRANSMITLED 8
+//#define TRANSMITLED 8
+#define TRANSMITLED 4
 
 // Light this when receive is pending
-#define RECEIVELED 7
+//#define RECEIVELED 7
+#define RECEIVELED 3
 
 // Light this when capture is pending
-#define CAPTURELED 6
+//#define CAPTURELED 6
+#define CAPTURELED 2
 
 // Light this when listening for command on the input stream
-#define COMMANDLED 5
+//#define COMMANDLED 5
+#define COMMANDLED 1
 
 // Define as an expression that takes MultiDecoder decodes (as per enum Type
 // in Multidecoder.h) to logical leds.
-#define DECODELED(decode) ((decode)+1)
+#define DECODELED(decode) ((decode)-1)
 
 // Other properties
 
@@ -55,7 +59,7 @@
 //#define LCD_4BIT
 
 // LCD display with I2C connection. Defines a command "lcd".
-#define LCD_I2C
+//#define LCD_I2C
 
 //#define ETHERNET
 
@@ -87,9 +91,11 @@
 // Include one file describing the pin configuration
 #ifdef ARDUINO_AVR_MEGA2560
 #include <girs_pins_mega2560_rear.h>
+//#include <girs_pins_mega2560.h>
 #else
 //#include <girs_pins_lcdshield.h>
 //#include <girs_pins_nano_shield.h>
+//#include <girs_pins_combi_shield.h>
 #include <girs_pins.h> // Generic
 #endif
 
@@ -98,7 +104,8 @@
 #ifdef ARDUINO_AVR_NANO
 #include <lcd_0x27_16_2.h>
 #else
-#include <lcd_0x3F_20_4.h>
+//#include <lcd_0x3F_20_4.h>
+#include <lcd_0x27_16_2.h>
 #endif
 #endif
 
@@ -153,7 +160,7 @@
 #ifdef LARGE_RAM
 #define DEFAULT_CAPTURESIZE 500U // must be even
 #else
-#define DEFAULT_CAPTURESIZE 300U // must be even
+#define DEFAULT_CAPTURESIZE 100U // must be even
 #endif
 #endif
 

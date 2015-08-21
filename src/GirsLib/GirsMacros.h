@@ -68,44 +68,48 @@
 #define DEFINE_IRRECEIVER_VSS
 #endif
 
+#ifdef IRRECEIVER_PIN
+#define IRRECEIVER_1_PIN IRRECEIVER_PIN
+#endif
+
 #ifdef RECEIVE
 #ifdef IRRECEIVER_1_PIN
-#define TERNARY_RECEIVER_1(receiverNo)             (receiverNo) == 1 ? IRRECEIVER_1_PIN :
+#define TERNARY_RECEIVER_1(receiverNo)  (receiverNo) == 1 ? IRRECEIVER_1_PIN :
 #else
 #define TERNARY_RECEIVER_1(receiverNo)
 #endif
 #ifdef IRRECEIVER_2_PIN
-#define TERNARY_RECEIVER_2(receiverNo)         (receiverNo) == 2 ? IRRECEIVER_2_PIN :
+#define TERNARY_RECEIVER_2(receiverNo)  (receiverNo) == 2 ? IRRECEIVER_2_PIN :
 #else
 #define TERNARY_RECEIVER_2(receiverNo)
 #endif
 #ifdef IRRECEIVER_3_PIN
-#define TERNARY_RECEIVER_3(receiverNo)         (receiverNo) == 3 ? IRRECEIVER_3_PIN :
+#define TERNARY_RECEIVER_3(receiverNo)  (receiverNo) == 3 ? IRRECEIVER_3_PIN :
 #else
 #define TERNARY_RECEIVER_3(receiverNo)
 #endif
 #ifdef IRRECEIVER_4_PIN
-#define TERNARY_RECEIVER_4(receiverNo)           (receiverNo) == 4 ? IRRECEIVER_4_PIN :
+#define TERNARY_RECEIVER_4(receiverNo)  (receiverNo) == 4 ? IRRECEIVER_4_PIN :
 #else
 #define TERNARY_RECEIVER_4(receiverNo)
 #endif
 #ifdef IRRECEIVER_5_PIN
-#define TERNARY_RECEIVER_5(receiverNo)               (receiverNo) == 5 ? IRRECEIVER_5_PIN :
+#define TERNARY_RECEIVER_5(receiverNo)  (receiverNo) == 5 ? IRRECEIVER_5_PIN :
 #else
 #define TERNARY_RECEIVER_5(receiverNo)
 #endif
 #ifdef IRRECEIVER_6_PIN
-#define TERNARY_RECEIVER_6(receiverNo)               (receiverNo) == 6 ? IRRECEIVER_6_PIN :
+#define TERNARY_RECEIVER_6(receiverNo)  (receiverNo) == 6 ? IRRECEIVER_6_PIN :
 #else
 #define TERNARY_RECEIVER_6(receiverNo)
 #endif
 #ifdef IRRECEIVER_7_PIN
-#define TERNARY_RECEIVER_7(receiverNo)               (receiverNo) == 7 ? IRRECEIVER_7_PIN :
+#define TERNARY_RECEIVER_7(receiverNo)  (receiverNo) == 7 ? IRRECEIVER_7_PIN :
 #else
 #define TERNARY_RECEIVER_7(receiverNo)
 #endif
 #ifdef IRRECEIVER_8_PIN
-#define TERNARY_RECEIVER_8(receiverNo)               (receiverNo) == 8 ? IRRECEIVER_8_PIN :
+#define TERNARY_RECEIVER_8(receiverNo)  (receiverNo) == 8 ? IRRECEIVER_8_PIN :
 #else
 #define TERNARY_RECEIVER_8(receiverNo)
 #endif
@@ -178,7 +182,7 @@
               (receiverNo) == 6 ? IRRECEIVER_6_PULLUP_VALUE : \
               (receiverNo) == 7 ? IRRECEIVER_7_PULLUP_VALUE : \
               (receiverNo) == 8 ? IRRECEIVER_8_PULLUP_VALUE : \
-                  -1)
+                  false)
 
 #endif // RECEIVE
 

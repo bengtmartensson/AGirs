@@ -22,7 +22,7 @@ this program. If not, see http://www.gnu.org/licenses/.
 #include "GirsTypes.h"
 
 /**
- * This is an abstact base class for all IR readers, capturing or receiving.
+ * This is an abstract base class for all IR readers, capturing or receiving.
  * It should also serve as an interface that can be printed and decoded.
  */
 
@@ -37,7 +37,7 @@ protected:
 
     IrReader(uint16_t bufSize_) : bufferSize(bufSize_) {
     }
-    
+
     IrReader() {
     }
 

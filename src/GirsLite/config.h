@@ -22,18 +22,18 @@
 
 #ifdef LED
 // Light this led when transmission is taking place
-#define TRANSMITLED 3
+#define TRANSMITLED 4
 
 #ifdef RECEIVE
 // Light this when receive is pending
-#define RECEIVELED 2
+#define RECEIVELED 3
 #else // ! RECEIVE
 // Light this when capture is pending
-#define CAPTURELED 2
+#define CAPTURELED 3
 #endif // ! RECEIVE
 
 // Light this when listening for command on the input stream
-#define COMMANDLED 1
+#define COMMANDLED 2
 #endif // LED
 
 // Character that ends the command lines
@@ -42,8 +42,9 @@
 // Hardware configuration
 
 // Include one file describing the pin configuration
-//#include <girs_pins_nano_shield.h>
-#include <girs_pins.h> // Generic
+#include <girs_pins_nano_shield.h>
+//#include <girs_pins_nano.h>
+//#include <girs_pins.h> // Generic
 
 
 // These are really not defaults, they are the non-changeable values.

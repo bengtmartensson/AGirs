@@ -12,6 +12,7 @@ public:
     Tokenizer(String& str) : index(0), payload(str) { payload.trim(); };
     String getToken();
     String getRest();
+    String getLine();
     long getInt();
     microseconds_t getMicroseconds();
     frequency_t getFrequency();

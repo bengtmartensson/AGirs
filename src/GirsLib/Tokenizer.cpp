@@ -7,6 +7,16 @@ String Tokenizer::getRest() {
     return result;
 }
 
+String Tokenizer::getLine() {
+    if (index < 0)
+        return String("");
+
+    int i = payload.indexOf('\n', index);
+    String s = (i > 0) ? payload.substring(index, i) : payload.substring(index);
+    index = (i > 0) ? i+1 : -1;
+    return s;
+}
+
 String Tokenizer::getToken() {
     if (index < 0)
         return String("");

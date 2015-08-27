@@ -11,15 +11,13 @@
 
 #ifdef LED
 #define SIGNAL_LED_1 13
-#define SIGNAL_LED_2 A1
-#define SIGNAL_LED_3 A2
-#define SIGNAL_LED_4 A3
-#define SIGNAL_LED_5 A0
+#define SIGNAL_LED_2 A0
+#define SIGNAL_LED_3 A1
+#define SIGNAL_LED_4 A2
+#define SIGNAL_LED_5 A3
 #define SIGNAL_LED_6 6
 #define SIGNAL_LED_7 7
-#ifndef NON_MOD
-//#define SIGNAL_LED_8 9
-#endif
+#define SIGNAL_LED_8 2
 #endif
 
 #if defined(CAPTURE)
@@ -32,9 +30,9 @@
 //#define IRRECEIVER_PIN 5
 #define IRRECEIVER_1_PIN 5
 //#define IRRECEIVER_1_PIN_PULLUP
-#define IRRECEIVER_2_PIN 4
-#define IRRECEIVER_3_PIN 9
-#define IRRECEIVER_4_PIN 8 // Non-demodulating sensor
+#define IRRECEIVER_2_PIN 11
+#define IRRECEIVER_3_PIN 12
+//#define IRRECEIVER_4_PIN 8 // Non-demodulating sensor
 //#define IRRECEIVER_4_PIN IRSENSOR_1_PIN // Non-demodulating sensor
 #endif
 
@@ -43,7 +41,7 @@
 #endif
 
 #ifdef NON_MOD
-#define NON_MOD_PIN 9
+#define NON_MOD_PIN 10
 #endif
 
 #endif // ! GIRS_PINS_DEFAULT_H

@@ -29,4 +29,8 @@
 // Send pin 3
 #endif
 
+#ifdef NON_MOD
+#define NON_MOD_PIN 9
+#endif
+
 #endif // ! GIRS_PINS_NANO_H

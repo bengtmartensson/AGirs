@@ -17,6 +17,11 @@
 #define SIGNAL_LED_4_GND A4
 //#define SIGNAL_LED_5 A7
 //#define SIGNAL_LED_5_GND A6
+
+#ifdef LCD_I2C
+#error Cannot use I2C with this configuration
+#endif
+
 #endif
 
 #if defined(CAPTURE)

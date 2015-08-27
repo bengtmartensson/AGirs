@@ -16,7 +16,7 @@
 
 // Additional modules
 // Support sending signals without modulation
-//#define NON_MOD
+#define NON_MOD
 
 // Try to decode also captures, normally not sensible
 //#define DECODE_CAPTURES
@@ -59,7 +59,7 @@
 //#define LCD_4BIT
 
 // LCD display with I2C connection. Defines a command "lcd".
-//#define LCD_I2C
+#define LCD_I2C
 
 //#define ETHERNET
 
@@ -165,7 +165,7 @@
 #endif
 
 #ifdef RECEIVE
-// See Chris' docs.
+// This quantity is added to all gaps and subtracted from all marks.
 #define IRRECEIVER_MARK_EXCESS 50U
 #endif
 

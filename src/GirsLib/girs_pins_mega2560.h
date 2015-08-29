@@ -37,7 +37,7 @@
 #define IRRECEIVER_2_PIN 7 // 38kHz, ACG4
 #define IRRECEIVER_3_PIN 8 // 56kHz
 #define IRRECEIVER_4_PIN 6 // 433 MHz
-#define IRRECEIVER_5_PIN IRSENSOR_1_PIN // Non-demodulating sensor
+#define IRRECEIVER_5_PIN 49 //IRSENSOR_1_PIN // Non-demodulating sensor
 #endif
 
 #ifdef TRANSMIT

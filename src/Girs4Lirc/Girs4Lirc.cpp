@@ -113,9 +113,9 @@ void sendIrSignal(uint16_t noSends, frequency_t frequency,
 }
 #endif // TRANSMIT
 
-#define modulesSupported EXPAND_AND_QUOTE(Base CAPTURE_NAME RECEIVE_NAME TRANSMIT_NAME LCD_NAME LED_NAME)
+#define modulesSupported EXPAND_AND_QUOTE(Base CAPTURE_NAME RECEIVE_NAME TRANSMIT_NAME TRANSMITTERS_NAME LCD_NAME LED_NAME)
 #define PROGNAME "Girs4Lirc"
-#define VERSION "2015-08-27"
+#define VERSION "2015-08-28"
 #define okString "OK"
 #define errorString "ERROR"
 #define timeoutString "."
@@ -292,6 +292,13 @@ void loop() {
             sendIrSignal(noSends, frequency, introLength, repeatLength, endingLength, intro, repeat, ending); // waits
             stream.println(okString);
         }
+            break;
+#endif
+
+#ifdef TRANSMITTERS
+            // Just dummy "implementation"
+        case 't':
+            stream.println(okString);
             break;
 #endif
         case 'v': // version

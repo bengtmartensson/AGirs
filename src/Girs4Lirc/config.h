@@ -17,6 +17,9 @@
 // Invoke the decoder
 #define DECODER
 
+// Presently just dummy, not yet implemented
+#define TRANSMITTERS
+
 // Use LEDs as debugging LEDs.
 // Note: different semantic from Girs, where it means a command is enabled.
 #define LED
@@ -44,8 +47,11 @@
 
 // If LCD support desired, include appropriate hardware description
 #ifdef LCD_I2C
-//#include <lcd_0x3F_20_4.h>
+#ifdef ARDUINO_AVR_MEGA2560
+#include <lcd_0x3F_20_4.h>
+#else
 #include <lcd_0x27_16_2.h>
+#endif
 #endif
 
 // Support sending signals without modulation
@@ -57,9 +63,9 @@
 // Hardware configuration
 
 // Include one file describing the pin configuration
-#include <girs_pins_nano_shield.h>
+//#include <girs_pins_nano_shield.h>
 //#include <girs_pins_nano.h>
-//#include <girs_pins.h> // Generic
+#include <girs_pins.h> // Generic
 
 
 // These are really not defaults, they are the non-changeable values.

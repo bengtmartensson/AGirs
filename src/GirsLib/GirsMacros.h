@@ -499,6 +499,12 @@
 #define NAMED_COMMANDS_NAME
 #endif
 
+#ifdef TRANSMITTERS
+#define TRANSMITTERS_NAME Transmitters
+#else
+#define TRANSMITTERS_NAME
+#endif
+
 #ifdef PARAMETERS
 #define PARAMETERS_NAME Parameters
 #define PARAMETER_CONST

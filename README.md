@@ -114,7 +114,7 @@ with the [Arduino uip
 library](https://github.com/ntruchsess/arduino_uip), but it was
 just too memory hungry on an AtMega328. Contributed code is welcome.
 
-* What about "GirsLite".
+* What about "GirsLite"?
 
 "GirsLite" is a precessor to the present program. It is a minimalistic
 (thereby the name) Girs server
@@ -124,7 +124,22 @@ for the Arduino, that implements only the
 without all options. This was meant to be used with
 [IrScrutinizer](http://www.harctoolbox.org/IrScrutinizer.html)
 versions 1.1.*. It is essentially equivalent to the present program
-with only the CPP symbols TRANSMIT and CAPTURE defined.
+with only the CPP symbols TRANSMIT, CAPTURE, LED, and NON_MOD
+defined. Alternatively, if RECEIVE is defined, but not CAPTURE, the
+program mimics the capture command with a demodulating sensor, for
+usage with IrScrutinizer without a non-demodulating sensor.
+
+* What about Girs4Lirc?
+
+This is a version of Girs, optimized for Lirc, using the "girs" driver
+by yours truly. This can be checkout with the command
+
+<pre>git clone -b girs-driver https://bengtmartensson@git.code.sf.net/u/bengtmartensson/lirc</pre>
+
+Basically, the program is a version of AGirs supporting TRANSMIT,
+NON_MOD, RECEIVE, LED, LCD, DECODE (only to the LCD), TRANSMITTERS
+(only a dummy implementation). Documentation is found with the Lirc
+driver, in the file <code>girs_driver.html</code>.
 
 ## License
 The entire work is licensed under the GPL3 license. Chris' as well as Ken's

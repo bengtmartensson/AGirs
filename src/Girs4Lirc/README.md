@@ -1,7 +1,13 @@
 # Girs4Lirc
 
 This is a version of AGirs, optimized for usage with Lirc, using the
-driver "girs", to be published.
+driver "girs". This can be checked out with the command
+
+<pre>git clone -b girs-driver https://bengtmartensson@git.code.sf.net/u/bengtmartensson/lirc</pre>
+
+The documentation file <code>girs_driver.html</code> therein contains the current documentation. Therefore,
+
+_The documentation in this file is not maintained and slightly out of date._
 
 ## Hardware requirements and configuration
 All components are optional. The sketch can be configured for sending

@@ -43,7 +43,7 @@
 #endif
 
 #ifdef NON_MOD
-#define NON_MOD_PIN 9
+#define NON_MOD_PIN 10
 #endif
 
 #endif // ! GIRS_PINS_DEFAULT_H

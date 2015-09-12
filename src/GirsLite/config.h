@@ -42,9 +42,9 @@
 // Hardware configuration
 
 // Include one file describing the pin configuration
-#include <girs_pins_nano_shield.h>
+//#include <girs_pins_nano_shield.h>
 //#include <girs_pins_nano.h>
-//#include <girs_pins.h> // Generic
+#include <girs_pins.h> // Generic
 
 
 // These are really not defaults, they are the non-changeable values.

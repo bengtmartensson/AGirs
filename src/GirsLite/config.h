@@ -13,8 +13,8 @@
 
 // Use one of these two, normally CAPTURE
 // Define RECEIVE to us a demodulating receiver (TSOP*) instead.
-//#define CAPTURE
-#define RECEIVE
+#define CAPTURE
+//#define RECEIVE
 
 // Use LEDs as debugging LEDs.
 // Note: different semantic from Girs, where it means a command is enabled.
@@ -40,6 +40,9 @@
 #define EOLCHAR '\r'
 
 // Hardware configuration
+
+// Has a non-modulating sender, typically RF.
+//#define NON_MOD
 
 // Include one file describing the pin configuration
 //#include <girs_pins_nano_shield.h>

@@ -106,7 +106,7 @@ void sendIrSignal(uint16_t noSends, frequency_t frequency,
 
 #define modulesSupported EXPAND_AND_QUOTE(Base Capture TRANSMIT_NAME)
 #define PROGNAME "GirsLite"
-#define VERSION "2015-08-28"
+#define VERSION "2015-09-12"
 #define okString "OK"
 #define errorString "ERROR"
 #define timeoutString "."

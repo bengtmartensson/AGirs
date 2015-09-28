@@ -1,8 +1,4 @@
-// Configuration options
-
-// Except for the hardware configuration, there are really only two interesting options here.
-// They are: LED (define if desired), and RECEIVE/CAPTURE (define exactly one).
-// Defining RECEIVE makes the capture command use the demodulating receiver.
+// Configuration options for Girs4Lirc
 
 #ifndef CONFIG_H
 #define CONFIG_H
@@ -14,11 +10,11 @@
 // Define RECEIVE to us a demodulating receiver (TSOP*).
 #define RECEIVE
 
-// Invoke the decoder
-#define DECODER
+// Invoke the decoder, independently of Lirc
+//#define DECODER
 
 // Presently just dummy, not yet implemented
-#define TRANSMITTERS
+//#define TRANSMITTERS
 
 // Use LEDs as debugging LEDs.
 // Note: different semantic from Girs, where it means a command is enabled.
@@ -35,6 +31,8 @@
 #define RECEIVELED 3
 #endif // ! RECEIVE
 
+// NOTE: CAPTURE is not supported in Girs2Lirc
+
 //#define DEBUG
 
 // Light this when listening for command on the input stream
@@ -43,7 +41,7 @@
 #endif // LED
 
 // Use an LCD display
-#define LCD_I2C
+//#define LCD_I2C
 
 // If LCD support desired, include appropriate hardware description
 #ifdef LCD_I2C
@@ -55,6 +53,7 @@
 #endif
 
 // Support sending signals without modulation
+// (does not hurt even if the hardware is missing).
 #define NON_MOD
 
 // Character that ends the command lines
@@ -70,7 +69,11 @@
 
 // These are really not defaults, they are the non-changeable values.
 #define DEFAULT_BEGINTIMEOUT 10000UL // milliseconds
-#define DEFAULT_ENDINGTIMEOUT 30L // milliseconds
+#ifdef DECODER
+#define DEFAULT_ENDINGTIMEOUT 30L // separates NEC1 intro from its repeats
+#else
+#define DEFAULT_ENDINGTIMEOUT 65L // milliseconds, presently must be <= 65.
+#endif
 
 // Size of capture and receive arrays
 #define DEFAULT_CAPTURESIZE 300U // must be even

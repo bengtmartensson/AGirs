@@ -359,24 +359,24 @@ void capture(Stream& stream) {
 
 #ifdef NAMED_COMMANDS
 const Command* yamaha_cmds[] = {
-    new Nec1Command("volume_up",    122, 26),
-    new Nec1Command("volume_down",  122, 27),
-    new Nec1Command("power_on",     122, 29),
-    new Nec1Command("power_off",    122, 30)
+    new NamedNec1Command("volume_up",    122, 26),
+    new NamedNec1Command("volume_down",  122, 27),
+    new NamedNec1Command("power_on",     122, 29),
+    new NamedNec1Command("power_off",    122, 30)
 };
 
 const Command* tv_cmds[] = {
-    new Rc5Command("0", 0, 0),
-    new Rc5Command("1", 0, 1),
-    new Rc5Command("2", 0, 2),
-    new Rc5Command("3", 0, 3),
-    new Rc5Command("4", 0, 4),
-    new Rc5Command("5", 0, 5),
-    new Rc5Command("6", 0, 6),
-    new Rc5Command("7", 0, 7),
-    new Rc5Command("8", 0, 8),
-    new Rc5Command("9", 0, 9),
-    new Rc5Command("power_toggle", 0, 12),
+    new NamedRc5Command("0", 0, 0),
+    new NamedRc5Command("1", 0, 1),
+    new NamedRc5Command("2", 0, 2),
+    new NamedRc5Command("3", 0, 3),
+    new NamedRc5Command("4", 0, 4),
+    new NamedRc5Command("5", 0, 5),
+    new NamedRc5Command("6", 0, 6),
+    new NamedRc5Command("7", 0, 7),
+    new NamedRc5Command("8", 0, 8),
+    new NamedRc5Command("9", 0, 9),
+    new NamedRc5Command("power_toggle", 0, 12),
 };
 
 const Remote* remotes[] = {
@@ -384,7 +384,7 @@ const Remote* remotes[] = {
     new Remote("tv",     tv_cmds,     sizeof (tv_cmds) / sizeof (Command*)),
 };
 
-RemoteSet remoteSet(remotes, sizeof (remotes) / sizeof (Remote*));
+IrNamedRemoteSet remoteSet(remotes, sizeof (remotes) / sizeof (Remote*));
 
 #if 0
 boolean sendNamedCommand(Stream& stream, unsigned int noSends, String& remoteName, String& commandName) {

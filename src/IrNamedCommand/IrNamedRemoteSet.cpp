@@ -1,15 +1,6 @@
-#include "RemoteSet.h"
+#include "IrNamedRemoteSet.h"
 
-/*RemoteSet::RemoteSet() {
-}
-
-RemoteSet::RemoteSet(const RemoteSet& orig) {
-}
-
-RemoteSet::~RemoteSet() {
-}*/
-
-const Remote* RemoteSet::getRemote(const char* name) const {
+const IrNamedRemote* IrNamedRemoteSet::getIrNamedRemote(const char* name) const {
     for (unsigned int i = 0; i < noRemotes; i++) {
         for (unsigned int j = 0; ; j++) {
             if (name[j] != remotes[i]->getName()[j])

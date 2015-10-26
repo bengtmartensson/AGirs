@@ -1,20 +1,24 @@
 #ifndef RC5COMMAND_H
 #define	RC5COMMAND_H
 
-#include "Command.h"
+#include "IrNamedCommand.h"
 #include "Rc5Renderer.h"
 
-class Rc5Command : public Command {
+class NamedRc5Command : public IrNamedCommand {
 public:
 
-    Rc5Command(const char* name, uint8_t D_, uint8_t F_) : Command(name), D(D_) {
+    NamedRc5Command(const char* name, uint8_t D_, uint8_t F_) : IrNamedCommand(name), D(D_) {
         F = F_;
     };
 
-    virtual ~Rc5Command() {
+    NamedRc5Command(const String& name, uint8_t D_, uint8_t F_) : IrNamedCommand(name), D(D_) {
+        F = F_;
     };
 
-    const Rc5Renderer* getRenderer() const {
+    virtual ~NamedRc5Command() {
+    };
+
+    const IrSignal& getIrSignal() const {
         return new Rc5Renderer(D, F);
     };
 private:

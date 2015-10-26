@@ -1,16 +1,35 @@
-#ifndef COMMAND_H
-#define	COMMAND_H
+#ifndef IRCOMMAND_H
+#define	IRCOMMAND_H
 
-#include "Renderer.h"
+#include "IrSignal.h"
 
-class Command {
+/** This class is basically an IrSignal with a name. The class is immutable. */
+class IrNamedCommand {
 public:
-    Command(const char* name_) : name(name_) {};
-    virtual ~Command() {};
-    virtual const Renderer* getRenderer() const = 0;
-    const char* getName() const { return name; }
+
+    IrNamedCommand(const char* name_) : name(name_) {
+    };
+
+    IrNamedCommand(const String& name_) : name(name_.c_str()) {
+    };
+
+    IrNamedCommand(const IrNamedCommand& orig) : name(orig.name) {
+    };
+
+    virtual ~IrNamedCommand() {
+    };
+    virtual const IrSignal& getIrSignal() const = 0;
+
+    const char* getName() const {
+        return name;
+    }
+
+    operator const IrSignal& () const {
+        return getIrSignal();
+    }
+
 private:
     const char *name;
 };
 
-#endif	/* COMMAND_H */
+#endif	/* IRCOMMAND_H */

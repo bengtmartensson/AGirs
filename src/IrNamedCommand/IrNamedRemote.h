@@ -34,6 +34,10 @@ public:
         return getIrNamedCommand(name_.c_str());
     }
 
+    const IrNamedCommand **getAllCommands() const {
+        return commands;
+    }
+
     //const IrNamedCommand** getIrNamedCommands() const { return commands; };
 
     unsigned int getNoCommands() const {

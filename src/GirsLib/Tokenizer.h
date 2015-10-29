@@ -1,15 +1,23 @@
 #ifndef _TOKENIZER_H
 #define _TOKENIZER_H
 
-#include <GirsTypes.h>
+#include <InfraredTypes.h>
 #include <limits.h>
 
 class Tokenizer {
 private:
-    int index;
-    String& payload;
+    static const int invalidIndex = -1;
+
+    int index; // signed since invalidIndex is possible
+    String payload;
+
+    void trim();
+
 public:
-    Tokenizer(String& str) : index(0), payload(str) { payload.trim(); };
+    Tokenizer(const String& str);
+    Tokenizer(const char *str);
+    virtual ~Tokenizer();
+
     String getToken();
     String getRest();
     String getLine();

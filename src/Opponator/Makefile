@@ -7,21 +7,21 @@ DEBUGFLAGS=-g
 WARNINGFLAGS=-Wall -Werror -Wextra
 ARDUINO_LIBS=$(HOME)/Arduino/libraries
 ARDUINO_ROOT=/local/arduino-1.6.5/
-INCLUDES=-I. -I$(ARDUINO_LIBS)/Infrared -I../LcdI2C-sim
+INCLUDES=-I. -I$(ARDUINO_LIBS)/Infrared -I../LcdI2C-sim -I../GirsLib
 
 VPATH=tests:../LcdI2C-sim
 
-OBJS=\
-Tokenizer.o LedLcdManager.o LiquidCrystal_I2C.o
+#OBJS=\
+#Tokenizer.o LedLcdManager.o LiquidCrystal_I2C.o
 
-libGirsLib.a: $(OBJS)
-	$(AR) rs $@ $(OBJS)
+#libGirsLib.a: $(OBJS)
+#	$(AR) rs $@ $(OBJS)
 
 %.o: %.cpp
 	$(CXX) -std=c++11 $(INCLUDES) $(WARNINGFLAGS) $(OPTIMIZEFLAGS) $(DEBUGFLAGS) -c $<
 
-test%: test%.o libGirsLib.a
-	$(CXX) -o $@ $< -L. -lGirsLib -L$(HOME)/Arduino/libraries/Infrared -lInfrared
+Opponator: Opponator.o
+	$(CXX) -o $@ $< -L../GirsLib -lGirsLib -L$(HOME)/Arduino/libraries/Infrared -lInfrared
 	./$@
 
 doc:

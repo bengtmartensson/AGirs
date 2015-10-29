@@ -9,7 +9,8 @@
 #include "LiquidCrystal_I2C.h"
 #include <Arduino.h>
 
-LiquidCrystal_I2C::LiquidCrystal_I2C(unsigned char address, unsigned char width, unsigned char height, unsigned char charsize) {
+LiquidCrystal_I2C::LiquidCrystal_I2C(unsigned char address UNUSED, unsigned char width UNUSED,
+        unsigned char height UNUSED, unsigned char charsize UNUSED) {
     std::cout << "LCD constructed" << std::endl;
 }
 

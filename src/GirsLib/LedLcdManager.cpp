@@ -50,10 +50,10 @@ void LedLcdManager::setupLogicLeds(const led_t logicalLeds_[maxLeds]) {
 void LedLcdManager::setupPhysicalLeds(const led_t physicalLeds_[maxLeds]) {
     for (int i = 0; i < maxLeds; i++) {
         physicalLeds[i] = physicalLeds_ == NULL ? invalidPin : physicalLeds_[i];
-#ifdef ARDUINO
+//#ifdef ARDUINO
         if (physicalLeds[i] != invalidPin)
             pinMode(physicalLeds[i], OUTPUT);
-#endif
+//#endif
     }
 }
 

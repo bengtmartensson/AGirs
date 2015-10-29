@@ -45,10 +45,10 @@ private:
 
     static void setupPhysicalLeds(const pin_t physicalLeds[maxLeds]);
     static void setupShouldTimeOut(const boolean shouldTimeOut[maxLeds]);
-    /*pin_t pled1, pin_t pled2 = IrSender.invalid_pin,
-            pin_t pled3 = IrSender.invalid_pin, pin_t pled4 = IrSender.invalid_pin,
-            pin_t pled5 = IrSender.invalid_pin, pin_t pled6 = IrSender.invalid_pin,
-            pin_t pled7 = IrSender.invalid_pin, pin_t pled8 = IrSender.invalid_pin);*/
+    /*pin_t pled1, pin_t pled2 = invalidPin,
+            pin_t pled3 = invalidPin, pin_t pled4 = invalidPin,
+            pin_t pled5 = invalidPin, pin_t pled6 = invalidPin,
+            pin_t pled7 = invalidPin, pin_t pled8 = invalidPin);*/
 
     static void setupLcdI2c(int i2cAddress, uint8_t columns, uint8_t rows);
     LedLcdManager();;
@@ -57,36 +57,42 @@ private:
 
     static void disableTurnOffTime();
 
+    static void groundPin(pin_t pin) {
+        pinMode(pin, OUTPUT);
+        digitalWrite(pin, LOW);
+    }
+
 public:
-
-    //LedLcdManager(const LedLcdManager& orig);
-    //virtual ~LedLcdManager();
-
     /** Sets up the instance, to be called before using the instance.  */
     static void setup(int i2cAddress = -1, uint8_t columns = defaultLcdColumns, uint8_t rows = defaultLcdRows,
             const pin_t physicalLeds[maxLeds] = NULL,
             const led_t logicalLeds[maxLeds] = NULL,
             const boolean shouldTimeOut[maxLeds] = NULL);
-/*            pin_t pled1, pin_t pled2 = IrSender.invalid_pin,
-            pin_t pled3 = IrSender.invalid_pin, pin_t pled4 = IrSender.invalid_pin,
-            pin_t pled5 = IrSender.invalid_pin, pin_t pled6 = IrSender.invalid_pin,
-            pin_t pled7 = IrSender.invalid_pin, pin_t pled8 = IrSender.invalid_pin);
-*/
-    //void setupLogicalLeds(pin_t logicalLeds[maxLeds]);
-    /*pin_t led1, pin_t led2 = IrSender.invalid_pin,
-            pin_t led3 = IrSender.invalid_pin, pin_t led4 = IrSender.invalid_pin,
-            pin_t led5 = IrSender.invalid_pin, pin_t led6 = IrSender.invalid_pin,
-            pin_t led7 = IrSender.invalid_pin, pin_t led8 = IrSender.invalid_pin);*/
 
-    void static lcdPrint(const String& str, boolean clear = false, int x = 0, int y = -1);
+    static void setup(int i2cAddress = -1, uint8_t columns = defaultLcdColumns, uint8_t rows = defaultLcdRows,
+            pin_t pled1 = invalidLed, pin_t pled2 = invalidLed,
+            pin_t pled3 = invalidPin, pin_t pled4 = invalidPin,
+            pin_t pled5 = invalidPin, pin_t pled6 = invalidPin,
+            pin_t pled7 = invalidPin, pin_t pled8 = invalidPin);
+
+    void setupPhysicalLeds(pin_t led1 = invalidPin, pin_t led2 = invalidPin,
+            pin_t led3 = invalidPin, pin_t led4 = invalidPin,
+            pin_t led5 = invalidPin, pin_t led6 = invalidPin,
+            pin_t led7 = invalidPin, pin_t led8 = invalidPin);
+
+    void static lcdPrint(const String& str, boolean clear = true, int x = 0, int y = -1);
     //void static lcdPrint(const String& str);
 
     //LedLcdManager& getInstance() {
     //    return instance;
     //};
 
-    static LiquidCrystal_I2C& getLcd() {
-        return *lcd;
+    //static LiquidCrystal_I2C& getLcd() {
+    //    return *lcd;
+    //}
+
+    static void lcdSetCursor(uint8_t x = 0, uint8_t y = 0) {
+        lcd->setCursor(x, y);
     }
 
     static void allOff(boolean force);
@@ -113,15 +119,6 @@ public:
     static void setupLogicLed(led_t loginLed, led_t physicalLed);
 
     static void setupLogicLeds(const led_t array[maxLeds]);
-
-    static void groundPin(pin_t pin) {
-#ifdef ARDUINO
-        pinMode(pin, OUTPUT);
-        digitalWrite(pin, LOW);
-#else
-        std::cout << "Grounded pin " << (int) pin << std::endl;
-#endif
-    }
 
     static void setupLedGroundPins() {
 #ifdef SIGNAL_LED_1_GND

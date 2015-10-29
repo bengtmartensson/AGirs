@@ -29,12 +29,10 @@ this program. If not, see http://www.gnu.org/licenses/.
 
 #include <lcd_0x27_16_2.h>
 
-#define IRRECEIVER_PIN 5
-//#define IRRECEIVER_GND 6
-//#define IRRECEIVER_VSS 7
-#define IRRECEIVER_PULLUP_VALUE false
-
-#include <GirsMacros.h>
+#define IRRECEIVER_1_PIN 5
+//#define IRRECEIVER_1_GND 6
+//#define IRRECEIVER_1_VSS 7
+//#define IRRECEIVER_1_PULLUP
 
 #ifdef ARDUINO
 #ifdef XARDUINO_AVR_MEGA2560
@@ -46,8 +44,11 @@ Stream& stream = Serial;
 Stream stream(std::cout);
 #endif // ! ARDUINO
 
-static const uint8_t selectedD = 114;
-static const uint8_t selectedS = 205;
+#include <GirsUtils.h> // Must come AFTER pin declarations and such!!
+
+// Remote the thing is reacting to
+static const int selectedD = 114;
+static const int selectedS = 205;
 
 #define PROGNAME "Opponator"
 #define VERSION "2015-10-29"
@@ -58,10 +59,10 @@ void send(String payload) {
 
 void sendReceiveDisplay(String payload, String title) {
     send(payload);
+    LedLcdManager::lcdPrint(title, true);
 #ifdef ARDUINO
     String answer = stream.readStringUntil('\r');
     answer.trim();
-    LedLcdManager::lcdPrint(title, true, 0, 0);
     LedLcdManager::lcdPrint(answer, false, 0, 1);
 #endif
 }
@@ -73,11 +74,11 @@ void action(IrReader *irReader) {
             && decoder.getS() == selectedS) {
         LedLcdManager::lcdPrint("Signal " +
 #ifdef ARDUINO
-        String(decoder.getF()),
+                String(decoder.getF())
 #else
-                std::to_string(decoder.getF()),
+                std::to_string(decoder.getF())
 #endif
-                true, 0, 0);
+                );
         switch (decoder.getF()) {
             case 6: // Play
                 send("PLA");
@@ -103,8 +104,7 @@ void action(IrReader *irReader) {
                 // ...
                 break;
         }
-    } /*else
-        lcdPrint("Unknown signal", true, 0, 0);*/
+    }
 }
 
 void loop() {
@@ -119,8 +119,8 @@ void loop() {
 
 void setup() {
     LedLcdManager::setup(LCD_I2C_ADDRESS, LCD_WIDTH, LCD_HEIGHT);
-    DEFINE_IRRECEIVER;
-    LedLcdManager::lcdPrint(F(PROGNAME), true, 0, 0);
+    setupReceivers();
+    LedLcdManager::lcdPrint(F(PROGNAME));
     LedLcdManager::lcdPrint(F(VERSION), false, 0, 1);
 
 #ifdef ARDUINO
@@ -128,7 +128,7 @@ void setup() {
 #endif
 
     IrReceiverSampler::newIrReceiverSampler(IrReader::defaultCaptureLength,
-            IRRECEIVER_PIN, IRRECEIVER_PULLUP_VALUE);
+            IRRECEIVER_1_PIN, IRRECEIVER_1_PULLUP_VALUE);
 }
 
 #ifndef ARDUINO

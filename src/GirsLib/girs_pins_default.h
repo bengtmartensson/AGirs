@@ -17,6 +17,7 @@
 #define SIGNAL_LED_5 A0
 #define SIGNAL_LED_6 6
 #define SIGNAL_LED_7 7
+#define SIGNAL_LED_8 108 // dummy
 #ifndef NON_MOD
 //#define SIGNAL_LED_8 9
 #endif
@@ -29,7 +30,6 @@
 #endif
 
 #ifdef RECEIVE
-//#define IRRECEIVER_PIN 5
 #define IRRECEIVER_1_PIN 5
 //#define IRRECEIVER_1_PIN_PULLUP
 #define IRRECEIVER_2_PIN 4

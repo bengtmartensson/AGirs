@@ -18,8 +18,8 @@
 //#define SIGNAL_LED_5 A7
 //#define SIGNAL_LED_5_GND A6
 
-#ifdef LCD_I2C
-#error Cannot use I2C with this configuration
+#ifdef LCD
+#error Cannot use LCD with this configuration
 #endif
 
 #endif
@@ -27,15 +27,15 @@
 #if defined(CAPTURE)
 // capture pin (ICP) 8
 #ifndef ETHERNET
-#define SENSOR_GND 9
-#define SENSOR_VSS 10
+#define IRSENSOR_1_GND 9
+#define IRSENSOR_1_VSS 10
 #endif
 #endif
 
 #ifdef RECEIVE
-#define IRRECEIVER_PIN 5
-#define IRRECEIVER_GND 6
-#define IRRECEIVER_VSS 7
+#define IRRECEIVER_1_PIN 5
+#define IRRECEIVER_1_GND 6
+#define IRRECEIVER_1_VSS 7
 #endif
 #ifdef RECEIVER_2
 #define IRRECEIVER_2_PIN 12

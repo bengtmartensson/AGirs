@@ -4,40 +4,36 @@
 #ifdef ARDUINO
 #define TOKEN2INT(tok) tok.toInt()
 #else
-#define TOKEN2INT(tok) std::stoi(tok)
-#endif
+#include <stdexcept>
 
-//static boolean isWhiteSpace(char c) {
-//    return c == ' ' || c == '\t' || c == '\n' || c == '\t';
-//}
-
-/*Tokenizer::Tokenizer(const char *str) : index(0) {
-    for (payload = str; isWhiteSpace(*payload); payload++)
-        ;
-    char *p;
-    for (p = payload; *p != '\0'; p++)
-        ;
-    for (;; p--) {
-        if (!isWhiteSpace(*p))
-            break;
-        *p = '\0';
+// Emulate Arduino moron-ness (returning 0 in the case of parse error...),
+// although it hurts...
+int TOKEN2INT(const String& tok) {
+    try {
+        return std::stoi(tok);
+    } catch (std::invalid_argument& ex) {
+        //std::cout << "Exception caugth!" << std::endl;
+        return 0;
     }
-}*/
+}
+#endif
 
 Tokenizer::Tokenizer(const String& str) : index(0), payload(str) {
     trim();
 }
 
-Tokenizer::Tokenizer(const char *str) : index(0),payload(String(str)) {
-    trim();
-}
+//Tokenizer::Tokenizer(const char *str) : index(0),payload(String(str)) {
+//    trim();
+//}
 
 void Tokenizer::trim() {
+#if 0
 #ifdef ARDUINO
     payload.trim();
 #else
     payload.erase(0, payload.find_first_not_of(" \t\n\r"));
     payload.erase(payload.find_last_not_of(" \t\n\r")+1, payload.length() - payload.find_last_not_of(" \t\n\r"));
+#endif
 #endif
 };
 
@@ -45,7 +41,7 @@ Tokenizer::~Tokenizer() {
 }
 
 String Tokenizer::getRest() {
-    String result =
+    String result = index == invalidIndex ? String("") :
 #ifdef ARDUINO
             payload.substring(index);
 #else

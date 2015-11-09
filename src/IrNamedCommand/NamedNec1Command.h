@@ -12,15 +12,7 @@ public:
         F = F_;
     };
 
-    NamedNec1Command(const String& name, uint8_t D_, uint8_t S_, uint8_t F_) : IrNamedCommand(name), D(D_), S(S_) {
-        F = F_;
-    };
-
     NamedNec1Command(const char* name, uint8_t D_, uint8_t F_) : IrNamedCommand(name), D(D_), S((uint8_t) 255 - D_) {
-        F = F_;
-    };
-
-    NamedNec1Command(const String& name, uint8_t D_, uint8_t F_) : IrNamedCommand(name), D(D_), S((uint8_t) 255 - D_) {
         F = F_;
     };
 

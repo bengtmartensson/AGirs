@@ -9,13 +9,18 @@
 #include "LiquidCrystal_I2C.h"
 #include <Arduino.h>
 
-LiquidCrystal_I2C::LiquidCrystal_I2C(unsigned char address UNUSED, unsigned char width UNUSED,
-        unsigned char height UNUSED, unsigned char charsize UNUSED) {
-    std::cout << "LCD constructed" << std::endl;
+LiquidCrystal_I2C::LiquidCrystal_I2C(unsigned char address, unsigned char width,
+        unsigned char height, unsigned char charsize UNUSED) {
+    std::cout << "LCD constructed with params " << (int) address << " " << (int) width
+            << " " << (int) height << std::endl;
 }
 
 void LiquidCrystal_I2C::begin() {
     std::cout << "LCD.begin()" << std::endl;
+}
+
+void LiquidCrystal_I2C::init() {
+    std::cout << "LCD.init()" << std::endl;
 }
 
 void LiquidCrystal_I2C::clear() {
@@ -42,7 +47,7 @@ void LiquidCrystal_I2C::noBacklight() {
     std::cout << "LCD.noBacklight()" << std::endl;
 }
 
-void LiquidCrystal_I2C::print(const String& str) {
+void LiquidCrystal_I2C::print(const char *str) {
     std::cout << "LCD,print(\"" << str << "\")"<< std::endl;
 };
 

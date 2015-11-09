@@ -12,7 +12,7 @@ public:
     IrNamedRemoteSet(const IrNamedRemoteSet& orig) : remotes(orig.remotes), noRemotes(orig.noRemotes) {
     };
 
-    IrNamedRemoteSet(const IrNamedRemote** remotes_, uint16_t noRemotes_) : remotes(remotes_), noRemotes(noRemotes_) {
+    IrNamedRemoteSet(const IrNamedRemote* const *remotes_, uint16_t noRemotes_) : remotes(remotes_), noRemotes(noRemotes_) {
     };
 
     virtual ~IrNamedRemoteSet() {
@@ -20,11 +20,7 @@ public:
 
     const IrNamedRemote* getIrNamedRemote(const char* name) const;
 
-    const IrNamedRemote* getIrNamedRemote(const String& name) const {
-        return getIrNamedRemote(name.c_str());
-    };
-
-    const IrNamedRemote** getIrNamedRemotes() const {
+    const IrNamedRemote* const * getIrNamedRemotes() const {
         return remotes;
     }
 
@@ -32,7 +28,7 @@ public:
         return noRemotes;
     }
 private:
-    const IrNamedRemote** remotes;
+    const IrNamedRemote* const * remotes;
     uint16_t noRemotes;
 };
 

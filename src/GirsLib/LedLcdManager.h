@@ -18,7 +18,8 @@ public:
     enum LedState {
         on,
         off,
-        blink
+        blink,
+        invalid
     };
 
 
@@ -41,7 +42,10 @@ private:
 
     static LiquidCrystal_I2C *lcd;
 
-    static LedLcdManager instance;
+    static unsigned int lcdRows;
+    static unsigned int lcdColumns;
+
+    //static LedLcdManager instance;
 
     static void setupPhysicalLeds(const pin_t physicalLeds[maxLeds]);
     static void setupShouldTimeOut(const boolean shouldTimeOut[maxLeds]);
@@ -50,7 +54,7 @@ private:
             pin_t pled5 = invalidPin, pin_t pled6 = invalidPin,
             pin_t pled7 = invalidPin, pin_t pled8 = invalidPin);*/
 
-    static void setupLcdI2c(int i2cAddress, uint8_t columns, uint8_t rows);
+    static void setupLcdI2c(int8_t i2cAddress, uint8_t columns, uint8_t rows);
     LedLcdManager();;
 
     //void initArray(char *array, uint8_t value);
@@ -64,12 +68,12 @@ private:
 
 public:
     /** Sets up the instance, to be called before using the instance.  */
-    static void setup(int i2cAddress = -1, uint8_t columns = defaultLcdColumns, uint8_t rows = defaultLcdRows,
+    static void setup(int8_t i2cAddress = -1, uint8_t columns = defaultLcdColumns, uint8_t rows = defaultLcdRows,
             const pin_t physicalLeds[maxLeds] = NULL,
             const led_t logicalLeds[maxLeds] = NULL,
             const boolean shouldTimeOut[maxLeds] = NULL);
 
-    static void setup(int i2cAddress = -1, uint8_t columns = defaultLcdColumns, uint8_t rows = defaultLcdRows,
+    static void setup(int8_t i2cAddress = -1, uint8_t columns = defaultLcdColumns, uint8_t rows = defaultLcdRows,
             pin_t pled1 = invalidLed, pin_t pled2 = invalidLed,
             pin_t pled3 = invalidPin, pin_t pled4 = invalidPin,
             pin_t pled5 = invalidPin, pin_t pled6 = invalidPin,
@@ -80,7 +84,7 @@ public:
             pin_t led5 = invalidPin, pin_t led6 = invalidPin,
             pin_t led7 = invalidPin, pin_t led8 = invalidPin);
 
-    void static lcdPrint(const String& str, boolean clear = true, int x = 0, int y = -1);
+    void static lcdPrint(const char *str, boolean clear = true, int x = 0, int y = -1);
     //void static lcdPrint(const String& str);
 
     //LedLcdManager& getInstance() {
@@ -110,15 +114,23 @@ public:
     /** Turn off if it is due. This has to be called periodically by the user. */
     static void checkTurnoff();
 
-    static void selfTest(const String& text);
+    static void selfTest(const char *text);
 
-    static void setPhysicalLed(led_t physicalLed, LedState state);
+    static boolean setPhysicalLed(led_t physicalLed, LedState state);
 
-    static void setLogicLed(led_t logicLed, LedState state);
+    static boolean setLogicLed(led_t logicLed, LedState state);
 
-    static void setupLogicLed(led_t loginLed, led_t physicalLed);
+    static boolean setLogicLed(led_t logicLed, const char *state) {
+        return setLogicLed(logicLed, onOffBlinkParse(state));
+    };
 
-    static void setupLogicLeds(const led_t array[maxLeds]);
+    static LedState onOffBlinkParse(const char *value);
+
+    static void setupShouldTimeout(led_t logicLed, boolean state);
+
+    static boolean setupLogicLed(led_t loginLed, led_t physicalLed);
+
+    static boolean setupLogicLeds(const led_t array[maxLeds]);
 
     static void setupLedGroundPins() {
 #ifdef SIGNAL_LED_1_GND

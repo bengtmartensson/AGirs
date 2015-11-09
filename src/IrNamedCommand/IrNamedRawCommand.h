@@ -16,9 +16,6 @@ public:
     IrNamedRawCommand(const char *name, const IrSignal& irSignal_) : IrNamedCommand(name), irSignal(irSignal_) {
     };
 
-    IrNamedRawCommand(const String& *name, const IrSignal& irSignal_) : IrNamedCommand(name), irSignal(irSignal_) {
-    }
-
     virtual ~IrNamedRawCommand() {
     };
 

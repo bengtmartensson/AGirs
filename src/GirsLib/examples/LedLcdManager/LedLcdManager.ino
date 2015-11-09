@@ -13,7 +13,9 @@
 #define A3 103
 #endif
 #include <girs_pins_mega2560.h>
-#include <lcd_0x27_16_2.h>
+//#include <lcd_0x27_16_2.h>
+#include <lcd_0x3F_20_4.h>
+#include <lcd_0x27_20_4.h>
 
 #include <LedLcdManager.h>
 

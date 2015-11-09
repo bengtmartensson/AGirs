@@ -1,15 +1,18 @@
 #include "LedLcdManager.h"
 #include "Tokenizer.h"
+#include <string.h>
 
 LiquidCrystal_I2C *LedLcdManager::lcd;
 milliseconds_t LedLcdManager::blinkTime = defaultBlinkTime;
 unsigned long LedLcdManager::turnOffTime;
+unsigned int LedLcdManager::lcdRows = 0;
+unsigned int LedLcdManager::lcdColumns = 0;
 
 pin_t LedLcdManager::physicalLeds[maxLeds];
 led_t LedLcdManager::logicalLeds[maxLeds];
 boolean LedLcdManager::shouldTimeOut[maxLeds];
 
-void LedLcdManager::setup(int i2cAddress, uint8_t columns, uint8_t rows,
+void LedLcdManager::setup(int8_t i2cAddress, uint8_t columns, uint8_t rows,
         const pin_t physicalLeds_[], const pin_t logicalLeds_[], const boolean shouldTimeOut_[]) {
     setupLcdI2c(i2cAddress, columns, rows);
     setupPhysicalLeds(physicalLeds_);
@@ -18,10 +21,10 @@ void LedLcdManager::setup(int i2cAddress, uint8_t columns, uint8_t rows,
     disableTurnOffTime();
 }
 
-void LedLcdManager::setPhysicalLed(led_t physicalLed, LedState state) {
+boolean LedLcdManager::setPhysicalLed(led_t physicalLed, LedState state) {
     pin_t pin = physicalLeds[physicalLed-1];
     if (pin == invalidPin)
-        return;
+        return false;
 
 #ifdef ARDUINO
     digitalWrite(pin, state == off ? LOW : HIGH);
@@ -30,30 +33,50 @@ void LedLcdManager::setPhysicalLed(led_t physicalLed, LedState state) {
 #endif
     if (state == blink)
         updateTurnOffTime();
+    return true;
 }
 
-void LedLcdManager::setLogicLed(led_t logicLed, LedState state) {
-    led_t physicalLed = logicalLeds[logicLed-1];
-    if (physicalLed != invalidLed)
-        setPhysicalLed(physicalLed, state);
+LedLcdManager::LedState LedLcdManager::onOffBlinkParse(const char *value) {
+        return value == NULL ? invalid
+                : strcmp(value, "on") == 0 ? on
+                : strcmp(value, "off") == 0 ? off
+                : strcmp(value, "blink") == 0 ? blink
+                : invalid;
 }
 
-void LedLcdManager::setupLogicLed(led_t logicLed, led_t physicalLed) {
+boolean LedLcdManager::setLogicLed(led_t logicLed, LedState state) {
+    if (logicLed == invalidLed
+            || logicLed <  1
+            || logicLed > maxLeds
+            || state == invalid )
+        return false;
+
+    led_t physicalLed = logicalLeds[logicLed - 1];
+    if (physicalLed == invalidLed)
+        return false;
+
+    return setPhysicalLed(physicalLed, state);
+}
+
+boolean LedLcdManager::setupLogicLed(led_t logicLed, led_t physicalLed) {
+    if (physicalLed == invalidLed)
+        return false;
+
     logicalLeds[logicLed-1] = physicalLed;
+    return true;
 }
 
-void LedLcdManager::setupLogicLeds(const led_t logicalLeds_[maxLeds]) {
+boolean LedLcdManager::setupLogicLeds(const led_t logicalLeds_[maxLeds]) {
     for (int i = 0; i < maxLeds; i++)
         logicalLeds[i] = logicalLeds_ == NULL ? i+1 : logicalLeds_[i];
+    return true;
 }
 
 void LedLcdManager::setupPhysicalLeds(const led_t physicalLeds_[maxLeds]) {
     for (int i = 0; i < maxLeds; i++) {
         physicalLeds[i] = physicalLeds_ == NULL ? invalidPin : physicalLeds_[i];
-//#ifdef ARDUINO
         if (physicalLeds[i] != invalidPin)
             pinMode(physicalLeds[i], OUTPUT);
-//#endif
     }
 }
 
@@ -62,18 +85,26 @@ void LedLcdManager::setupShouldTimeOut(const boolean shouldTimeOut_[maxLeds]) {
         shouldTimeOut[i] = shouldTimeOut_ == NULL ? true : shouldTimeOut_[i];
 }
 
-void LedLcdManager::setupLcdI2c(int i2cAddress, uint8_t columns, uint8_t rows) {
-    lcd = i2cAddress >= 0 ? new LiquidCrystal_I2C(i2cAddress, columns, rows) : NULL;
-    if (lcd)
-        lcd->begin();
+void LedLcdManager::setupShouldTimeout(led_t logicLed, boolean state) {
+    if (logicLed != invalidLed)
+        shouldTimeOut[logicLed-1] = state;
+}
+
+void LedLcdManager::setupLcdI2c(int8_t i2cAddress, uint8_t columns, uint8_t rows) {
+    lcd = i2cAddress >= 0 ? new LiquidCrystal_I2C((uint8_t)i2cAddress, columns, rows) : NULL;
+    if (lcd) {
+        lcdRows = rows;
+        lcdColumns = columns;
+        lcd->init();
+    }
 }
 
 void LedLcdManager::updateTurnOffTime() {
     turnOffTime = millis() + blinkTime;
 }
 
-void LedLcdManager::selfTest(const String& text) {
-    lcdPrint(text, true);
+void LedLcdManager::selfTest(const char *text) {
+    lcdPrint(text);
     for (led_t i = 1; i <= maxLeds; i++)
         setLogicLed(i, on);
     delay(defaultBlinkTime);
@@ -101,29 +132,36 @@ void LedLcdManager::disableTurnOffTime() {
     turnOffTime = (unsigned long) -1;
 }
 
-
-
-
-void LedLcdManager::lcdPrint(String const& str, boolean clear, int x, int y) {
+void LedLcdManager::lcdPrint(const char *str, boolean clear, int x, int y) {
     if (!lcd)
         return;
 
     int row = (y < 0 && clear) ? 0 : y;
-    int column = x;
+    int column = x < 0 ? 0 : x;
+    if (row > (int) lcdRows - 1 || column > (int) lcdColumns - 1) // outside of display
+        return;
+
     if (clear)
         lcd->clear();
-    lcd->display();
-    lcd->backlight();
 
-    Tokenizer tokenizer(str);
+    boolean didPrint = false;
+    String string(str);
+    Tokenizer tokenizer(string);
     while (true) {
         String line = tokenizer.getLine();
         if (line.length() == 0)
             break;
-        if (row >= 0)
-            lcd->setCursor(column, row++);
-        column = 0;
-        lcd->print(line);
+        if (clear || y >= 0) {
+            lcd->setCursor(column, row);
+            row++;
+            column = 0;
+        }
+        lcd->print(line.c_str());
+        didPrint = true;
+    }
+    if (didPrint) {
+        lcd->display();
+        lcd->backlight();
     }
     updateTurnOffTime();
 }

@@ -518,7 +518,7 @@ void setup() {
 
 // Process one command.
 
-boolean work(Stream& stream) {
+boolean readProcessOneCommand(Stream& stream) {
 #ifdef ETHERNET_SESSION
     boolean quit = false;
 #endif
@@ -911,7 +911,7 @@ void loop() {
 
     //while (client.read() != -1)
     //    checkTurnoff();
-    while (work(client) && client.connected())
+    while (readProcessOneCommand(client) && client.connected())
         ;
 #ifdef LCD
     lcdPrint(F("Connection closed!"), true, 0, 0);

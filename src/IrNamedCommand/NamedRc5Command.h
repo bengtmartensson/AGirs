@@ -11,15 +11,11 @@ public:
         F = F_;
     };
 
-    NamedRc5Command(const String& name, uint8_t D_, uint8_t F_) : IrNamedCommand(name), D(D_) {
-        F = F_;
-    };
-
     virtual ~NamedRc5Command() {
     };
 
     const IrSignal& getIrSignal() const {
-        return new Rc5Renderer(D, F);
+        return *(new Rc5Renderer(D, F));
     };
 private:
     // NOTE: There is no T here, but there is a (persistent, static) T in Rc5Render.

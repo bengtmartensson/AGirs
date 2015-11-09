@@ -19,7 +19,7 @@
 #endif
 
 #ifdef RECEIVE
-#define IRRECEIVER_PIN 5
+#define IRRECEIVER_1_PIN 5
 #endif
 #ifdef RECEIVER_2
 #define IRRECEIVER_2_PIN 12

@@ -53,6 +53,7 @@ this program. If not, see http://www.gnu.org/licenses/.
 #include <lcd_0x27_16_2.h>
 #endif
 
+#include <defineMissingStuff.h>
 #include <GirsUtils.h>
 
 static const long serialBaud = 115200L;
@@ -77,10 +78,6 @@ Stream& stream = Serial;
 Stream stream(std::cout);
 #endif
 
-static led_t decode2logicalLed(MultiDecoder::Type type) {
-    return (led_t) ((int) type - 1);
-}
-
 // Read and process one signal (or timeout).
 void loop() {
     irReceiver->enable();
@@ -92,20 +89,20 @@ void loop() {
 #ifdef LCD
     if (multiDecoder.getType() > MultiDecoder::noise) {
         LedLcdManager::lcdPrint(multiDecoder.getType() == MultiDecoder::nec_ditto
-                ? F(".") : multiDecoder.toString(),
+                ? F(".") : multiDecoder.getDecode(),
                 multiDecoder.getType() != MultiDecoder::nec_ditto);
         if (multiDecoder.getType() == MultiDecoder::nec)
             LedLcdManager::lcdSetCursor(0, 1); // prepare for dittos
     }
 #endif
-    LedLcdManager::setLogicLed(decode2logicalLed(multiDecoder.getType()), LedLcdManager::blink);
-    stream.println(multiDecoder.toString());
+    LedLcdManager::setLogicLed(GirsUtils::decode2logicalLed(multiDecoder.getType()), LedLcdManager::blink);
+    stream.println(multiDecoder.getDecode());
     irReceiver->disable();
 }
 
 void setup() {
-    setupReceivers();
-    setupLeds();
+    GirsUtils::setupReceivers();
+    GirsUtils::setupLeds();
     LedLcdManager::setup(LCD_I2C_ADDRESS, LCD_WIDTH, LCD_HEIGHT,
             (const pin_t[]) {SIGNAL_LED_1, SIGNAL_LED_2, SIGNAL_LED_3, SIGNAL_LED_4,
                     SIGNAL_LED_5, SIGNAL_LED_6, SIGNAL_LED_7, SIGNAL_LED_8 });

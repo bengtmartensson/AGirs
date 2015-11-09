@@ -12,7 +12,7 @@ INCLUDES=-I. -I$(ARDUINO_LIBS)/Infrared -I../LcdI2C-sim
 VPATH=tests:../LcdI2C-sim
 
 OBJS=\
-Tokenizer.o LedLcdManager.o LiquidCrystal_I2C.o
+Tokenizer.o LedLcdManager.o LiquidCrystal_I2C.o GirsUtils.o
 
 libGirsLib.a: $(OBJS)
 	$(AR) rs $@ $(OBJS)

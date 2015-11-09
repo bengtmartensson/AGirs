@@ -4,18 +4,21 @@
 #include <InfraredTypes.h>
 #include <limits.h>
 
+#ifndef ARDUINO
+#define String std::string
+#endif
+
 class Tokenizer {
 private:
     static const int invalidIndex = -1;
 
     int index; // signed since invalidIndex is possible
-    String payload;
-
+    const String& payload;
     void trim();
 
 public:
-    Tokenizer(const String& str);
-    Tokenizer(const char *str);
+    Tokenizer(const String &str);
+    //Tokenizer(const char *str);
     virtual ~Tokenizer();
 
     String getToken();

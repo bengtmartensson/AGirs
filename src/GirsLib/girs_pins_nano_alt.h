@@ -21,7 +21,7 @@
 #endif
 
 #ifdef RECEIVE
-#define IRRECEIVER_PIN 12
+#define IRRECEIVER_1_PIN 12
 #endif
 
 #ifdef TRANSMIT

@@ -1,11 +1,12 @@
-// Configuration for Arduino Mega2560
+// Dummy pin Configuration
 
-#ifndef GIRS_PINS_MEGA2560_H
-#define GIRS_PINS_MEGA2560_H
+#ifndef GIRS_PINS_DUMMY
+#define GIRS_PINS_DUMMY
 
-#ifndef ARDUINO_AVR_MEGA2560
-#error This file is for AVR_MEGA2560 only
+#ifdef ARDUINO
+#error This file is not for flashin on Arduino
 #endif
+
 #ifdef LED
 #define SIGNAL_LED_1     LED_BUILTIN // 13
 #define SIGNAL_LED_2     A1
@@ -25,7 +26,7 @@
 #if defined(CAPTURE)
 // capture pin (ICP) 49
 #define IRSENSOR_1_PIN 49
-//#ifdef IRSENSOR_1_PIN_PULLUP
+//#ifdef IRSENSOR_PIN_PULLUP
 // not presently implemented
 #define IRSENSOR_2_PIN 48
 #define IRSENSOR_2_PIN_PULLUP
@@ -48,4 +49,4 @@
 #define NON_MOD_PIN 3
 #endif
 
-#endif // ! GIRS_PINS_MEGA2560_H
+#endif // ! GIRS_PINS_DUMMY

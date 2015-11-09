@@ -1,4 +1,5 @@
-// Configuration for Arduino Mega2560
+// Configuration for Arduino Mega2560, a custom "half-shield", designed
+// to fit on a Mega2560, already having an Ethernet shield attached.
 
 #ifndef GIRS_PINS_MEGA2560_H
 #define GIRS_PINS_MEGA2560_H

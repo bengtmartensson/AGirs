@@ -27,7 +27,6 @@
 #endif
 
 #ifdef RECEIVE
-//#define IRRECEIVER_PIN 5
 #define IRRECEIVER_1_PIN 5
 //#define IRRECEIVER_1_PIN_PULLUP
 #define IRRECEIVER_2_PIN 11

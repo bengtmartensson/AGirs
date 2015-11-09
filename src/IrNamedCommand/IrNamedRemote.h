@@ -14,13 +14,9 @@ public:
     virtual ~IrNamedRemote() {
     };
 
-    IrNamedRemote(const char* name_, const IrNamedCommand** commands_, unsigned int length_)
+    IrNamedRemote(const char* name_, const IrNamedCommand* const * commands_, unsigned int length_)
     : name(name_), commands(commands_), noCommands(length_) {
     };
-
-    IrNamedRemote(const String& name_, const IrNamedCommand** commands_, unsigned int length_)
-    : name(name_.c_str()), commands(commands_), noCommands(length_) {
-    }
 
     const char* getName() const {
         return name;
@@ -29,16 +25,9 @@ public:
     /** Returns the IrNamedCommand with matching name, or NULL if not found. */
     const IrNamedCommand *getIrNamedCommand(const char *name) const;
 
-    /** Returns the IrNamedCommand with matching name, or NULL if not found. */
-    const IrNamedCommand *getIrNamedCommand(const String& name_) const {
-        return getIrNamedCommand(name_.c_str());
-    }
-
-    const IrNamedCommand **getAllCommands() const {
+    const IrNamedCommand * const *getAllCommands() const {
         return commands;
     }
-
-    //const IrNamedCommand** getIrNamedCommands() const { return commands; };
 
     unsigned int getNoCommands() const {
         return noCommands;
@@ -46,7 +35,7 @@ public:
 
 private:
     const char* name;
-    const IrNamedCommand **commands;
+    const IrNamedCommand * const *commands;
     unsigned int noCommands;
 };
 

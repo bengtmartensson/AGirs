@@ -84,6 +84,11 @@ public:
 	 */
 	void begin();
 
+        /**
+	 * Set the LCD display in the correct begin state, must be called before anything else is done.
+	 */
+	void init();
+
 	 /**
 	  * Remove all the characters currently shown. Next print/write operation will start
 	  * from the first position on LCD display.
@@ -171,7 +176,7 @@ private:
 
 #ifndef ARDUINO
 public:
-        void print(const String& str);
+        void print(const char *str);
 #endif
 };
 

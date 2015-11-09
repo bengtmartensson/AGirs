@@ -37,11 +37,11 @@ this program. If not, see http://www.gnu.org/licenses/.
 #include <IrWidgetAggregating.h>
 #endif
 
-#include <LedFuncs.inc> // Must come after lcd
+#include <LedLcdManager.h> // Must come after lcd
 
 #ifdef LED
 #ifdef TRANSMITLED
-static LED_PARAMETER_CONST pin_t transmitled = TRANSMITLED;
+static const pin_t transmitled = TRANSMITLED;
 #endif
 
 #ifdef RECEIVELED
@@ -49,23 +49,23 @@ static LED_PARAMETER_CONST pin_t receiveled = RECEIVELED;
 #endif
 
 #ifdef CAPTURELED
-static LED_PARAMETER_CONST pin_t captureled = CAPTURELED;
+static const pin_t captureled = CAPTURELED;
 #endif
 
 #ifdef COMMANDLED
-static LED_PARAMETER_CONST pin_t commandled = COMMANDLED;
+static const pin_t commandled = COMMANDLED;
 #endif
 #endif // LED
 
 static const pin_t receiverNo = 1;
 
-static PARAMETER_CONST unsigned long beginTimeout = DEFAULT_BEGINTIMEOUT; // milliseconds
+static const unsigned long beginTimeout = DEFAULT_BEGINTIMEOUT; // milliseconds
 #if defined(RECEIVE) || defined(CAPTURE)
-static PARAMETER_CONST unsigned long endingTimeout = DEFAULT_ENDINGTIMEOUT; // milliseconds
+static const unsigned long endingTimeout = DEFAULT_ENDINGTIMEOUT; // milliseconds
 #endif
 
 #if defined(RECEIVE) | defined(CAPTURE)
-static PARAMETER_CONST uint16_t captureSize = DEFAULT_CAPTURESIZE;
+static const uint16_t captureSize = DEFAULT_CAPTURESIZE;
 #endif
 
 #define stream STREAM
@@ -76,7 +76,7 @@ void sendIrSignal(uint16_t noSends, frequency_t frequency,
         uint16_t introLength, uint16_t repeatLength, uint16_t endingLength,
         const microseconds_t intro[], const microseconds_t repeat[], const microseconds_t ending[]) {
 #ifdef TRANSMITLED
-    setLogicLed(transmitled, HIGH);
+    LedLcdManager::setLogicLed(transmitled, LedLcdManager::on);
 #endif
     IrSender *irSender =
 #ifdef NON_MOD

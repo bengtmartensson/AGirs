@@ -10,9 +10,6 @@ public:
     IrNamedCommand(const char* name_) : name(name_) {
     };
 
-    IrNamedCommand(const String& name_) : name(name_.c_str()) {
-    };
-
     IrNamedCommand(const IrNamedCommand& orig) : name(orig.name) {
     };
 

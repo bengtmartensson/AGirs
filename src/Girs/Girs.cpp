@@ -16,11 +16,8 @@ this program. If not, see http://www.gnu.org/licenses/.
 */
 
 #include "config.h"
-#include <Arduino.h>
 #include "LedLcdManager.h"
-#include <Tokenizer.h>
 #include <GirsUtils.h>
-#include <string.h>
 #ifdef ARDUINO
 #include <avr/pgmspace.h>
 #else
@@ -29,7 +26,7 @@ this program. If not, see http://www.gnu.org/licenses/.
 
 // Conditional includes
 #if defined(ETHERNET) & !defined(ARDUINO)
-//#error not supported
+#error not supported
 #endif
 
 #ifdef ETHERNET
@@ -173,17 +170,11 @@ String ip2string(IPAddress ip) {
 boolean reset = false;
 #endif
 
-#ifdef ARDUINO
-Stream& stream = Serial;
-#else
-Stream stream(std::cout);
-#endif
-
 #define modulesSupported EXPAND_AND_QUOTE(Base TRANSMIT_NAME CAPTURE_NAME RENDERER_NAME RECEIVE_NAME DECODER_NAME LED_NAME LCD_NAME PARAMETERS_NAME NAMED_COMMANDS_NAME )
 #ifndef PROGNAME
 #define PROGNAME "AGirs"
 #endif
-#define VERSION "2015-11-17"
+#define VERSION "2015-11-23"
 #define okString "OK"
 #define errorString "ERROR"
 #define timeoutString "."
@@ -298,7 +289,7 @@ boolean receive(Stream& stream) {
 boolean capture(Stream& stream) {
     IrWidget *irWidget = IrWidgetAggregating::newIrWidgetAggregating(captureSize);
     if (irWidget == NULL)
-        stream.println(F("This cannot happen"));//    irWidget = IrWidgetAggregating::getInstance();
+        stream.println(F("This cannot happen"));
     irWidget->setEndingTimeout(captureEndingTimeout);
     irWidget->setBeginningTimeout(beginTimeout);
     irWidget->reset();
@@ -316,7 +307,7 @@ boolean capture(Stream& stream) {
 #ifdef CAPTURELED
     LedLcdManager::setLogicLed(captureled, LedLcdManager::off);
 #endif
-    if (irWidget->isReady()) {
+    if (!irWidget->isEmpty()) {
         // Trying to decode the capture does not make sense,
         // that is what "receive" is for.
         irWidget->dump(stream);
@@ -415,7 +406,7 @@ void setup() {
     LedLcdManager::lcdPrint(F(",SerialDbg"), false);
 #endif
 #else // ! ETHERNET
-    LedLcdManager::lcdPrint("Serial", false, 0, 2); // FIXME
+    LedLcdManager::lcdPrint(F("Serial"), false, 0, 2);
 #endif // ! ETHERNET
 #endif // LCD
 
@@ -425,10 +416,6 @@ void setup() {
     pinMode(SDCARD_ON_ETHERSHIELD_PIN, OUTPUT);
     digitalWrite(SDCARD_ON_ETHERSHIELD_PIN, LOW);
 #endif
-#ifdef ARDUINO_AVR_MEGA2560
-    //pinMode(53, OUTPUT);
-    //digitalWrite(53, LOW);
-#endif
     byte mac[] = { MACADDRESS };
 #ifdef DHCP
     Ethernet.begin(mac);
@@ -436,7 +423,8 @@ void setup() {
     Ethernet.begin(mac, IPAddress(IPADDRESS), IPAddress(DNSSERVER), IPAddress(GATEWAY), IPAddress(SUBNETMASK));
 #endif // !DHCP
 
-    LedLcdManager::lcdPrint(ip2string(Ethernet.localIP()), false, 0, 3);
+    String ipstring = ip2string(Ethernet.localIP());
+    LedLcdManager::lcdPrint(ipstring, false, 0, 3);
 
 #ifdef BEACON
     Beacon::setup(PROGNAME, "DE-AD-BE-EF-FE-ED", "Utility", "www.harctoolbox.org",
@@ -552,7 +540,8 @@ boolean processCommand(const String& line, Stream& stream) {
 
 #ifdef LCD
         if (isPrefix(cmd, F("lcd"))) { //LCD
-        LedLcdManager::lcdPrint(tokenizer.getRest().c_str());
+        String rest = tokenizer.getRest();
+        LedLcdManager::lcdPrint(rest);
         stream.println(F(okString));
         } else
 #endif // LCD
@@ -771,7 +760,6 @@ boolean processCommand(const String& line, Stream& stream) {
 
 boolean readProcessOneCommand(Stream& stream) {
     String line = readCommand(stream);
-    //stream.println(">>" + line + "<<");
 #ifdef SERIAL_DEBUG
     Serial.println("Command: " + line);
 #endif
@@ -811,9 +799,10 @@ void loop() {
         Serial.print(", port ");
         Serial.println(udp.remotePort());
 #endif
-        LedLcdManager::lcdPrint("UDP: " + ip2string(remote), true, 0, 0);
+        LedLcdManager::lcdPrint("UDP: " + ip2string(remote), true, 0, 0); // TODO: #ifdef...
         LedLcdManager::lcdPrint("@" + String(udp.remotePort(), DEC), false, 0, 1);
-        LedLcdManager::lcdPrint(String(char(udp.peek())), false, 0, 3);
+        String peek(char(udp.peek()));
+        LedLcdManager::lcdPrint(peek, false, 0, 2);
 
         udp.beginPacket(udp.remoteIP(), udp.remotePort());
         readProcessOneCommand(udp);
@@ -841,8 +830,7 @@ void loop() {
     while (client.read() != -1)
         LedLcdManager::checkTurnoff();
 #ifdef SESSION
-    while
-        (readProcessOneTcpCommand(client))
+    while (readProcessOneTcpCommand(client))
         ;
 #else
     readProcessOneTcpCommand(client);
@@ -879,8 +867,13 @@ void loop() {
 
 #endif // !USEUDP
 #else // ! ETHERNET
-    readProcessOneCommand(stream);
 
+#ifdef ARDUINO
+    Stream& stream = Serial;
+ #else
+    Stream stream(std::cout);
+#endif
+   readProcessOneCommand(stream);
 #endif // ! ETHERNET
 
 #ifdef RESET

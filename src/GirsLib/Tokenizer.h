@@ -4,10 +4,6 @@
 #include <InfraredTypes.h>
 #include <limits.h>
 
-#ifndef ARDUINO
-#define String std::string
-#endif
-
 class Tokenizer {
 private:
     static const int invalidIndex = -1;

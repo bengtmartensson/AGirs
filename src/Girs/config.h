@@ -4,7 +4,7 @@
 #define CONFIG_H
 
 // Define for IrScrutinizer optimized version
-//#define GIRSLITE
+#define GIRSLITE
 
 // GirsLitePlus is LCD and NON_MOD added tp GirsLite.
 //#define GIRSLITEPLUS
@@ -21,7 +21,7 @@
 #define PROGNAME "GirsLite"
 #define TRANSMIT
 #define CAPTURE
-//#define RECEIVE
+#define RECEIVE
 #define LED
 //#define FREEMEM
 
@@ -151,7 +151,7 @@
 #define DHCP // Consumes rather much memory
 
 // Invoke the AMX style beacon, as per https://github.com/bengtmartensson/ABeacon
-#define BEACON
+//#define BEACON
 
 #endif // ETHERNET
 
@@ -167,9 +167,9 @@
 #endif
 #elif defined(ARDUINO_AVR_NANO) // ! ARDUINO_AVR_MEGA2560
 
-//#include <girs_pins_nano.h>
+#include <girs_pins_nano.h>
 //#include <girs_pins_nano_lcd.h>
-#include <girs_pins_nano_shield.h>
+//#include <girs_pins_nano_shield.h>
 
 #elif defined(ARDUINO)
 

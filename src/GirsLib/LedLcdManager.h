@@ -1,6 +1,7 @@
 #ifndef LEDLCDMANAGER_H
 #define	LEDLCDMANAGER_H
 
+#include <Tokenizer.h>
 #include <InfraredTypes.h>
 #include <IrSender.h>
 #include <LiquidCrystal_I2C.h> //https://github.com/fdebrabander/Arduino-LiquidCrystal-I2C-library
@@ -84,7 +85,18 @@ public:
             pin_t led5 = invalidPin, pin_t led6 = invalidPin,
             pin_t led7 = invalidPin, pin_t led8 = invalidPin);
 
-    void static lcdPrint(const char *str, boolean clear = true, int x = 0, int y = -1);
+    void static lcdPrint(String& string, boolean clear = true, int x = 0, int y = -1);
+    void static lcdPrint(const char *str, boolean clear = true, int x = 0, int y = -1) {
+        String string(str);
+        lcdPrint(string, clear, x, y);
+    };
+#ifdef ARDUINO
+    void static lcdPrint(const __FlashStringHelper *pstr, boolean clear = true, int x = 0, int y = -1) {
+        String string(pstr);
+        lcdPrint(string, clear, x, y);
+    }
+#endif
+
     //void static lcdPrint(const String& str);
 
     //LedLcdManager& getInstance() {

@@ -132,7 +132,7 @@ void LedLcdManager::disableTurnOffTime() {
     turnOffTime = (unsigned long) -1;
 }
 
-void LedLcdManager::lcdPrint(const char *str, boolean clear, int x, int y) {
+void LedLcdManager::lcdPrint(String& string, boolean clear, int x, int y) {
     if (!lcd)
         return;
 
@@ -145,7 +145,6 @@ void LedLcdManager::lcdPrint(const char *str, boolean clear, int x, int y) {
         lcd->clear();
 
     boolean didPrint = false;
-    String string(str);
     Tokenizer tokenizer(string);
     while (true) {
         String line = tokenizer.getLine();

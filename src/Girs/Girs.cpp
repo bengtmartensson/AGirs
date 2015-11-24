@@ -174,7 +174,7 @@ boolean reset = false;
 #ifndef PROGNAME
 #define PROGNAME "AGirs"
 #endif
-#define VERSION "2015-11-23"
+#define VERSION "2015-11-24"
 #define okString "OK"
 #define errorString "ERROR"
 #define timeoutString "."
@@ -232,6 +232,9 @@ void decodeOrDump(IrReader *irReader, Stream& stream) {
 #ifdef DECODELED
     LedLcdManager::setLogicLed(DECODELED(multiDecoder.getType()), LedLcdManager::blink);
 #endif
+#endif
+
+#if defined(DECODER) & ! defined(GIRS4LIRC) // lircd does its own decoding
     switch (multiDecoder.getType()) {
         case MultiDecoder::noise:
             // ignore
@@ -243,7 +246,7 @@ void decodeOrDump(IrReader *irReader, Stream& stream) {
             stream.println(multiDecoder.getDecode()); // also for timeout
             break;
     }
-#else  // !DECODER
+#else  // ! (defined(DECODER) & ! defined(GIRS4LIRC))
     if (irReader->isEmpty())
         stream.println(F(timeoutString));
     else

@@ -4,7 +4,7 @@
 #define CONFIG_H
 
 // Define for IrScrutinizer optimized version
-#define GIRSLITE
+//#define GIRSLITE
 
 // GirsLitePlus is LCD and NON_MOD added tp GirsLite.
 //#define GIRSLITEPLUS
@@ -162,7 +162,6 @@
 #ifdef ETHERNET
 #include <girs_pins_mega2560_rear.h>
 #else
-//#include <girs_pins_mega2560_rear.h>
 #include <girs_pins_mega2560.h>
 #endif
 #elif defined(ARDUINO_AVR_NANO) // ! ARDUINO_AVR_MEGA2560

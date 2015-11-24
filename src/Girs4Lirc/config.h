@@ -3,22 +3,27 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
-// Properties
 // Girs modules to implement, see http://www.harctoolbox.org/Girs.html
+
+// Define for Lirc optimized version
+#define GIRS4LIRC
+
+#define PROGNAME "Girs4Lirc"
 #define TRANSMIT
 
-// Define RECEIVE to us a demodulating receiver (TSOP*).
 #define RECEIVE
+// Use LEDs as debugging LEDs.
+#define LED
+// Use an LCD display
+#define LCD
 
 // Invoke the decoder, independently of Lirc
-//#define DECODER
+#ifdef LCD
+#define DECODER
+#endif
 
 // Presently just dummy, not yet implemented
-//#define TRANSMITTERS
-
-// Use LEDs as debugging LEDs.
-// Note: different semantic from Girs, where it means a command is enabled.
-#define LED
+#define TRANSMITTERS
 
 #ifdef LED
 // Light this led when transmission is taking place
@@ -40,11 +45,8 @@
 
 #endif // LED
 
-// Use an LCD display
-//#define LCD_I2C
-
 // If LCD support desired, include appropriate hardware description
-#ifdef LCD_I2C
+#ifdef LCD
 #ifdef ARDUINO_AVR_MEGA2560
 #include <lcd_0x3F_20_4.h>
 #else
@@ -62,17 +64,19 @@
 // Hardware configuration
 
 // Include one file describing the pin configuration
-//#include <girs_pins_nano_shield.h>
+#ifdef ARDUINO_AVR_NANO
+#include <girs_pins_nano_shield.h>
 //#include <girs_pins_nano.h>
+#else
 #include <girs_pins.h> // Generic
-
+#endif
 
 // These are really not defaults, they are the non-changeable values.
 #define DEFAULT_BEGINTIMEOUT 10000UL // milliseconds
 #ifdef DECODER
-#define DEFAULT_ENDINGTIMEOUT 30L // separates NEC1 intro from its repeats
+#define DEFAULT_RECEIVE_ENDINGTIMEOUT 30L // separates NEC1 intro from its repeats
 #else
-#define DEFAULT_ENDINGTIMEOUT 65L // milliseconds, presently must be <= 65.
+#define DEFAULT_RECEIVE_ENDINGTIMEOUT 65L // milliseconds, presently must be <= 65.
 #endif
 
 // Size of capture and receive arrays
@@ -86,8 +90,5 @@
 // This quantity is added to all gaps and subtracted from all marks.
 #define IRRECEIVER_MARK_EXCESS 50U
 #endif
-
-// Stream to read and write, must be a (sub)class of Stream
-#define STREAM Serial
 
 #endif // ! CONFIG_H

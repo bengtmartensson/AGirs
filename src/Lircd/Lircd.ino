@@ -12,10 +12,6 @@
 
 #ifdef LCD_I2C
 #include <LiquidCrystal_I2C.h>
-#include <Wire.h>
-#include <SPI.h>
 #endif
 
-#ifdef LCD_4BIT
-#include <LiquidCrystal.h>
-#endif
+#include <IrNamedCommand.h>

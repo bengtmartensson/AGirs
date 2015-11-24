@@ -62,6 +62,7 @@
 
 // LCD display with I2C connection. Defines a command "lcd".
 #define LCD_I2C
+#define LCD
 
 #define DEBUG_CMD
 
@@ -108,10 +109,6 @@
 #else
 #include <lcd_0x3F_20_4.h>
 #endif
-#endif
-
-#ifdef LCD_4BIT
-#include <lcd_4bit_16_2.h>
 #endif
 
 #ifdef ETHERNET

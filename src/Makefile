@@ -9,3 +9,4 @@ default:
 
 clean:
 	$(foreach subdir, $(SUBDIRS), $(MAKE) -C $(subdir) clean;)
+	$(foreach subdir, $(SUBDIRS), rm -f $(subdir)/*.hex;)

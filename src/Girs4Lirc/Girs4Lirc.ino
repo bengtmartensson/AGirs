@@ -4,10 +4,3 @@
 
 #include "config.h"
 
-#include <GirsMacros.h>
-
-#ifdef LCD_I2C
-#include <LiquidCrystal_I2C.h>
-#include <Wire.h>
-#include <SPI.h>
-#endif

@@ -94,7 +94,7 @@ Exactly which commands are
 available depends on the configuration. In all cases, the
 <code>version</code> and the <code>modules</code> commands are
 available. If <code>receive</code> is implemented, just type
-"<code>r</code>" (without the 
+"<code>r</code>" (without the
 quotes), followed by return, and fire a suitable IR signal at the
 receiver. The raw capture will be output to the terminal program. Using
 the clipboard, it can be pasted to IrScrutinizer, and analyzed. Of course, also
@@ -102,12 +102,11 @@ the other commands can be tested in this way.
 
 ## Dependencies
 
-* Ethernet (if enabling the ETHERNET configure option). Contacted in the Arduino IDE.
-* SPI (if enabling the ETHERNET or LCD_I2C configure option). Contacted in the Arduino IDE.
-* Wire (if enabling the LCD_I2C configure option). Contacted in the Arduino IDE.
-* LiquidCrystal (if enabling the LCD_4BIT option, i.e. connecting an
-LCD display directly). Contained in the Arduino IDE.
-* [Arduino-LiquidCrystal-I2C](https://github.com/fdebrabander/Arduino-LiquidCrystal-I2C-library.git)
+* [Infrared4Arduino](https://github.com/bengtmartensson/Infrared4Arduino) by myself.
+* Ethernet (if enabling the ETHERNET configure option). Contained in the Arduino IDE.
+* SPI (if enabling the ETHERNET or LCD_I2C configure option). Contained in the Arduino IDE.
+* Wire (if enabling the LCD_I2C configure option). Contained in the Arduino IDE.
+* [Arduino-LiquidCrystal-I2C](https://github.com/marcoschwartz/LiquidCrystal_I2C) version 1.1.2.
 Needed if defining LCD_I2C, i.e. connecting an LCD display with an I2C interface card.
 
 ## Questions and answers

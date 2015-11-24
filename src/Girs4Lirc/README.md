@@ -1,9 +1,10 @@
 # Girs4Lirc
 
 This is a version of AGirs, optimized for usage with Lirc, using the
-driver "girs". This can be checked out with the command
+driver "girs". It presently resides in the Lirc Git source repository,
+and will be included in the upcoming release 0.9.4. This can be checked out with the command
 
-<pre>git clone -b girs-driver https://bengtmartensson@git.code.sf.net/u/bengtmartensson/lirc</pre>
+<pre>git clone git://git.code.sf.net/p/lirc/git lirc-git</pre>
 
 The documentation file <code>girs_driver.html</code> therein contains the current documentation. Therefore,
 

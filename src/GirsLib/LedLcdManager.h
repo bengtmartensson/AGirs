@@ -128,6 +128,8 @@ public:
 
     static void selfTest(const char *text);
 
+    static void selfTest(const __FlashStringHelper *text);
+
     static boolean setPhysicalLed(led_t physicalLed, LedState state);
 
     static boolean setLogicLed(led_t logicLed, LedState state);

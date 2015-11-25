@@ -3,6 +3,9 @@
 
 #include <LedLcdManager.h> // for led_t
 #include <MultiDecoder.h>  // for MultiDecoder::Type
+#ifdef ARDUINO
+#include <IPAddress.h>
+#endif
 #include "defineMissingStuff.h"
 
 class GirsUtils {
@@ -23,6 +26,10 @@ public:
         stream.print("=");
         stream.println(value);
     }
+
+#ifdef ARDUINO
+    static String ip2string(IPAddress ip);
+#endif
 
     static pin_t receiverPin(uint8_t receiverNo UNUSED) {
 

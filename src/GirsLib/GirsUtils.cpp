@@ -29,3 +29,15 @@ void GirsUtils::reset() {
     std::cout << "Resetting, but not really :-)" << std::endl;
 #endif
 }
+
+#ifdef ARDUINO
+String GirsUtils::ip2string(IPAddress ip) {
+    String result;
+    for (int i = 0; i < 4; i++) {
+        result.concat(String(ip[i], DEC));
+        if (i < 3)
+            result.concat(".");
+    }
+    return result;
+}
+#endif

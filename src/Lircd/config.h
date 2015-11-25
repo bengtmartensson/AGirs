@@ -1,4 +1,4 @@
-// Configuration options
+// Configuration options for Lircd
 
 #ifndef CONFIG_H
 #define CONFIG_H
@@ -7,25 +7,11 @@
 // Girs modules to implement, see http://www.harctoolbox.org/Girs.html
 #define TRANSMIT
 #define RENDERER
-//#define CAPTURE
-//#define RECEIVE
-//#define DECODER
-//#define PARAMETERS
-//#define LISTEN
 #define NAMED_COMMANDS
 
 // Additional modules
 // Support sending signals without modulation
 #define NON_MOD
-
-// Try to decode also captures, normally not sensible
-//#define DECODE_CAPTURES
-
-// Have parameters for transmitled etc.
-//#define CONFIGURABLE_LEDS
-
-// Reset command
-//#define RESET
 
 // Report free memory (for debugging). Command "info".
 #define FREEMEM
@@ -57,16 +43,14 @@
 
 // Other properties
 
-// LCD display with parallel connection, 4 bit mode. Defines a command "lcd".
-//#define LCD_4BIT
-
 // LCD display with I2C connection. Defines a command "lcd".
-#define LCD_I2C
 #define LCD
 
 #define DEBUG_CMD
 
 #define ETHERNET
+
+#define BEACON
 
 #ifdef ETHERNET
 
@@ -103,7 +87,7 @@
 #endif
 
 // If LCD support desired, include appropriate hardware description
-#ifdef LCD_I2C
+#ifdef LCD
 #ifdef ARDUINO_AVR_NANO
 #include <lcd_0x27_16_2.h>
 #else
@@ -131,41 +115,12 @@
 #define PORT       8765
 #endif // ETHERNET
 
-#if defined(ARDUINO_AVR_MEGA2560)
-#define LARGE_RAM
-#endif
-
-// Defaults
-
 // Character that ends the command lines
 #define EOLCHAR '\n'
-
-#define DEFAULT_BEGINTIMEOUT 10000UL // milliseconds
 
 #if !defined(ETHERNET) | defined(SERIAL_DEBUG)
 #define serialBaud 115200
 #define serialTimeout 5000L
 #endif // !defined(ETHERNET) | defined(SERIAL_DEBUG)
-
-#ifdef DECODER
-// If using the decoder, be sure to end a capture before the repeat sequence.
-#define DEFAULT_ENDINGTIMEOUT 30L // milliseconds
-#else
-#define DEFAULT_ENDINGTIMEOUT 100L // milliseconds
-#endif
-
-#ifdef CAPTURE
-// Size of capture and receive arrays
-#ifdef LARGE_RAM
-#define DEFAULT_CAPTURESIZE 500U // must be even
-#else
-#define DEFAULT_CAPTURESIZE 300U // must be even
-#endif
-#endif
-
-#ifdef RECEIVE
-// This quantity is added to all gaps and subtracted from all marks.
-#define IRRECEIVER_MARK_EXCESS 50U
-#endif
 
 #endif // ! CONFIG_H

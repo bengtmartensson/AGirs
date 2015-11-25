@@ -155,15 +155,6 @@ IPAddress peer(PEER_IP);
 #endif
 #endif // !USEUDP
 
-String ip2string(IPAddress ip) {
-    String result;
-    for (int i = 0; i < 4; i++) {
-        result.concat(String(ip[i], DEC));
-        if (i < 3)
-            result.concat(".");
-    }
-    return result;
-}
 #endif // ETHERNET
 
 #ifdef RESET
@@ -426,7 +417,7 @@ void setup() {
     Ethernet.begin(mac, IPAddress(IPADDRESS), IPAddress(DNSSERVER), IPAddress(GATEWAY), IPAddress(SUBNETMASK));
 #endif // !DHCP
 
-    String ipstring = ip2string(Ethernet.localIP());
+    String ipstring = GirsUtils::ip2string(Ethernet.localIP());
     LedLcdManager::lcdPrint(ipstring, false, 0, 3);
 
 #ifdef BEACON

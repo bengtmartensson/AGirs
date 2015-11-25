@@ -111,6 +111,14 @@ void LedLcdManager::selfTest(const char *text) {
     allOff(true);
 }
 
+void LedLcdManager::selfTest(const __FlashStringHelper *text) {
+    lcdPrint(text);
+    for (led_t i = 1; i <= maxLeds; i++)
+        setLogicLed(i, on);
+    delay(defaultBlinkTime);
+    allOff(true);
+}
+
 void LedLcdManager::checkTurnoff() {
     if (millis() > turnOffTime)
         allOff(false);
@@ -150,6 +158,8 @@ void LedLcdManager::lcdPrint(String& string, boolean clear, int x, int y) {
         String line = tokenizer.getLine();
         if (line.length() == 0)
             break;
+        if (line.length() > lcdColumns)
+            line = line.substring(0, lcdColumns);
         if (clear || y >= 0) {
             lcd->setCursor(column, row);
             row++;

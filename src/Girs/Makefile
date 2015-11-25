@@ -1,7 +1,7 @@
 # Makefile for creating stuff on host.
 # To compile for Arduino, use the Arduino IDE
 
-BOARDDEFINES=-D ARDUINO_AVR_NANO
+BOARDDEFINES=
 CXX=g++
 DEBUGFLAGS=-g
 WARNINGFLAGS=-Wall -Werror -Wextra

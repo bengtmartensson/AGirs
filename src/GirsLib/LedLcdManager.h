@@ -128,7 +128,9 @@ public:
 
     static void selfTest(const char *text);
 
+#ifdef ARDUINO
     static void selfTest(const __FlashStringHelper *text);
+#endif
 
     static boolean setPhysicalLed(led_t physicalLed, LedState state);
 

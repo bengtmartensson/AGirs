@@ -19,8 +19,9 @@ public:
     virtual ~NamedNec1Command() {
     };
 
-    const IrSignal& getIrSignal() const {
-        return *(new Nec1Renderer(D, S, F));
+    IrSignal *getIrSignal() const {
+        Nec1Renderer nec1Renderer(D, S, F);
+        return nec1Renderer.render().clone();
     };
 private:
     uint8_t D;

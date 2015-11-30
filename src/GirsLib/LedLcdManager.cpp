@@ -111,6 +111,7 @@ void LedLcdManager::selfTest(const char *text) {
     allOff(true);
 }
 
+#ifdef ARDUINO
 void LedLcdManager::selfTest(const __FlashStringHelper *text) {
     lcdPrint(text);
     for (led_t i = 1; i <= maxLeds; i++)
@@ -118,6 +119,7 @@ void LedLcdManager::selfTest(const __FlashStringHelper *text) {
     delay(defaultBlinkTime);
     allOff(true);
 }
+#endif
 
 void LedLcdManager::checkTurnoff() {
     if (millis() > turnOffTime)

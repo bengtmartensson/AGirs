@@ -165,7 +165,7 @@ boolean reset = false;
 #ifndef PROGNAME
 #define PROGNAME "AGirs"
 #endif
-#define VERSION "2015-11-24"
+#define VERSION "2015-11-30"
 #define okString "OK"
 #define errorString "ERROR"
 #define timeoutString "."
@@ -329,7 +329,9 @@ boolean sendNamedCommand(Stream& stream, String& remoteName, String& commandName
         stream.println(F("No such command"));
         return false;
     }
-    sendIrSignal(*command, noSends); // waits, blinks
+    IrSignal *irSignal = command->getIrSignal();
+    sendIrSignal(*irSignal, noSends); // waits, blinks
+    delete irSignal;
     return true;
 }
 
@@ -454,6 +456,29 @@ void setup() {
 #endif // defined(ARDUINO) & !defined(ETHERNET) | defined(SERIAL_DEBUG)
 }
 
+#ifdef INFO
+void info(Stream& stream) {
+    stream.print("Board: ");
+#ifdef ARDUINO_AVR_MEGA2560
+    stream.print(F("Arduino Mega2560"));
+#elif defined(ARDUINO_AVR_NANO)
+    stream.print(F("Arduino Nano"));
+#elif defined(ARDUINO_AVR_LEONARDO)
+    stream.print(F("Arduino Leonardo"));
+#elif defined(ARDUINO_AVR_MINI)
+    stream.print(F("Arduino Leonardo"));
+#elif defined(ARDUINO_AVR_UNO)
+    stream.print(F("Arduino Uno"));
+#else
+    stream.print(F("Unknown"));
+#endif
+
+    stream.print(F(", CPU frequency: "  EXPAND_AND_QUOTE(F_CPU)));
+
+    stream.println();
+}
+#endif
+
 boolean isPrefix(const String& cmd, const char *string) {
     return strncmp(cmd.c_str(), string, cmd.length()) == 0;
 }
@@ -556,6 +581,12 @@ boolean processCommand(const String& line, Stream& stream) {
 #ifdef FREEMEM
         if (isPrefix(cmd, F("memory"))) {
         stream.println(GirsUtils::freeRam());
+    } else
+#endif
+
+#ifdef INFO
+        if (isPrefix(cmd, F("info"))) {
+        info(stream);
     } else
 #endif
 
@@ -725,7 +756,7 @@ boolean processCommand(const String& line, Stream& stream) {
             stream.println(protocol);
         }
         if (renderer != NULL) {
-            sendIrSignal(*renderer, noSends); // waits, blinks
+            sendIrSignal(renderer->render(), noSends); // waits, blinks
             delete renderer;
         }
         stream.println(okString);

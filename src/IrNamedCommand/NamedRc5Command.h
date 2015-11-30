@@ -14,8 +14,10 @@ public:
     virtual ~NamedRc5Command() {
     };
 
-    const IrSignal& getIrSignal() const {
-        return *(new Rc5Renderer(D, F));
+    IrSignal *getIrSignal() const {
+        Rc5Renderer rc5Renderer(D, F);
+        IrSignal irSignal = rc5Renderer.render();
+        return irSignal.clone();
     };
 private:
     // NOTE: There is no T here, but there is a (persistent, static) T in Rc5Render.

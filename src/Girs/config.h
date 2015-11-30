@@ -96,8 +96,11 @@
 // Reset command, use at own risk
 #define RESET
 
-// Report free memory (for debugging). Command "info".
+// Report free memory (for debugging). Command "memory".
 #define FREEMEM
+
+// Command "info"
+#define INFO
 
 // Light this led when transmission is taking place
 #define TRANSMITLED 8

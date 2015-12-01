@@ -84,6 +84,10 @@ this program. If not, see http://www.gnu.org/licenses/.
 #include <Beacon.h>
 #endif
 
+#ifdef PRONTO
+#include <Pronto.h>
+#endif
+
 #ifdef ARDUINO
 #else
 #include <string.h> // for strlen
@@ -165,14 +169,16 @@ boolean reset = false;
 #ifndef PROGNAME
 #define PROGNAME "AGirs"
 #endif
-#define VERSION "2015-11-30"
+#define VERSION "2015-12-01"
 #define okString "OK"
 #define errorString "ERROR"
 #define timeoutString "."
 
 #ifdef TRANSMIT
 
-void sendIrSignal(const IrSignal &irSignal, unsigned int noSends=1) {
+boolean sendIrSignal(const IrSignal &irSignal, unsigned int noSends=1) {
+    if (noSends == 0)
+        return false;
 #ifdef TRANSMITLED
     LedLcdManager::setLogicLed(transmitled, LedLcdManager::on);
 #endif
@@ -182,7 +188,7 @@ void sendIrSignal(const IrSignal &irSignal, unsigned int noSends=1) {
 #endif
             (IrSender*) IrSenderPwm::getInstance(true);
 
-    irSender->sendSignal(irSignal, noSends);
+    irSender->sendIrSignal(irSignal, noSends);
 
 #ifdef NON_MOD
     if (irSignal.getFrequency() == 0)
@@ -194,6 +200,7 @@ void sendIrSignal(const IrSignal &irSignal, unsigned int noSends=1) {
 #ifdef TRANSMITLED
     LedLcdManager::setLogicLed(transmitled, LedLcdManager::off);
 #endif
+    return true;
 }
 
 #endif // TRANSMIT
@@ -329,10 +336,10 @@ boolean sendNamedCommand(Stream& stream, String& remoteName, String& commandName
         stream.println(F("No such command"));
         return false;
     }
-    IrSignal *irSignal = command->getIrSignal();
-    sendIrSignal(*irSignal, noSends); // waits, blinks
+    const IrSignal *irSignal = command->getIrSignal();
+    boolean status = sendIrSignal(*irSignal, noSends); // waits, blinks
     delete irSignal;
-    return true;
+    return status;
 }
 
 void dumpRemote(Stream& stream, String& name) {
@@ -726,40 +733,55 @@ boolean processCommand(const String& line, Stream& stream) {
         for (uint16_t i = 0; i < endingLength; i++)
             ending[i] = tokenizer.getMicroseconds();
         IrSignal irSignal(intro, introLength, repeat, repeatLength, ending, endingLength, frequency);
-        sendIrSignal(irSignal, noSends); // waits
-        stream.println(F(okString));
+        boolean status = sendIrSignal(irSignal, noSends); // waits
+        stream.println(status ? F(okString) : F(errorString));
     } else
 #endif // TRANSMIT
+
+#ifdef PRONTO
+        if (isPrefix(cmd, F("hex"))) { // pronto hex send
+        uint16_t noSends = (uint16_t) tokenizer.getInt();
+        String rest = tokenizer.getRest();
+        IrSignal *irSignal = Pronto::parse(rest.c_str());
+        boolean status;
+        if (irSignal != NULL) {
+            status = sendIrSignal(*irSignal, noSends); // waits
+            delete irSignal;
+        }
+        stream.println(status ? F(okString) : F(errorString));
+    } else
+#endif // PRONTO
 
 #ifdef RENDERER
         if (cmd[0] == 't') { // transmit
         // TODO: handle unparseable data gracefully
         uint16_t noSends = (uint16_t) tokenizer.getInt();
         String protocol = tokenizer.getToken();
-        IrRenderer *renderer = NULL;
+        const IrSignal *irSignal = NULL;
         if (isPrefix(protocol, F("nec1"))) {
             unsigned int D = (unsigned) tokenizer.getInt();
             unsigned int S = (unsigned) tokenizer.getInt();
             unsigned int F = (unsigned) tokenizer.getInt();
-            renderer = (F == Tokenizer::invalid)
-                    ? new Nec1Renderer(D, S)
-                    : new Nec1Renderer(D, S, F);
+            irSignal = (F == Tokenizer::invalid)
+                    ? Nec1Renderer::newIrSignal(D, S)
+                    : Nec1Renderer::newIrSignal(D, S, F);
         } else if (isPrefix(protocol, F("rc5"))) {
             unsigned int D = (unsigned) tokenizer.getInt();
             unsigned int F = (unsigned) tokenizer.getInt();
             unsigned int T = (unsigned) tokenizer.getInt();
-            renderer = (T == Tokenizer::invalid)
-                    ? new Rc5Renderer(D, F)
-                    : new Rc5Renderer(D, F, T);
+            irSignal = (T == Tokenizer::invalid)
+                    ? Rc5Renderer::newIrSignal(D, F)
+                    : Rc5Renderer::newIrSignal(D, F, T);
         } else {
             stream.print(F("no such protocol: "));
             stream.println(protocol);
         }
-        if (renderer != NULL) {
-            sendIrSignal(renderer->render(), noSends); // waits, blinks
-            delete renderer;
+        boolean status = false;
+        if (irSignal != NULL) {
+            status = sendIrSignal(*irSignal, noSends); // waits, blinks
+            delete irSignal;
         }
-        stream.println(okString);
+        stream.println(status ? F(okString) : F(errorString));
     } else
 #endif // RENDERER
 

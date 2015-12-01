@@ -15,21 +15,17 @@ You should have received a copy of the GNU General Public License along with
 this program. If not, see http://www.gnu.org/licenses/.
 */
 
+#include "config.h"
+#include <defineMissingStuff.h>
+#include <GirsUtils.h>
 #include <IrReceiverSampler.h>
-#include <LedLcdManager.h>
-#include <MultiDecoder.h>
-#include <MultiDecoder.h>
-
-#define LED
-#define LCD
-#define RECEIVE
 
 #ifdef ARDUINO
-#include <girs_pins_mega2560.h>
 
 #else // ! ARDUINO
 
 // Define some dummy stuff to be able to compile and test
+#if 0
 #define SIGNAL_LED_1     13
 #define SIGNAL_LED_2     101
 #define SIGNAL_LED_3     102
@@ -46,15 +42,13 @@ this program. If not, see http://www.gnu.org/licenses/.
 #define IRRECEIVER_1_PIN 5
 #define IRRECEIVER_1_GND 6
 #define IRRECEIVER_1_VSS 7
+#endif
 
 #endif // ! ARDUINO
 
-#ifdef LCD
-#include <lcd_0x27_16_2.h>
+#ifdef ETHERNET
+#error ETHERNET not yet supported
 #endif
-
-#include <defineMissingStuff.h>
-#include <GirsUtils.h>
 
 static const long serialBaud = 115200L;
 static const long serialTimeout = 5000L;
@@ -66,7 +60,7 @@ static const microseconds_t markExcess = 50U;
 IrReceiver *irReceiver = NULL;
 
 #define PROGNAME "Listener"
-#define VERSION "2015-10-29"
+#define VERSION "2015-12-01"
 
 #ifdef ARDUINO
 void flushIn(Stream &stream) {
@@ -89,7 +83,7 @@ void loop() {
 #ifdef LCD
     if (multiDecoder.getType() > MultiDecoder::noise) {
         LedLcdManager::lcdPrint(multiDecoder.getType() == MultiDecoder::nec_ditto
-                ? F(".") : multiDecoder.getDecode(),
+                ? "." : multiDecoder.getDecode(),
                 multiDecoder.getType() != MultiDecoder::nec_ditto);
         if (multiDecoder.getType() == MultiDecoder::nec)
             LedLcdManager::lcdSetCursor(0, 1); // prepare for dittos

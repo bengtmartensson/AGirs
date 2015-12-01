@@ -102,7 +102,8 @@ the other commands can be tested in this way.
 
 ## Dependencies
 
-* [Infrared4Arduino](https://github.com/bengtmartensson/Infrared4Arduino) by myself.
+* [Infrared4Arduino](https://github.com/bengtmartensson/Infrared4Arduino) by myself. (In earlier versions
+  of this project, this was integrated.)
 * Ethernet (if enabling the ETHERNET configure option). Contained in the Arduino IDE.
 * SPI (if enabling the ETHERNET or LCD_I2C configure option). Contained in the Arduino IDE.
 * Wire (if enabling the LCD_I2C configure option). Contained in the Arduino IDE.
@@ -121,22 +122,23 @@ this is not universally accepted terminology (yet!).
 
 * What Ethernet modules are supported?
 
-Only cards based on the W5100 chip, like the
+Only cards based on the W5100 chip (and compatible), like the
 [official
 shield](https://www.arduino.cc/en/Main/ArduinoEthernetShield).  There are both cheap clones of the original available, as well as
 smallish W5100-based cards.
 
 * What about "GirsLite"?
 
-"GirsLite" is a predecessor to the present program. As indicated by the
+"GirsLite" was a predecessor to the present program. As indicated by the
 name, it is a minimalist Girs server
 for the Arduino, that implements only the
 [capture](http://www.harctoolbox.org/Girs.html#Capture) and the
 [transmit](http://www.harctoolbox.org/Girs.html#Transmit) modules,
 without all options. This was meant to be used with
 [IrScrutinizer](http://www.harctoolbox.org/IrScrutinizer.html)
-versions 1.1.*. It is essentially equivalent to the present program
-with only the CPP symbols TRANSMIT, CAPTURE, LED, and NON_MOD
+versions 1.1.*. Presently, it is not an independent program, it is just AGirs
+with certain options enabled, namely
+the CPP symbols TRANSMIT, CAPTURE, LED, and (optionally) NON_MOD
 defined. Alternatively, if RECEIVE is defined, but not CAPTURE, the
 program mimics the capture command with a demodulating sensor, for
 usage with IrScrutinizer without a non-demodulating sensor.
@@ -151,8 +153,8 @@ repository, which can be checkout with the command
 
 <pre>git clone git://git.code.sf.net/p/lirc/git lirc-git</pre>
 
-Basically, the program is a stripped-down version of AGirs supporting TRANSMIT,
-NON_MOD, RECEIVE, LED, LCD, DECODE (only to the LCD), TRANSMITTERS
+Like GirsLite, this is not an independent program, but corresponds to a version of AGirs supporting TRANSMIT,
+NON_MOD (optionally), RECEIVE, LED, LCD, DECODE (only to the LCD), TRANSMITTERS
 (only a dummy implementation). Documentation is found with the Lirc
 driver, in the file <code>girs_driver.html</code>.
 

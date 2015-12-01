@@ -19,10 +19,6 @@ this program. If not, see http://www.gnu.org/licenses/.
 #include <LedLcdManager.h>
 #include <GirsUtils.h>
 
-#ifdef RENDERER
-#include <IrRenderer.h>
-#endif
-
 #ifdef ETHERNET
 #include <Ethernet.h>
 #include <IPAddress.h>
@@ -99,7 +95,7 @@ void sendIrSignal(const IrSignal &irSignal, unsigned int noSends=1) {
 #endif
             (IrSender*) IrSenderPwm::getInstance(true);
 
-    irSender->sendSignal(irSignal, noSends);
+    irSender->sendIrSignal(irSignal, noSends);
 
 #ifdef NON_MOD
     if (irSignal.getFrequency() == 0)
@@ -427,21 +423,21 @@ boolean readProcessOneCommand(Stream& stream) {
         // TODO: handle unparseable data gracefully
         int16_t noSends = (int16_t) tokenizer.getInt();
         String protocol = tokenizer.getToken();
-        IrRenderer *renderer = NULL;
+        const IrSignal *renderer = NULL;
         if (protocol == "nec1") {
             unsigned int D = (unsigned) tokenizer.getInt();
             unsigned int S = (unsigned) tokenizer.getInt();
             unsigned int F = (unsigned) tokenizer.getInt();
             renderer = (F == Tokenizer::invalid)
-                    ? new Nec1Renderer(D, S)
-                    : new Nec1Renderer(D, S, F);
+                    ? Nec1Renderer::newIrSignal(D, S)
+                    : Nec1Renderer::newIrSignal(D, S, F);
         } else if (protocol == "rc5") {
             unsigned int D = (unsigned) tokenizer.getInt();
             unsigned int F = (unsigned) tokenizer.getInt();
             unsigned int T = (unsigned) tokenizer.getInt();
             renderer = (T == Tokenizer::invalid)
-                    ? new Rc5Renderer(D, F)
-                    : new Rc5Renderer(D, F, T);
+                    ? Rc5Renderer::newIrSignal(D, F)
+                    : Rc5Renderer::newIrSignal(D, F, T);
         } else {
             stream.print(F("no such protocol: "));
             stream.println(protocol);
@@ -478,8 +474,8 @@ boolean readProcessOneCommand(Stream& stream) {
                 myprintln(stream, 1);
                 myprintln(stream, "unknown command: \"" + commandName + "\"");
             } else {
-                const IrSignal& irSignal = command->getIrSignal();
-                sendIrSignal(irSignal, noSends + 1); // waits, blinks
+                const IrSignal *irSignal = command->getIrSignal();
+                sendIrSignal(*irSignal, noSends + 1); // waits, blinks
                 myprintln(stream, F("SUCCESS"));
             }
         }

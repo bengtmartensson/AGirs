@@ -102,6 +102,9 @@
 // Command "info"
 #define INFO
 
+// Command "hex", sending Pronto hex signals
+#define PRONTO
+
 // Light this led when transmission is taking place
 #define TRANSMITLED 8
 //#define TRANSMITLED 4

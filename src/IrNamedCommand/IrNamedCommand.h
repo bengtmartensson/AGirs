@@ -25,7 +25,7 @@ public:
      * Create an IrSignal.
      * @return new IrSignal.Must be deleted by the user.
      */
-    virtual IrSignal *getIrSignal() const = 0;
+    virtual const IrSignal *getIrSignal() const = 0;
 
     const char* getName() const {
         return name;

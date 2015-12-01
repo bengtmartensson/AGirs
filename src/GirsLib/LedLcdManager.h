@@ -74,8 +74,8 @@ public:
             const led_t logicalLeds[maxLeds] = NULL,
             const boolean shouldTimeOut[maxLeds] = NULL);
 
-    static void setup(int8_t i2cAddress = -1, uint8_t columns = defaultLcdColumns, uint8_t rows = defaultLcdRows,
-            pin_t pled1 = invalidLed, pin_t pled2 = invalidLed,
+    static void setup(int8_t i2cAddress, uint8_t columns, uint8_t rows,
+            pin_t pled1, pin_t pled2 = invalidLed,
             pin_t pled3 = invalidPin, pin_t pled4 = invalidPin,
             pin_t pled5 = invalidPin, pin_t pled6 = invalidPin,
             pin_t pled7 = invalidPin, pin_t pled8 = invalidPin);

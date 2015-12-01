@@ -119,7 +119,7 @@ void loop() {
 
 void setup() {
     LedLcdManager::setup(LCD_I2C_ADDRESS, LCD_WIDTH, LCD_HEIGHT);
-    setupReceivers();
+    GirsUtils::setupReceivers();
     LedLcdManager::lcdPrint(F(PROGNAME));
     LedLcdManager::lcdPrint(F(VERSION), false, 0, 1);
 

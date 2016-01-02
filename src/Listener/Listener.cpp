@@ -15,103 +15,111 @@ You should have received a copy of the GNU General Public License along with
 this program. If not, see http://www.gnu.org/licenses/.
 */
 
-#include <Arduino.h>
 #include "config.h"
-#include <GirsMacros.h>
+#include <defineMissingStuff.h>
+#include <GirsUtils.h>
 #include <IrReceiverSampler.h>
 
+#ifdef ARDUINO
+
+#else // ! ARDUINO
+
+// Define some dummy stuff to be able to compile and test
+#if 0
+#define SIGNAL_LED_1     13
+#define SIGNAL_LED_2     101
+#define SIGNAL_LED_3     102
+#define SIGNAL_LED_4     103
+
+#define SIGNAL_LED_5_GND 22
+#define SIGNAL_LED_5     23
+#define SIGNAL_LED_6_GND 24
+#define SIGNAL_LED_6     25
+#define SIGNAL_LED_7_GND 26
+#define SIGNAL_LED_7     27
+#define SIGNAL_LED_8_GND 28
+#define SIGNAL_LED_8     29
+#define IRRECEIVER_1_PIN 5
+#define IRRECEIVER_1_GND 6
+#define IRRECEIVER_1_VSS 7
+#endif
+
+#endif // ! ARDUINO
+
 #ifdef ETHERNET
-#error Ethernet not supported (yet?)
+#error ETHERNET not yet supported
 #endif
 
-#define serialBaud 115200
-#define serialTimeout 5000L
-
-#ifdef LCD_4BIT
-#include <LiquidCrystal.h>
-#endif
-#ifdef LCD_I2C
-#include <LiquidCrystal_I2C.h>
-#endif
-
-#ifdef DECODER
-#include <MultiDecoder.h>
-#endif
-
-LCD_DEFINE(lcd);
-
-#include <LedFuncs.inc> // Must come after lcd
-#include <LcdFuncs.inc>
-
+static const long serialBaud = 115200L;
+static const long serialTimeout = 5000L;
 static const milliseconds_t beginTimeout = 10000U;
 static const milliseconds_t endingTimeout = 35U;
 static const int16_t captureSize = 200U;
 static const microseconds_t markExcess = 50U;
 
-IrReceiverSampler *irReceiver = NULL;
+IrReceiver *irReceiver = NULL;
 
 #define PROGNAME "Listener"
-#define VERSION "2015-07-15"
+#define VERSION "2015-12-01"
 
+#ifdef ARDUINO
 void flushIn(Stream &stream) {
     while (stream.available())
         stream.read();
 }
-
-#ifdef LED
-
-static void allLedsOff() {
-    for (uint8_t i = 1; i <= MAX_LED; i++)
-        setLogicLed(i, LOW);
-}
+Stream& stream = Serial;
+#else
+Stream stream(std::cout);
 #endif
 
-void receive(Stream& stream) {
+// Read and process one signal (or timeout).
+void loop() {
     irReceiver->enable();
     // Wait until something arrives
     while (!irReceiver->isReady())
-        checkTurnoff();
+        LedLcdManager::checkTurnoff();
 
     MultiDecoder multiDecoder(*irReceiver);
 #ifdef LCD
     if (multiDecoder.getType() > MultiDecoder::noise) {
-        lcdPrint(multiDecoder.getType() == MultiDecoder::nec_ditto
-                ? F(".") : multiDecoder.getDecode(),
+        LedLcdManager::lcdPrint(multiDecoder.getType() == MultiDecoder::nec_ditto
+                ? "." : multiDecoder.getDecode(),
                 multiDecoder.getType() != MultiDecoder::nec_ditto);
         if (multiDecoder.getType() == MultiDecoder::nec)
-            lcd.setCursor(0, 1); // prepare for dittos
+            LedLcdManager::lcdSetCursor(0, 1); // prepare for dittos
     }
 #endif
-#ifdef DECODELED
-    setLogicLed(DECODELED(multiDecoder.getType()), BLINK);
-#endif
+    LedLcdManager::setLogicLed(GirsUtils::decode2logicalLed(multiDecoder.getType()), LedLcdManager::blink);
     stream.println(multiDecoder.getDecode());
     irReceiver->disable();
 }
 
 void setup() {
-    DEFINE_IRRECEIVER;
-    DEFINE_LEDS;
-    BLINK_ALL_LEDS; // as self test
-#ifdef LCD
-    LCD_INIT(lcd);
-    lcdPrint(F(PROGNAME), true, 0, 0);
-    lcdPrint(F(VERSION), false, 0, 1);
-#endif
+    GirsUtils::setupReceivers();
+    GirsUtils::setupLeds();
+    LedLcdManager::setup(LCD_I2C_ADDRESS, LCD_WIDTH, LCD_HEIGHT,
+            (const pin_t[]) {SIGNAL_LED_1, SIGNAL_LED_2, SIGNAL_LED_3, SIGNAL_LED_4,
+                    SIGNAL_LED_5, SIGNAL_LED_6, SIGNAL_LED_7, SIGNAL_LED_8 });
+    LedLcdManager::selfTest(F(PROGNAME "\n" VERSION));
 
+#ifdef ARDUINO
     Serial.begin(serialBaud);
+    Serial.setTimeout(serialTimeout);
+#endif
 #if defined(ARDUINO_AVR_LEONARDO) | defined(ARDUINO_AVR_MICRO)
     while (!Serial)
         ; // wait for serial port to connect. "Needed for Leonardo only"
 #endif
-    Serial.println(F(PROGNAME " " VERSION));
-    Serial.setTimeout(serialTimeout);
+    stream.println(F(PROGNAME " " VERSION));
 
-    irReceiver = IrReceiverSampler::newIrReceiverSampler(captureSize, IRRECEIVER_PIN,
-            IRRECEIVER_PIN_PULLUP_VALUE, markExcess, beginTimeout, endingTimeout);
+    irReceiver = IrReceiverSampler::newIrReceiverSampler(captureSize, IRRECEIVER_1_PIN,
+            IRRECEIVER_1_PULLUP_VALUE, markExcess, beginTimeout, endingTimeout);
 }
 
-// Read one IR signal.
-void loop() {
-    receive(Serial);
+#ifndef ARDUINO
+int main() {
+    setup();
+    while (true)
+        loop();
 }
+#endif

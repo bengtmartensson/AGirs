@@ -1,1 +1,7 @@
 *~
+*.o
+*.a
+html
+nbproject
+.rlhistory
+*.hex

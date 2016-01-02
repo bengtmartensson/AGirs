@@ -19,7 +19,7 @@
 #endif
 
 #ifdef RECEIVE
-#define IRRECEIVER_PIN 5
+#define IRRECEIVER_1_PIN 5
 #endif
 #ifdef RECEIVER_2
 #define IRRECEIVER_2_PIN 12
@@ -27,6 +27,10 @@
 
 #ifdef TRANSMIT
 // Send pin 3
+#endif
+
+#ifdef NON_MOD
+#define NON_MOD_PIN 9
 #endif
 
 #endif // ! GIRS_PINS_NANO_H

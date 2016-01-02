@@ -153,7 +153,7 @@
 #endif
 
 #ifdef RECEIVE
-// See Chris' docs.
+// This quantity is added to all gaps and subtracted from all marks.
 #define IRRECEIVER_MARK_EXCESS 50U
 #endif
 

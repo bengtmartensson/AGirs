@@ -3,51 +3,27 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
-// Properties
-// Girs modules, see http://www.harctoolbox.org/Girs.html
-#define TRANSMIT
-#define RENDERER
-#define CAPTURE
+// Properties, needed for the *_pins.h files
 #define RECEIVE
 #define DECODER
-#define PARAMETERS
-
-// Additional modules
-
-// Reset command
-#define RESET
-
-// Report free memory (for debugging)
-#define FREEMEM
-
-// Leds connected, implements a led command
 #define LED
-//#define LISTEN
+#define LCD
 
-// Light this led when transmission is taking place
-#define TRANSMITLED 8
-
-// Light this when receive is pending
-#define RECEIVELED 7
-
-// Light this when capture is pending
-#define CAPTURELED 6
-
-// Light this when listening for command on the input stream
-#define COMMANDLED 5
-
-// Define as an expression that takes MultiDecoder decodes (see MultiDecoder.h) to logical leds.
-#define DECODELED(decode) ((decode)-1)
-
-// Other properties
-
-// LCD display with parallel connection, 4 bit mode. Defines a command "lcd".
-//#define LCD_4BIT
-
-// LCD display with I2C connection. Defines a command "lcd".
-#define LCD_I2C
-
+// Using Ethernet for communication
 //#define ETHERNET
+
+// Parameters, (not really defaults, but actual values))
+#ifndef ETHERNET
+#define SERIALBAUD 115200
+#define SERIALTIMEOUT 5000L
+#endif // !defined ETHERNET
+
+#define DEFAULT_RECEIVE_ENDINGTIMEOUT 35L // milliseconds
+#define DEFAULT_CAPTURESIZE 200U // must be even
+
+// This quantity is added to all gaps and subtracted from all marks.
+#define IRRECEIVER_MARK_EXCESS 50U
+
 
 #ifdef ETHERNET
 
@@ -69,29 +45,7 @@
 //#define ETHER_ENC28J60 // Cheapie ENC 28J60 chip, not yet supported
 #define ETHERNET_SESSION // multi-command session, otherwise close after one command
 //#define DHCP // Consumes rather much memory
-#endif // ETHERNET
 
-// Hardware configuration
-
-// Include one file describing the pin configuration
-//#include <girs_pins_lcdshield.h>
-//#include <girs_pins_nano_shield.h>
-#include <girs_pins_nano_alt.h>
-//#include <girs_pins.h> // Generic
-
-// If LCD support desired, include appropriate hardware description
-#ifdef LCD_I2C
-#ifdef ARDUINO_AVR_NANO
-#include <lcd_0x27_16_2.h>
-#else
-#include <lcd_0x3F_20_4.h>
-#endif
-#endif
-#ifdef LCD_4BIT
-#include <lcd_4bit_16_2.h>
-#endif
-
-#ifdef ETHERNET
 #ifndef SERVER
 // Host the program tries to contact
 #define PEER_IP 192,168,1,3
@@ -109,5 +63,25 @@
 #endif // ! DHCP
 #define PORT       33333
 #endif // ETHERNET
+
+// Hardware configuration
+// Include one file describing the pin configuration
+#ifdef ARDUINO
+//#include <girs_pins_lcdshield.h>
+#include <girs_pins_nano_shield.h>
+//#include <girs_pins_nano_alt.h>
+//#include <girs_pins.h> // Generic
+#else // !  ARDUINO
+#include <girs_pins_dummy.h>
+#endif
+
+// If LCD support desired, include appropriate hardware description
+#ifdef LCD
+#ifdef ARDUINO_AVR_NANO
+#include <lcd_0x27_16_2.h>
+#else
+#include <lcd_0x3F_20_4.h>
+#endif
+#endif
 
 #endif // ! CONFIG_H

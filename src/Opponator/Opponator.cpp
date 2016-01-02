@@ -23,41 +23,48 @@ this program. If not, see http://www.gnu.org/licenses/.
  * It can also issue query commands, and display the result on an LCD screen.
  */
 #include <Arduino.h>
-#include "config.h"
-#include <GirsMacros.h>
-
-#ifdef LCD_I2C
-#include <LiquidCrystal_I2C.h>
-#endif
-
 #include <IrReceiverSampler.h>
 #include <Nec1Decoder.h>
+#include <LedLcdManager.h>
 
-#define SERIAL Serial1
+#include <lcd_0x27_16_2.h>
 
-#define selectedD 114
-#define selectedS 205
+#define IRRECEIVER_1_PIN 5
+//#define IRRECEIVER_1_GND 6
+//#define IRRECEIVER_1_VSS 7
+//#define IRRECEIVER_1_PULLUP
 
-LCD_DEFINE(lcd);
+#ifdef ARDUINO
+#ifdef XARDUINO_AVR_MEGA2560
+Stream& stream = Serial1;
+#else  // !ARDUINO_AVR_MEGA2560
+Stream& stream = Serial;
+#endif // ! ARDUINO_AVR_MEGA2560
+#else  // ! ARDUINO
+Stream stream(std::cout);
+#endif // ! ARDUINO
 
-#include <LedFuncs.inc> // Must come after lcd
-#include <LcdFuncs.inc>
+#include <GirsUtils.h> // Must come AFTER pin declarations and such!!
+
+// Remote the thing is reacting to
+static const int selectedD = 114;
+static const int selectedS = 205;
 
 #define PROGNAME "Opponator"
-#define VERSION "2015-07-25"
-
-static void allLedsOff() {}
+#define VERSION "2015-10-29"
 
 void send(String payload) {
-    SERIAL.print("#" + payload + "\r");
+    stream.print("#" + payload + "\r");
 }
 
 void sendReceiveDisplay(String payload, String title) {
     send(payload);
-    String answer = SERIAL.readStringUntil('\r');
+    LedLcdManager::lcdPrint(title, true);
+#ifdef ARDUINO
+    String answer = stream.readStringUntil('\r');
     answer.trim();
-    lcdPrint(title, true, 0, 0);
-    lcdPrint(answer, false, 0, 1);
+    LedLcdManager::lcdPrint(answer, false, 0, 1);
+#endif
 }
 
 void action(IrReader *irReader) {
@@ -65,7 +72,13 @@ void action(IrReader *irReader) {
     if (decoder.isValid() && ! decoder.isDitto()
             && decoder.getD() == selectedD
             && decoder.getS() == selectedS) {
-        lcdPrint("Signal " + String(decoder.getF()), true, 0, 0);
+        LedLcdManager::lcdPrint("Signal " +
+#ifdef ARDUINO
+                String(decoder.getF())
+#else
+                std::to_string(decoder.getF())
+#endif
+                );
         switch (decoder.getF()) {
             case 6: // Play
                 send("PLA");
@@ -91,30 +104,37 @@ void action(IrReader *irReader) {
                 // ...
                 break;
         }
-    } /*else
-        lcdPrint("Unknown signal", true, 0, 0);*/
+    }
 }
 
 void loop() {
     IrReceiverSampler *irReceiver = IrReceiverSampler::getInstance();
     irReceiver->enable();
     while (!irReceiver->isReady()) {
-        checkTurnoff();
+        LedLcdManager::checkTurnoff();
     }
     irReceiver->disable();
     action(irReceiver);
 }
 
 void setup() {
-    DEFINE_IRRECEIVER;
-#ifdef LCD
-    LCD_INIT(lcd);
-    lcdPrint(F(PROGNAME), true, 0, 0);
-    lcdPrint(F(VERSION), false, 0, 1);
+    LedLcdManager::setup(LCD_I2C_ADDRESS, LCD_WIDTH, LCD_HEIGHT);
+    GirsUtils::setupReceivers();
+    LedLcdManager::lcdPrint(F(PROGNAME));
+    LedLcdManager::lcdPrint(F(VERSION), false, 0, 1);
+
+#ifdef ARDUINO
+    Serial.begin(9600);
 #endif
-    SERIAL.begin(9600);
-    IrReceiverSampler *irReceiver = IrReceiverSampler::newIrReceiverSampler(DEFAULT_CAPTURESIZE, IRRECEIVER_1_PIN, IRRECEIVER_1_PULLUP_VALUE);
-    irReceiver->setEndingTimeout(DEFAULT_ENDINGTIMEOUT);
-    irReceiver->setBeginningTimeout(DEFAULT_BEGINTIMEOUT);
-    irReceiver->setMarkExcess(IRRECEIVER_MARK_EXCESS);
+
+    IrReceiverSampler::newIrReceiverSampler(IrReader::defaultCaptureLength,
+            IRRECEIVER_1_PIN, IRRECEIVER_1_PULLUP_VALUE);
 }
+
+#ifndef ARDUINO
+int main() {
+    setup();
+    while (true)
+        loop();
+}
+#endif

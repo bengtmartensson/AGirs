@@ -3,19 +3,23 @@
 // Rationale: see http://www.gammon.com.au/forum/?id=12625
 
 #include "config.h"
-
-#include <GirsMacros.h>
+#include <InfraredTypes.h>
+#include <LedLcdManager.h>
 
 #ifdef ETHERNET
 #include <Ethernet.h>
 #endif
 
-#ifdef LCD_I2C
+#ifdef LCD
 #include <LiquidCrystal_I2C.h>
 #include <Wire.h>
 #include <SPI.h>
 #endif
 
-#ifdef LCD_4BIT
-#include <LiquidCrystal.h>
+#ifdef NAMED_COMMAND
+#include "IrNamedRemote.h"
+#endif
+
+#ifdef BEACON
+#include <Beacon.h>
 #endif

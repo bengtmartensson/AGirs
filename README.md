@@ -33,6 +33,14 @@ conjunction with my Java program
 [dispatcher](https://github.com/bengtmartensson/dispatcher). (It may
 possibly be discontinued in the future.)
 
+## Windows users beware!
+As is common in the Open Source/Git community, this project contains
+[symbolic links](https://en.wikipedia.org/wiki/Symbolic_link) to organize the sources and prevent duplication.
+This usage is not discouraged in any document I have seen so far, neither in the Git handbook nor in the Github texts.
+However, on Windows this can cause problems, at least for some Git implementations. Long story short:
+if `src\GirsLite\GirsLite.cpp` just contains the line `../Girs/Girs.cpp`,
+then delete it and replace it by the file `src\Girs\Girs.cpp`.
+
 ## Configuration
 It is a modular program that is heavily based on CPP symbols, defined
 in the configuration file <code>config.h</code>. This determines the capacities of the

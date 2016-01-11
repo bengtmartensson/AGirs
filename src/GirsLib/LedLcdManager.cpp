@@ -2,7 +2,9 @@
 #include "Tokenizer.h"
 #include <string.h>
 
+#ifdef LCD
 LiquidCrystal_I2C *LedLcdManager::lcd;
+#endif
 milliseconds_t LedLcdManager::blinkTime = defaultBlinkTime;
 unsigned long LedLcdManager::turnOffTime;
 unsigned int LedLcdManager::lcdRows = 0;
@@ -91,12 +93,14 @@ void LedLcdManager::setupShouldTimeout(led_t logicLed, boolean state) {
 }
 
 void LedLcdManager::setupLcdI2c(int8_t i2cAddress, uint8_t columns, uint8_t rows) {
+#ifdef LCD
     lcd = i2cAddress >= 0 ? new LiquidCrystal_I2C((uint8_t)i2cAddress, columns, rows) : NULL;
     if (lcd) {
         lcdRows = rows;
         lcdColumns = columns;
         lcd->init();
     }
+#endif
 }
 
 void LedLcdManager::updateTurnOffTime() {
@@ -127,10 +131,12 @@ void LedLcdManager::checkTurnoff() {
 }
 
 void LedLcdManager::allOff(boolean force) {
+#ifdef LCD
     if (lcd) {
         lcd->noDisplay();
         lcd->noBacklight();
     }
+#endif
     for (led_t i = 1; i <= maxLeds; i++)
         if (force || shouldTimeOut[i - 1])
             setLogicLed(i, off);
@@ -143,6 +149,7 @@ void LedLcdManager::disableTurnOffTime() {
 }
 
 void LedLcdManager::lcdPrint(String& string, boolean clear, int x, int y) {
+#ifdef LCD
     if (!lcd)
         return;
 
@@ -175,4 +182,5 @@ void LedLcdManager::lcdPrint(String& string, boolean clear, int x, int y) {
         lcd->backlight();
     }
     updateTurnOffTime();
+#endif
 }

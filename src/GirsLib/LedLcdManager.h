@@ -4,7 +4,9 @@
 #include <Tokenizer.h>
 #include <InfraredTypes.h>
 #include <IrSender.h>
-#include <LiquidCrystal_I2C.h> //https://github.com/fdebrabander/Arduino-LiquidCrystal-I2C-library
+#ifdef LCD
+#include <LiquidCrystal_I2C.h> // https://github.com/marcoschwartz/LiquidCrystal_I2C
+#endif
 
 typedef uint8_t led_t;
 
@@ -41,7 +43,9 @@ private:
     /** Time to turn of, in the semantic of millis(). */
     static unsigned long turnOffTime;
 
+#ifdef LCD
     static LiquidCrystal_I2C *lcd;
+#endif
 
     static unsigned int lcdRows;
     static unsigned int lcdColumns;
@@ -56,7 +60,7 @@ private:
             pin_t pled7 = invalidPin, pin_t pled8 = invalidPin);*/
 
     static void setupLcdI2c(int8_t i2cAddress, uint8_t columns, uint8_t rows);
-    LedLcdManager();;
+    LedLcdManager();
 
     //void initArray(char *array, uint8_t value);
 
@@ -108,7 +112,9 @@ public:
     //}
 
     static void lcdSetCursor(uint8_t x = 0, uint8_t y = 0) {
+#ifdef LCD
         lcd->setCursor(x, y);
+#endif
     }
 
     static void allOff(boolean force);

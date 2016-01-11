@@ -169,7 +169,7 @@ boolean reset = false;
 #ifndef PROGNAME
 #define PROGNAME "AGirs"
 #endif
-#define VERSION "2015-12-01"
+#define VERSION "2016-01-11"
 #define okString "OK"
 #define errorString "ERROR"
 #define timeoutString "."

@@ -4,7 +4,7 @@
 
 #include "config.h"
 
-#include <GirsMacros.h>
+#include <GirsUtils.h>
 
 #ifdef ETHERNET
 #include <Ethernet.h>

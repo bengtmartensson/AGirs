@@ -5,5 +5,5 @@
 #include "config.h"
 
 #include <InfraredTypes.h>
-#include <GirsMacros.h>
+#include <GirsUtils.h>
 

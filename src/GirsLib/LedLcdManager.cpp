@@ -1,3 +1,10 @@
+// Pick up LCD. Unfortunately, the user must take care to include the correct
+// config.h, this is just a suggestion, waiting for a better build system for Arduino.
+#ifdef ARDUINO_AVR_NANO
+#include "../GirsLite/config.h"
+#else
+#include "../Girs/config.h"
+#endif
 #include "LedLcdManager.h"
 #include "Tokenizer.h"
 #include <string.h>
@@ -100,6 +107,10 @@ void LedLcdManager::setupLcdI2c(int8_t i2cAddress, uint8_t columns, uint8_t rows
         lcdColumns = columns;
         lcd->init();
     }
+#else
+    (void) i2cAddress;
+    (void) columns;
+    (void) rows;
 #endif
 }
 
@@ -182,5 +193,10 @@ void LedLcdManager::lcdPrint(String& string, boolean clear, int x, int y) {
         lcd->backlight();
     }
     updateTurnOffTime();
+#else
+    (void) string;
+    (void) clear;
+    (void) x;
+    (void) y;
 #endif
 }

@@ -114,6 +114,9 @@ public:
     static void lcdSetCursor(uint8_t x = 0, uint8_t y = 0) {
 #ifdef LCD
         lcd->setCursor(x, y);
+#else
+        (void) x;
+        (void) y;
 #endif
     }
 

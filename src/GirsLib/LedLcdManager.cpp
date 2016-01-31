@@ -1,10 +1,16 @@
-// Pick up LCD. Unfortunately, the user must take care to include the correct
-// config.h, this is just a suggestion, waiting for a better build system for Arduino.
-#ifdef ARDUINO_AVR_NANO
-#include "../GirsLite/config.h"
-#else
-#include "../Girs/config.h"
+// Comment out if LCD is not wanted or needed. Except for needing some memory,
+// it has otherwise no disadvantages.
+
+// This should be taken from config.h, but the Arduino IDE does not seem
+// to allow for this. User friendlyness taken to a new level...
+#ifdef ARDUINO
+#if ! defined (ARDUINO_AVR_NANO) & ! defined(ARDUINO_AVR_MICRO)
+#define LCD
 #endif
+#else
+#include "config.h"
+#endif
+
 #include "LedLcdManager.h"
 #include "Tokenizer.h"
 #include <string.h>

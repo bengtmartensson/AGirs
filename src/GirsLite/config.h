@@ -66,15 +66,20 @@
 #define DEFAULT_RECEIVE_ENDINGTIMEOUT 30L // milliseconds
 
 // Size of capture and receive arrays
-#define DEFAULT_CAPTURESIZE 300U // must be even
+#define DEFAULT_CAPTURESIZE 400U // must be even
 
 #define serialBaud 115200
 #define serialTimeout 5000L
 
 
 #ifdef RECEIVE
-// This quantity is added to all gaps and subtracted from all marks.
-#define IRRECEIVER_MARK_EXCESS 50U
+// This quantity is added to all gaps and subtracted from all marks when receiving.
+#define IRRECEIVER_MARK_EXCESS 50
+#endif
+
+#ifdef CAPTURE
+// This quantity is added to all gaps and subtracted from all marks when capturing.
+#define IRSENSOR_MARK_EXCESS -10
 #endif
 
 // Stream to read and write, must be a (sub)class of Stream

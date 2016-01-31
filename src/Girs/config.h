@@ -257,7 +257,12 @@
 
 #ifdef RECEIVE
 // This quantity is added to all gaps and subtracted from all marks.
-#define IRRECEIVER_MARK_EXCESS 50U
+#define IRRECEIVER_MARK_EXCESS 50
+#endif
+
+#ifdef CAPTURE
+// This quantity is added to all gaps and subtracted from all marks.
+#define IRSENSOR_MARK_EXCESS -10
 #endif
 
 #endif // ! CONFIG_H

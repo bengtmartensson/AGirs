@@ -169,7 +169,7 @@ boolean reset = false;
 #ifndef PROGNAME
 #define PROGNAME "AGirs"
 #endif
-#define VERSION "2016-01-11"
+#define VERSION "2016-01-30"
 #define okString "OK"
 #define errorString "ERROR"
 #define timeoutString "."
@@ -293,6 +293,7 @@ boolean capture(Stream& stream) {
         stream.println(F("This cannot happen"));
     irWidget->setEndingTimeout(captureEndingTimeout);
     irWidget->setBeginningTimeout(beginTimeout);
+    irWidget->setMarkExcess(IRSENSOR_MARK_EXCESS);
     irWidget->reset();
 #ifdef CAPTURELED
     LedLcdManager::setLogicLed(captureled, LedLcdManager::on);

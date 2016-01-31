@@ -131,6 +131,7 @@ static LED_PARAMETER_CONST led_t commandled = COMMANDLED;
 
 #ifdef CAPTURE
 static PARAMETER_CONST unsigned long captureEndingTimeout = DEFAULT_CAPTURE_ENDINGTIMEOUT; // milliseconds
+static const unsigned sensorNo = 1; // presently, only one supported
 #endif
 #ifdef RECEIVE
 static PARAMETER_CONST unsigned long receiveEndingTimeout = DEFAULT_RECEIVE_ENDINGTIMEOUT; // milliseconds
@@ -288,7 +289,8 @@ boolean receive(Stream& stream) {
 #ifdef CAPTURE
 
 boolean capture(Stream& stream) {
-    IrWidget *irWidget = IrWidgetAggregating::newIrWidgetAggregating(captureSize);
+    IrWidget *irWidget = IrWidgetAggregating::newIrWidgetAggregating(captureSize,
+            GirsUtils::sensorPullup(sensorNo));
     if (irWidget == NULL)
         stream.println(F("This cannot happen"));
     irWidget->setEndingTimeout(captureEndingTimeout);

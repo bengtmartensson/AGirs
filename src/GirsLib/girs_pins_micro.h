@@ -20,12 +20,14 @@
 
 #if defined(CAPTURE)
 // capture pin (ICP) 4
+//#define IRSENSOR_1_PULLUP
 #define SENSOR_GND 5
 #define SENSOR_VSS 6
 #endif
 
 #ifdef RECEIVE
 #define IRRECEIVER_PIN 10
+//#define IRRECEIVER_1_PULLUP
 #define IRRECEIVER_GND 16
 #define IRRECEIVER_VSS 14
 #endif

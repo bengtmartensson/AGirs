@@ -23,12 +23,12 @@
 #if defined(CAPTURE)
 #define IRSENSOR_1_PIN 8
 // capture pin (ICP) 8/4/49
-//#define IRSENSOR_1_PIN_PULLUP
+//#define IRSENSOR_1_PULLUP
 #endif
 
 #ifdef RECEIVE
 #define IRRECEIVER_1_PIN 5
-//#define IRRECEIVER_1_PIN_PULLUP
+//#define IRRECEIVER_1_PULLUP
 #define IRRECEIVER_2_PIN 11
 #define IRRECEIVER_3_PIN 12
 //#define IRRECEIVER_4_PIN 8 // Non-demodulating sensor

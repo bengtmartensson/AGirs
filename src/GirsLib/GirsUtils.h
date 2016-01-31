@@ -324,10 +324,54 @@ public:
         digitalWrite(IRSENSOR_8_VSS, HIGH);
 #endif
     }
-};
+
+    static boolean sensorPullup(uint8_t sensorNo UNUSED) {
+
+#ifdef IRSENSOR_1_PIN
+        if (sensorNo == 1)
+            return IRSENSOR_1_PULLUP_VALUE;
+#endif
+
+#ifdef IRSENSOR_2_PIN
+        if (sensorNo == 2)
+            return IRSENSOR_2_PULLUP_VALUE;
+#endif
+
+#ifdef IRSENSOR_3_PIN
+        if (sensorNo == 3)
+            return IRSENSOR_3_PULLUP_VALUE;
+#endif
+
+#ifdef IRSENSOR_4_PIN
+        if (sensorNo == 4)
+            return IRSENSOR_4_PULLUP_VALUE;
+#endif
+
+#ifdef IRSENSOR_5_PIN
+        if (sensorNo == 5)
+            return IRSENSOR_5_PULLUP_VALUE;
+#endif
+
+#ifdef IRSENSOR_6_PIN
+        if (sensorNo == 6)
+            return IRSENSOR_6_PULLUP_VALUE;
+#endif
+
+#ifdef IRSENSOR_7_PIN
+        if (sensorNo == 7)
+            return IRSENSOR_7_PULLUP_VALUE;
+#endif
+
+#ifdef IRSENSOR_8_PIN
+        if (sensorNo == 8)
+            return IRSENSOR_8_PULLUP_VALUE;
+#endif
+        return false;
+    }
 
 #ifndef NON_MOD_PIN
 #define NON_MOD_PIN invalidPin
 #endif
+};
 
-#endif	/* GIRSUTILS_H */
+#endif /* GIRSUTILS_H */

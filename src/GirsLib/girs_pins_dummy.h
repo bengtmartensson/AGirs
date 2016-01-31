@@ -26,15 +26,15 @@
 #if defined(CAPTURE)
 // capture pin (ICP) 49
 #define IRSENSOR_1_PIN 49
-//#ifdef IRSENSOR_PIN_PULLUP
+#define IRSENSOR_1_PULLUP
 // not presently implemented
 #define IRSENSOR_2_PIN 48
-#define IRSENSOR_2_PIN_PULLUP
+#define IRSENSOR_2_PULLUP
 #endif
 
 #ifdef RECEIVE
 #define IRRECEIVER_1_PIN 5
-//#define IRRECEIVER_1_PIN_PULLUP
+#define IRRECEIVER_1_PULLUP
 #define IRRECEIVER_2_PIN 7 // 38kHz, ACG4
 #define IRRECEIVER_3_PIN 8 // 56kHz
 #define IRRECEIVER_4_PIN 6 // 433 MHz

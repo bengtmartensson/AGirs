@@ -49,6 +49,53 @@
 #define IRRECEIVER_8_PULLUP_VALUE false
 #endif
 
+#ifdef IRSENSOR_1_PULLUP
+#define IRSENSOR_1_PULLUP_VALUE true
+#else
+#define IRSENSOR_1_PULLUP_VALUE false
+#endif
+
+#ifdef IRSENSOR_2_PULLUP
+#define IRSENSOR_2_PULLUP_VALUE true
+#else
+#define IRSENSOR_2_PULLUP_VALUE false
+#endif
+
+#ifdef IRSENSOR_3_PULLUP
+#define IRSENSOR_3_PULLUP_VALUE true
+#else
+#define IRSENSOR_3_PULLUP_VALUE false
+#endif
+
+#ifdef IRSENSOR_4_PULLUP
+#define IRSENSOR_4_PULLUP_VALUE true
+#else
+#define IRSENSOR_4_PULLUP_VALUE false
+#endif
+
+#ifdef IRSENSOR_5_PULLUP
+#define IRSENSOR_5_PULLUP_VALUE true
+#else
+#define IRSENSOR_5_PULLUP_VALUE false
+#endif
+
+#ifdef IRSENSOR_6_PULLUP
+#define IRSENSOR_6_PULLUP_VALUE true
+#else
+#define IRSENSOR_6_PULLUP_VALUE false
+#endif
+
+#ifdef IRSENSOR_7_PULLUP
+#define IRSENSOR_7_PULLUP_VALUE true
+#else
+#define IRSENSOR_7_PULLUP_VALUE false
+#endif
+
+#ifdef IRSENSOR_8_PULLUP
+#define IRSENSOR_8_PULLUP_VALUE true
+#else
+#define IRSENSOR_8_PULLUP_VALUE false
+#endif
 
 #ifndef SIGNAL_LED_1
 #define SIGNAL_LED_1 invalidPin

@@ -65,6 +65,11 @@ For further motivation, see [this article](http://www.gammon.com.au/forum/?id=12
 (however, "__Third__" therein does not appear to be valid with current software.)
 
 ## Hardware configuration
+I have written a [fairly detailed description](http://www.harctoolbox.org/arduino_nano.html)
+of using an Arduino Nano (clone) by soldering suitable components to the PCB. This is
+a small handy gadget at the size of a (large) stamp and the price of a (small) pizza,
+perfect for using with IrScrutinizer and Lirc.
+
 The hardware configuration is determined by including a suitable
 header file. It describes the attach sensor(s) and the pins
 they are connected to. To allow soldering sensors directly to the

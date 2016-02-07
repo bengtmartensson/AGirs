@@ -1,33 +1,38 @@
 // Configuration options
 
-// Define for IrScrutinizer optimized version
-#define GIRSLITE
-
-// Except for the hardware configuration, there are mainly two interesting options here.
-// They are: LED (define if desired), and RECEIVE/CAPTURE.
-// Defining RECEIVE instead of CAPTURE makes the capture command use the demodulating receiver.
-// (A future version of IrScrutinizer will support selecting "receive" as alternative
-// to "capture".)
-
 #ifndef CONFIG_H
 #define CONFIG_H
 
+// Define for IrScrutinizer/Lirc optimized version
+#define GIRSLITE
+
 // Properties
 // Girs modules to implement, see http://www.harctoolbox.org/Girs.html
+
+// Displayed in greeting messages
 #define PROGNAME "GirsLite"
+
+// Transmit IR signals, requires IR Leds.
 #define TRANSMIT
 
-// Use one of these two, normally CAPTURE
-// Define RECEIVE to us a demodulating receiver (TSOP*) instead.
+// Capture IR signals, requires non-demodulating IR sensor (TSMP58000, QSE159, etc)
 #define CAPTURE
+
+// Receive demodulated IR signals, require demodulating IR sensor (TSMP* or equivalent)
 #define RECEIVE
 
 // Use LEDs as debugging LEDs.
 #define LED
 
+// Defines command "memory" reporting free (SRAM) memory.
+//#define FREEMEM
+
 #ifdef LED
+
+#ifdef TRANSMIT
 // Light this led when transmission is taking place
 #define TRANSMITLED 4
+#endif
 
 #ifdef RECEIVE
 // Light this when receive is pending
@@ -37,7 +42,7 @@
 #ifdef CAPTURE
 // Light this when capture is pending
 #define CAPTURELED 3
-#endif // ! RECEIVE
+#endif
 
 // Light this when listening for command on the input stream
 #define COMMANDLED 2
@@ -48,18 +53,12 @@
 
 // Hardware configuration
 
-// Has a non-modulating sender, typically RF.
-//#define NON_MOD
-
 // Include one file describing the pin configuration
-#ifdef ARDUINO_AVR_NANO
-//#include <girs_pins_nano_shield.h>
-#include <girs_pins_nano.h>
-#else
+// Use one in GirsLib, or write your own.
 #include <girs_pins.h> // Generic
-#endif
 
-// These are really not defaults, they are the non-changeable values.
+// Without PARAMETERS, these are really not defaults,
+// they are the non-changeable values.
 #define DEFAULT_BEGINTIMEOUT 10000UL // milliseconds
 #define DEFAULT_CAPTURE_ENDINGTIMEOUT 100L // milliseconds
 
@@ -81,8 +80,5 @@
 // This quantity is added to all gaps and subtracted from all marks when capturing.
 #define IRSENSOR_MARK_EXCESS -10
 #endif
-
-// Stream to read and write, must be a (sub)class of Stream
-#define STREAM Serial
 
 #endif // ! CONFIG_H

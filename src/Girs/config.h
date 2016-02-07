@@ -3,14 +3,8 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
-// Define for IrScrutinizer optimized version
+// Define for IrScrutinizer/Lirc optimized version
 //#define GIRSLITE
-
-// GirsLitePlus is LCD and NON_MOD added tp GirsLite.
-//#define GIRSLITEPLUS
-
-// Define for Lirc optimized version
-//#define GIRS4LIRC
 
 // Define for pure listener (not yet implemented)
 //#define LISTENER
@@ -18,56 +12,52 @@
 // Define Girs modules to implement, see http://www.harctoolbox.org/Girs.html
 #ifdef GIRSLITE
 
+// Displayed in greeting messages
 #define PROGNAME "GirsLite"
+
+// Transmit IR signals, requires IR Leds.
 #define TRANSMIT
+
+// Capture IR signals, requires non-demodulating IR sensor (TSMP58000, QSE159, etc)
 #define CAPTURE
+
+// Receive demodulated IR signals, require demodulating IR sensor (TSMP* or equivalent)
 #define RECEIVE
+
+// Use LEDs, define command "led!
 #define LED
+
+// Defines command "memory" reporting free (SRAM) memory.
 //#define FREEMEM
 
+#ifdef LED
+
+#ifdef TRANSMIT
 // Light this led when transmission is taking place
 #define TRANSMITLED 4
+#endif
 
+#ifdef RECEIVE
 // Light this when receive is pending
 #define RECEIVELED 3
+#endif
 
+#ifdef CAPTURE
 // Light this when capture is pending
 #define CAPTURELED 3
+#endif
 
 // Light this when listening for command on the input stream
 #define COMMANDLED 2
 
-#elif defined(GIRSLITEPLUS)
+#endif // LED
 
-#define PROGNAME "GirsLite+"
-#define TRANSMIT
-#define RECEIVE
-#define CAPTURE
-#define LED
-#define LCD
-#define FREEMEM
-// Support sending signals without modulation, e.g. with RF module.
-#define NON_MOD
-
-#define TRANSMITLED 4
-#define RECEIVELED  3
-#define CAPTURELED  2
-#define COMMANDLED  1
-
-#elif defined(GIRS4LIRC)
-
-#define PROGNAME "Girs4Lirc"
-#define TRANSMIT
-#define RECEIVE
-#define LED
-#define LCD
-
-#elif defined(LISTENER)
+#elif defined(LISTENER) // ! GIRSLITE
 
 #error LISTENER not yet implemented
 #define PROGNAME Listener
 
-#else
+#else // ! LISTENER
 
 #define PROGNAME "AGirs"
 
@@ -105,22 +95,33 @@
 // Command "hex", sending Pronto hex signals
 #define PRONTO
 
+#ifdef LED
+
+#ifdef TRANSMIT
 // Light this led when transmission is taking place
 #define TRANSMITLED 8
 //#define TRANSMITLED 4
+#endif
 
+#ifdef RECEIVE
 // Light this when receive is pending
 #define RECEIVELED 7
 //#define RECEIVELED 3
+#endif
 
+#ifdef CAPTURE
 // Light this when capture is pending
 #define CAPTURELED 6
 //#define CAPTURELED 2
+#endif
 
 // Light this when listening for command on the input stream
 #define COMMANDLED 5
 //#define COMMANDLED 1
-#endif
+
+#endif // LED
+
+#endif // ! LISTENER
 
 // Define if using Ethernet (TCP or UDP) as the communication channel
 //#define ETHERNET
@@ -164,40 +165,17 @@
 // Hardware configuration
 
 // Include one file describing the pin configuration
-#ifdef ARDUINO_AVR_MEGA2560
-#ifdef ETHERNET
-#include <girs_pins_mega2560_rear.h>
-#else
-#include <girs_pins_mega2560.h>
-#endif
-#elif defined(ARDUINO_AVR_NANO) // ! ARDUINO_AVR_MEGA2560
-
-#include <girs_pins_nano.h>
-//#include <girs_pins_nano_lcd.h>
-//#include <girs_pins_nano_shield.h>
-
-#elif defined(ARDUINO)
-
+// Use one in GirsLib, or write your own.
+#ifdef ARDUINO
 #include <girs_pins.h> // Generic
 #else // ! ARDUINO
-
+// For compiling a version to test on the PC, not to flash onto the Arduino.
 #include <girs_pins_dummy.h>
-
 #endif
 
 // If LCD support desired, include appropriate hardware description
 #ifdef LCD
-#if defined(ARDUINO_AVR_NANO)
-#include <lcd_0x27_16_2.h>
-#else  // ! ARDUINO_AVR_NANO
-#ifdef ETHERNET
 #include <lcd_0x3F_20_4.h>
-#else  // ! ETHERNET
-#include <lcd_0x27_20_4.h>
-//#include <lcd_0x3F_20_4.h>
-//#include <lcd_0x27_16_2.h>
-#endif // ! ETHERNET
-#endif // ! ARDUINO_AVR_NANO
 #endif // ! LCD
 
 #ifdef ETHERNET

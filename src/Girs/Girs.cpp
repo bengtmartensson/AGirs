@@ -170,7 +170,7 @@ boolean reset = false;
 #ifndef PROGNAME
 #define PROGNAME "AGirs"
 #endif
-#define VERSION "2016-01-30"
+#define VERSION "2016-03-28"
 #define okString "OK"
 #define errorString "ERROR"
 #define timeoutString "."
@@ -519,7 +519,7 @@ String readCommand(Stream& stream) {
     }
 
     String line = stream.readStringUntil(EOLCHAR);
-    const char *str = line.c_str();
+    line.trim();
 #else
     (void) stream;
     LedLcdManager::checkTurnoff();
@@ -529,7 +529,12 @@ String readCommand(Stream& stream) {
         std::cout << "Bye!" << std::endl;
         exit(0);
     }
-    //String line(str);
+    char *s = str;
+    while (isspace(*s))
+        s++;
+    while (isspace(s[strlen(s)-1]))
+        s[strlen(s)-1] = '\0';
+    String line(s);
 #endif
 
 #if defined(DEBUG_CMD)
@@ -538,7 +543,7 @@ String readCommand(Stream& stream) {
 #if defined(COMMANDLED) & defined(LED)
     LedLcdManager::setLogicLed(commandled, LedLcdManager::off);
 #endif
-    return str;
+    return line;
 }
 
 boolean processCommand(const String& line, Stream& stream) {

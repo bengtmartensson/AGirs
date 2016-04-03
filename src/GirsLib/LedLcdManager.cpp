@@ -4,7 +4,7 @@
 // This should be taken from config.h, but the Arduino IDE does not seem
 // to allow for this. User friendlyness taken to a new level...
 #ifdef ARDUINO
-#if ! defined (ARDUINO_AVR_NANO) & ! defined(ARDUINO_AVR_MICRO)
+#if ! defined(ARDUINO_AVR_MICRO)
 #define LCD
 #endif
 #else

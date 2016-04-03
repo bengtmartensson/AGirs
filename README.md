@@ -123,7 +123,7 @@ the other commands can be tested in this way.
 * Ethernet (if enabling the ETHERNET configure option). Contained in the Arduino IDE.
 * SPI (if enabling the ETHERNET or LCD_I2C configure option). Contained in the Arduino IDE.
 * Wire (if enabling the LCD_I2C configure option). Contained in the Arduino IDE.
-* [Arduino-LiquidCrystal-I2C](https://github.com/marcoschwartz/LiquidCrystal_I2C) version 1.1.2.
+* [Arduino-LiquidCrystal-I2C](https://github.com/marcoschwartz/LiquidCrystal_I2C) version 1.1.3. (Version 1.1.1 will not work with current Arduino IDE, 1.1.2 probably will.)
 (The Frank de Brabander version does not work.)
 Needed if defining LCD_I2C, i.e. connecting an LCD display with an I2C interface card.
 

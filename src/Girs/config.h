@@ -71,6 +71,10 @@
 #define LISTEN
 #define NAMED_COMMANDS
 
+// Define to have the receive command report the duration, even if DECODE is defined
+// and a decode was found. Use this for Lirc.
+//#define DONT_REPORT_DECODES
+
 // Have parameters for transmitled etc.
 #define CONFIGURABLE_LEDS
 

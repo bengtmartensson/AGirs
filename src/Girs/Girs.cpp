@@ -170,7 +170,7 @@ boolean reset = false;
 #ifndef PROGNAME
 #define PROGNAME "AGirs"
 #endif
-#define VERSION "2016-03-28"
+#define VERSION "2016-04-03"
 #define okString "OK"
 #define errorString "ERROR"
 #define timeoutString "."
@@ -233,7 +233,7 @@ void decodeOrDump(IrReader *irReader, Stream& stream) {
 #endif
 #endif
 
-#if defined(DECODER) & ! defined(GIRS4LIRC) // lircd does its own decoding
+#if defined(DECODER) & ! defined(DONT_REPORT_DECODES) // lircd does its own decoding
     switch (multiDecoder.getType()) {
         case MultiDecoder::noise:
             // ignore
@@ -245,7 +245,7 @@ void decodeOrDump(IrReader *irReader, Stream& stream) {
             stream.println(multiDecoder.getDecode()); // also for timeout
             break;
     }
-#else  // ! (defined(DECODER) & ! defined(GIRS4LIRC))
+#else  // ! (defined(DECODER) & ! defined(DONT_REPORT_DECODES))
     if (irReader->isEmpty())
         stream.println(F(timeoutString));
     else
@@ -269,18 +269,19 @@ boolean receive(Stream& stream) {
 #endif
     irReceiver->enable();
 #ifdef ARDUINO
-    while (!irReceiver->isReady())
+    while (!irReceiver->isReady() && stream.available() == 0)
 #else
         std::cout << "** Simulating timeout **" << std::endl;
         delay(beginTimeout);
 #endif
         LedLcdManager::checkTurnoff();
-
+    boolean ready = irReceiver->isReady();
     irReceiver->disable();
 #ifdef RECEIVELED
      LedLcdManager::setLogicLed(receiveled, LedLcdManager::off);
 #endif
-     decodeOrDump(irReceiver, stream);
+     if (ready)
+         decodeOrDump(irReceiver, stream);
      IrReceiverSampler::deleteInstance();
      return true;
 }

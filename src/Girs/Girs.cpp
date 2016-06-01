@@ -170,7 +170,7 @@ boolean reset = false;
 #ifndef PROGNAME
 #define PROGNAME "AGirs"
 #endif
-#define VERSION "2016-04-03"
+#define VERSION "2016-06-01"
 #define okString "OK"
 #define errorString "ERROR"
 #define timeoutString "."
@@ -882,11 +882,17 @@ void loop() {
     Serial.println(F("Connection!"));
 #endif
     client.println(F(PROGNAME));
+#if defined(COMMANDLED) & defined(LED)
+    LedLcdManager::setLogicLed(commandled, LedLcdManager::on);
+#endif
 
     while (client.read() != -1)
         LedLcdManager::checkTurnoff();
 #ifdef SESSION
     while (readProcessOneTcpCommand(client))
+#if defined(COMMANDLED) & defined(LED)
+        LedLcdManager::setLogicLed(commandled, LedLcdManager::on)
+#endif
         ;
 #else
     readProcessOneTcpCommand(client);
@@ -898,6 +904,11 @@ void loop() {
     Serial.println(F("Connection closed!"));
 #endif
     client.println(F("Bye"));
+
+#if defined(COMMANDLED) & defined(LED)
+    LedLcdManager::setLogicLed(commandled, LedLcdManager::off);
+#endif
+
 #else // !SERVER
     IPAddress peer(PEER_IP);
     EthernetClient client;

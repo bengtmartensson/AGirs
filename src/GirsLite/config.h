@@ -62,7 +62,7 @@
 #define DEFAULT_BEGINTIMEOUT 10000UL // milliseconds
 #define DEFAULT_CAPTURE_ENDINGTIMEOUT 100L // milliseconds
 
-#define DEFAULT_RECEIVE_ENDINGTIMEOUT 30L // milliseconds
+#define DEFAULT_RECEIVE_ENDINGTIMEOUT 150L // milliseconds
 
 // Size of capture and receive arrays
 #define DEFAULT_CAPTURESIZE 400U // must be even

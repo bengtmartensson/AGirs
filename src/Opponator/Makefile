@@ -6,8 +6,9 @@ BROWSER=firefox
 DEBUGFLAGS=-g
 WARNINGFLAGS=-Wall -Werror -Wextra
 ARDUINO_LIBS=$(HOME)/Arduino/libraries
-ARDUINO_ROOT=/local/arduino-1.6.5/
-INCLUDES=-I. -I$(ARDUINO_LIBS)/Infrared -I../LcdI2C-sim -I../GirsLib
+ARDUINO_ROOT=/usr/local/arduino
+INFRARED4ARDUINO=$(ARDUINO_LIBS)/Infrared
+INCLUDES=-I. -I$(INFRARED4ARDUINO)/src -I../LcdI2C-sim -I../GirsLib
 
 VPATH=tests:../LcdI2C-sim
 

@@ -5,6 +5,9 @@ CXX=g++
 BROWSER=firefox
 DEBUGFLAGS=-g
 WARNINGFLAGS=-Wall -Werror -Wextra
+ARDUINO_LIBS=$(HOME)/Arduino/libraries
+ARDUINO_ROOT=/usr/local/arduino
+INFRARED4ARDUINO=$(ARDUINO_LIBS)/Infrared
 
 VPATH=tests
 
@@ -15,10 +18,10 @@ libIrNamedCommand.a: $(OBJS)
 	$(AR) rs $@ $(OBJS)
 
 %.o: %.cpp
-	$(CXX) -I. -I$(HOME)/Arduino/libraries/Infrared -std=c++11 $(WARNINGFLAGS) $(OPTIMIZEFLAGS) $(DEBUGFLAGS) -c $<
+	$(CXX) -I. -I$(INFRARED4ARDUINO)/src -std=c++11 $(WARNINGFLAGS) $(OPTIMIZEFLAGS) $(DEBUGFLAGS) -c $<
 
 test%: test%.o libIrNamedCommand.a
-	$(CXX) -o $@ $< -L. -lIrNamedCommand -L$(HOME)/Arduino/libraries/Infrared -lInfrared
+	$(CXX) -o $@ $< -L. -lIrNamedCommand -L$(INFRARED4ARDUINO)/Arduino/libraries/Infrared -lInfrared
 	./$@
 
 doc:

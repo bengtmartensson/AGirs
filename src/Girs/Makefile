@@ -6,9 +6,9 @@ CXX=g++
 DEBUGFLAGS=-g
 WARNINGFLAGS=-Wall -Werror -Wextra
 ARDUINO_LIBS=$(HOME)/Arduino/libraries
-ARDUINO_ROOT=/local/arduino-1.6.5/
-INFRARED4ARDUINO=../../../Infrared4Arduino
-INCLUDES=-I. -I$(INFRARED4ARDUINO) -I../LcdI2C-sim -I../GirsLib -I../IrNamedCommand
+ARDUINO_ROOT=/usr/local/arduino
+INFRARED4ARDUINO=$(ARDUINO_LIBS)/Infrared
+INCLUDES=-I. -I$(INFRARED4ARDUINO)/src -I../LcdI2C-sim -I../GirsLib -I../IrNamedCommand
 
 VPATH=tests:../LcdI2C-sim
 

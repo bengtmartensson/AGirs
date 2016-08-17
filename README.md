@@ -21,10 +21,10 @@ Michael's code is included, in somewhat modified form, in the files
 IrWidget.[cpp,h] and IrWidgetAggregating.[cpp,h].
 
 The project contains a library, contained in the directory GirsLib,
-and a few applications, presently Girs, GirsLite, Girs4Lirc, Listener,
+and a few applications, presently Girs, GirsLite, Listener,
 and others. The directory GirsLib should
 be copied to
-the library area, typically <b>$HOME/Arduino/libraries/GirsLib</b>, while the
+the library area, typically `$HOME/Arduino/libraries/GirsLib`, while the
 application directories can be processed by the Arduino IDE
 directly. The directory Girs contains the AGirs application
 interactive program. Listener is a uni-directional program that just
@@ -35,9 +35,9 @@ possibly be discontinued in the future.)
 
 ## Configuration
 It is a modular program that is heavily based on CPP symbols, defined
-in the configuration file <code>config.h</code>. This determines the capacities of the
+in the configuration file `config.h`. This determines the capacities of the
 compiled program, and adapts the configuration to the underlying
-hardware. The options are (somewhat) documented in <code>Girs/config.h</code>.
+hardware. The options are (somewhat) documented in `Girs/config.h`.
 Not all combination are sensible or implemented. Some of the non-sensible
 combinations will be detected and will generate a compilation error.
 
@@ -45,14 +45,14 @@ Caused by the limitations of the Arduino build process, it may be necessary to a
 the path to `config.h` in the included statement of `GirsLib/LedLcdManager.cpp`.
 
 ## Code organization
-There is a "library" (in the Arduino sense), <code>src/GirsLib</code>, which should be copied/moved/linked to the Arduino library area,
-typically <code>~/Arduino/libraries</code> or <code>C:\Arduino\libraries</code>.
-The other sub-directories of <code>src</code> contain different sketches that can
+There is a "library" (in the Arduino sense), `src/GirsLib`, which should be copied/moved/linked to the Arduino library area,
+typically `~/Arduino/libraries` or `C:\Arduino\libraries`.
+The other sub-directories of `src` contain different sketches that can
 be compiled and run on the Arduino.
 
 Due to the quirks of the preprocessor of the Arduino IDE, the following rule is used:
-The <code>_program_.ino</code> is kept empty, except for some dummy <code>#include</code>s,
-necessary for the IDE to find the libraries. The real code goes into <code>_program_.cpp</code>.
+The `_program_.ino` is kept empty, except for some dummy `#include`s,
+necessary for the IDE to find the libraries. The real code goes into `_program_.cpp`.
 For further motivation, see [this article](http://www.gammon.com.au/forum/?id=12625).
 (however, "__Third__" therein does not appear to be valid with current software.)
 
@@ -100,9 +100,9 @@ Girs](http://www.harctoolbox.org/Girs.html). Just type the command to
 the program, and the unit will respond.
 Exactly which commands are
 available depends on the configuration. In all cases, the
-<code>version</code> and the <code>modules</code> commands are
-available. If <code>receive</code> is implemented, just type
-"<code>r</code>" (without the
+`version` and the `modules` commands are
+available. If `receive` is implemented, just type
+"`r`" (without the
 quotes), followed by return, and fire a suitable IR signal at the
 receiver. The raw capture will be output to the terminal program. Using
 the clipboard, it can be pasted to IrScrutinizer, and analyzed. Of course, also
@@ -110,8 +110,11 @@ the other commands can be tested in this way.
 
 ## Dependencies
 
-* [Infrared4Arduino](https://github.com/bengtmartensson/Infrared4Arduino) by myself. (In earlier versions
-  of this project, this was integrated in AGirs, but is now an independent project.)
+* [Infrared4Arduino](https://github.com/bengtmartensson/Infrared4Arduino) by myself.
+  Current version is 1.0.0. Can be installed by the library manager within the Arduino IDE
+  (Sketch -> Include library -> Manage libraries, name Infrared).
+  In earlier versions
+  of this project, this was integrated in AGirs, but it is now an independent project.
 * Ethernet (if enabling the ETHERNET configure option). Contained in the Arduino IDE.
 * SPI (if enabling the ETHERNET or LCD_I2C configure option). Contained in the Arduino IDE.
 * Wire (if enabling the LCD_I2C configure option). Contained in the Arduino IDE.
@@ -120,6 +123,12 @@ the other commands can be tested in this way.
 Needed if defining LCD_I2C, i.e. connecting an LCD display with an I2C interface card.
 
 ## Questions and answers
+
+* What are Makefiles doing in an Arduino project?
+
+To build the project for the Arduino, use the Arduino IDE from [arduino.cc](https://www.arduino.cc/en/Main/Software),
+as in most Arduino projects.
+The Makefile is used for building a "Software-in-the-loop" test version for the PC; of interest for developers only.
 
 * What is the difference between
   ["receive"](http://www.harctoolbox.org/Glossary.html#ReceivingIrSignals)
@@ -146,8 +155,8 @@ for the Arduino, that implements only the
 without all options. It is meant to be used with
 [IrScrutinizer](http://www.harctoolbox.org/IrScrutinizer.html)
 versions 1.1.*, as well as with Lirc, using  the Lirc
-<code>girs</code> driver by yours truly. Documentation is found with the Lirc
-driver, in the file <code>girs_driver.html</code>.
+`girs` driver by yours truly. Documentation is found with the [Lirc
+driver](http://lirc.org/html/girs), in the Lirc sources the file `girs.html`.
 
 It is not an independent program, it is just AGirs
 with certain options enabled, namely
@@ -158,10 +167,11 @@ usage with IrScrutinizer without a non-demodulating sensor.
 
 * What about Girs4Lirc?
 
+_Now discontinued_, replaced by GirsLite.
 Just as GirsLite, this was just a certain configuration of AGirs,
 "optimized" for Lirc, supporting TRANSMIT,
 NON_MOD (optionally), RECEIVE, LED, LCD, DECODE (only to the LCD), TRANSMITTERS
-(only a dummy implementation). It is now discontinued, replaced by GirsLite.
+(only a dummy implementation).
 
 ## License
 The entire work is licensed under the GPL3 license. Chris' as well as Ken's

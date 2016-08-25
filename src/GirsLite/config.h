@@ -12,7 +12,7 @@
 // Displayed in greeting messages
 #define PROGNAME "GirsLite"
 
-#define VERSION "2016-08-24-6"
+#define VERSION "2016-08-25-p"
 
 // Transmit IR signals, requires IR Leds.
 #define TRANSMIT
@@ -25,6 +25,9 @@
 
 // Use LEDs as debugging LEDs.
 #define LED
+
+// Allow to change the parameters, like timeouts
+#define PARAMETERS
 
 // Support sending signals without modulation, e.g. with RF module.
 //#define NON_MOD
@@ -67,7 +70,7 @@
 #define DEFAULT_BEGINTIMEOUT 10000UL // milliseconds
 #define DEFAULT_CAPTURE_ENDINGTIMEOUT 100L // milliseconds
 
-#define DEFAULT_RECEIVE_ENDINGTIMEOUT 6L // milliseconds
+#define DEFAULT_RECEIVE_ENDINGTIMEOUT 50L // milliseconds
 
 // Size of capture and receive arrays
 #define DEFAULT_CAPTURESIZE 400U // must be even

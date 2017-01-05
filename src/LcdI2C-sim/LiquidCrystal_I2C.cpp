@@ -1,6 +1,6 @@
 // Dummy version of LiquidCrystal_I2C.c for generic C++.
 // Copyright Bengt Martensson 2015.
-// License: GPL3.
+// License: GPL2+.
 
 #ifdef ARDUINO
 #error This file is not for the Arduino.

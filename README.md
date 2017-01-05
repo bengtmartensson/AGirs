@@ -174,7 +174,7 @@ NON_MOD (optionally), RECEIVE, LED, LCD, DECODE (only to the LCD), TRANSMITTERS
 (only a dummy implementation).
 
 ## License
-The entire work is licensed under the GPL3 license. Chris' as well as Ken's
+The entire work is licensed under the GPL2 license, or later. Chris' as well as Ken's
 code is licensed under the LGPL 2.1-license. Michael's code carries the
 GPL2-license, although he is [willing to agree to "or later
 versions"](http://www.hifi-remote.com/forums/viewtopic.php?p=112586#112586).

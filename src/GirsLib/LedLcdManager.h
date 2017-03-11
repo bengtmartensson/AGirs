@@ -17,6 +17,7 @@ public:
     static const int defaultLcdColumns = 16;
 
     static const int defaultBlinkTime = 2000;
+    static const int selftestTime = 200;
 
     enum LedState {
         on,

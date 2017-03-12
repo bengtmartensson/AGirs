@@ -7,18 +7,21 @@ for interact with other programs. communicating over a serial line
 (likely in USB disguise), TCP-, or UDP sockets, acting as server
 (accepting incoming requests) or client (initiating connections).
 
-It implements some of the functionality of [Chris Young's
-IRLib](http://tech.cyborg5.com/irlib/,
-https://github.com/cyborg5/IRLib), which is a major
-rewrite of a previous library called IRremote, published by
-Ken Shirriff in [his blog](http://www.righto.com/2009/08/multi-protocol-infrared-remote-library.html), but does not use it directly.
+It is build on top of the low-level library called [Infrared4Arduino](https://github.com/bengtmartensson/Infrared4Arduino).
+This is basically a descendant of a library called IRremote, published by
+Ken Shirriff in [his blog](http://www.righto.com/2009/08/multi-protocol-infrared-remote-library.html),
+now maintained [here](https://github.com/z3t0/Arduino-IRremote).
 It uses Michael Dreher's
 IrWidget [(article in
 German)](http://www.mikrocontroller.net/articles/High-Speed_capture_mit_ATmega_Timer),
 see also [this forum
 contribution](http://www.hifi-remote.com/forums/viewtopic.php?p=111876#111876).
 Michael's code is included, in somewhat modified form, in the files
-IrWidget.[cpp,h] and IrWidgetAggregating.[cpp,h].
+`IrWidget.[cpp,h]` and `IrWidgetAggregating.[cpp,h]`.
+The influence of [Chris Young's IRLib](http://tech.cyborg5.com/irlib/),
+maintained on [Github](https://github.com/cyborg5/IRLib), is acknowledged.
+However, the source code of the present projects is not, with the exception of the file
+`IRremoteBoardDefs.h`, derived from IRremote or IRLib.
 
 The project contains a library, contained in the directory GirsLib,
 and a few applications, presently Girs, GirsLite, Listener,
@@ -38,7 +41,8 @@ It is a modular program that is heavily based on CPP symbols, defined
 in the configuration file `config.h`. This determines the capacities of the
 compiled program, and adapts the configuration to the underlying
 hardware. The options are (somewhat) documented in `Girs/config.h`.
-Not all combination are sensible or implemented. Some of the non-sensible
+Not all combination are sensible or implemented. Some, but not all,
+of the non-sensible
 combinations will be detected and will generate a compilation error.
 
 Caused by the limitations of the Arduino build process, it may be necessary to adjust
@@ -51,10 +55,10 @@ The other sub-directories of `src` contain different sketches that can
 be compiled and run on the Arduino.
 
 Due to the quirks of the preprocessor of the Arduino IDE, the following rule is used:
-The `_program_.ino` is kept empty, except for some dummy `#include`s,
-necessary for the IDE to find the libraries. The real code goes into `_program_.cpp`.
+The _program_`.ino` is kept empty, except for some dummy `#include`s,
+necessary for the IDE to find the libraries. The real code goes into _program_`.cpp`.
 For further motivation, see [this article](http://www.gammon.com.au/forum/?id=12625).
-(however, "__Third__" therein does not appear to be valid with current software.)
+(however, "Third" therein does not appear to be valid with current software.)
 
 ## Hardware configuration
 I have written a [fairly detailed description](http://www.harctoolbox.org/arduino_nano.html)
@@ -65,8 +69,8 @@ perfect for using with IrScrutinizer and Lirc.
 The hardware configuration is determined by including a suitable
 header file. It describes the attach sensor(s) and the pins
 they are connected to. To allow soldering sensors directly to the
-holes in some boards, the program supports defining e.g. SENSOR_GND
-and SENSOR_VSS, which will make the program define these pins as
+holes in some boards, the program supports defining e.g. `SENSOR_GND`
+and `SENSOR_VSS`, which will make the program define these pins as
 digital outputs, being fed by constant 0 and 5 volts respectively.
 
 Note that the sending pin and the capture pin
@@ -85,9 +89,9 @@ RF signals (433 MHz and other carrier frequencies) do not use the IR
 typical modulation. Also there are a few IR protocols (like [Revox, Barco,
 Archer](http://www.hifi-remote.com/forums/viewtopic.php?t=14186&start=40))
 not using modulation. These signals can be sent by defining the symbol
-__NON_MOD__, and connecting
+`NON_MOD`, and connecting
 some hardware capable of sending non-modulated signals (IR- _or_ RF-)
-to the GPIO pin defined as NON_MOD_PIN. Then transmitted signals
+to the GPIO pin defined as `NON_MOD_PIN`. Then transmitted signals
 having frequency 0 will be directed to that device. (Later versions
 may use different syntax and semantic.)
 
@@ -111,18 +115,26 @@ the other commands can be tested in this way.
 ## Dependencies
 
 * [Infrared4Arduino](https://github.com/bengtmartensson/Infrared4Arduino) by myself.
-  Current version is 1.0.0. Can be installed by the library manager within the Arduino IDE
-  (Sketch -> Include library -> Manage libraries, name Infrared).
+  Current version is 1.0.1. Can be installed by the library manager within the Arduino IDE
+  (Sketch -> Include library -> Manage libraries, name Infrared (Category: Others)).
   In earlier versions
   of this project, this was integrated in AGirs, but it is now an independent project.
-* Ethernet (if enabling the ETHERNET configure option). Contained in the Arduino IDE.
-* SPI (if enabling the ETHERNET or LCD_I2C configure option). Contained in the Arduino IDE.
-* Wire (if enabling the LCD_I2C configure option). Contained in the Arduino IDE.
+* Ethernet (if enabling the `ETHERNET` configure option). Contained in the Arduino IDE.
+* SPI (if enabling the `ETHERNET` or `LCD_I2C` configure option). Contained in the Arduino IDE.
+* Wire (if enabling the `LCD_I2C` configure option). Contained in the Arduino IDE.
 * [Arduino-LiquidCrystal-I2C](https://github.com/marcoschwartz/LiquidCrystal_I2C) version 1.1.3. (Version 1.1.1 will not work with current Arduino IDE, 1.1.2 probably will.)
 (The Frank de Brabander version does not work.)
-Needed if defining LCD_I2C, i.e. connecting an LCD display with an I2C interface card.
+Needed if defining `LCD_I2C`, i.e. connecting an LCD display with an I2C interface card.
 
 ## Questions and answers
+
+* How do I setup Lirc to use this?
+
+Use the `girs` driver contained in the recent official upstream Lirc distribution.
+This is described in a document `girs.html`, also contained in the distro.
+The document is also [available online](http://lirc.org/html/girs.html).
+At the time of this writing, that document is not quite up-to-data; the recent version
+is available [here](https://sourceforge.net/u/bengtmartensson/lirc/ci/a299fed7bb0b1f99f3e7ac82707a138bfb183cdb/tree/doc/plugindocs/girs.html).
 
 * What are Makefiles doing in an Arduino project?
 
@@ -145,6 +157,10 @@ Only cards based on the W5100 chip (and compatible), like the
 shield](https://www.arduino.cc/en/Main/ArduinoEthernetShield).  There are both cheap clones of the original available, as well as
 smallish W5100-based cards.
 
+It is believed that also the next generation of W5500 based shields, like the
+official [Arduino Ethernet Shield 2](https://www.arduino.cc/en/Main/ArduinoEthernetShield)
+work, but this has not yet been tested.
+
 * What about "GirsLite"?
 
 As indicated by the
@@ -154,14 +170,14 @@ for the Arduino, that implements only the
 [transmit](http://www.harctoolbox.org/Girs.html#Transmit) modules,
 without all options. It is meant to be used with
 [IrScrutinizer](http://www.harctoolbox.org/IrScrutinizer.html)
-versions 1.1.*, as well as with Lirc, using  the Lirc
+versions 1.1.0 or later, as well as with Lirc, using  the Lirc
 `girs` driver by yours truly. Documentation is found with the [Lirc
 driver](http://lirc.org/html/girs), in the Lirc sources the file `girs.html`.
 
 It is not an independent program, it is just AGirs
 with certain options enabled, namely
-the CPP symbols TRANSMIT, CAPTURE, LED, and (optionally) NON_MOD
-defined. Alternatively, if RECEIVE is defined, but not CAPTURE, the
+the CPP symbols `TRANSMIT, CAPTURE, LED`, and (optionally) `NON_MOD`
+defined. Alternatively, if `RECEIVE` is defined, but not `CAPTURE`, the
 program mimics the capture command with a demodulating sensor, for
 usage with IrScrutinizer without a non-demodulating sensor.
 
@@ -169,12 +185,12 @@ usage with IrScrutinizer without a non-demodulating sensor.
 
 _Now discontinued_, replaced by GirsLite.
 Just as GirsLite, this was just a certain configuration of AGirs,
-"optimized" for Lirc, supporting TRANSMIT,
-NON_MOD (optionally), RECEIVE, LED, LCD, DECODE (only to the LCD), TRANSMITTERS
+"optimized" for Lirc, supporting `TRANSMIT,
+NON_MOD` (optionally), `RECEIVE, LED, LCD, DECODE` (only to the LCD), `TRANSMITTERS`
 (only a dummy implementation).
 
 ## License
-The entire work is licensed under the GPL2 license, or later. Chris' as well as Ken's
+The entire work is licensed under the GPL2 "or later" license. Chris' as well as Ken's
 code is licensed under the LGPL 2.1-license. Michael's code carries the
 GPL2-license, although he is [willing to agree to "or later
 versions"](http://www.hifi-remote.com/forums/viewtopic.php?p=112586#112586).

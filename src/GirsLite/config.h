@@ -12,7 +12,7 @@
 // Displayed in greeting messages
 #define PROGNAME "GirsLite"
 
-#define VERSION "2016-08-25-p"
+// VERSION is defined in Girs[Lite].cpp; should normally not be changed here.
 
 // Transmit IR signals, requires IR Leds.
 #define TRANSMIT

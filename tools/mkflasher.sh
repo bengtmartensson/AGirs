@@ -15,7 +15,7 @@ CPU=atmega328
 ZIP=zip
 #VERBOSE=--verbose
 
-VERSION=`grep 'define VERSION' src/$SKETCH/config.h | sed -e 's/#define VERSION //' -e 's/"//g'`
+VERSION=`grep 'define VERSION' src/$SKETCH/$SKETCH.cpp | sed -e 's/#define VERSION //' -e 's/"//g'`
 
 OUTFILE=$SKETCH-$VERSION-$BOARD-flasher.sh
 
@@ -60,8 +60,10 @@ rm -f \${HEXFILE}
 EOF2
 
 chmod +x ${OUTFILE}
+cp $TMPDIR/$SKETCH.ino.hex $SKETCH-$VERSION-$BOARD.hex
 
 # Github rejects files ending with .sh
 $ZIP ${OUTFILE}.zip ${OUTFILE}
+$ZIP $SKETCH-$VERSION-$BOARD.hex.zip $SKETCH-$VERSION-$BOARD.hex
 
 echo Created $OUTFILE and ${OUTFILE}.zip

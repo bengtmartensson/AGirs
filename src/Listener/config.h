@@ -3,6 +3,9 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
+// Use DecodeIR instead of our own decoder
+#define DECODEIR
+
 // Use LEDs
 #define LED
 
@@ -40,8 +43,8 @@
 
 // If LCD support desired, include appropriate hardware description
 #ifdef LCD
-#include <lcd_0x27_16_2.h>
-//#include <lcd_0x27_20_4.h>
+//#include <lcd_0x27_16_2.h>
+#include <lcd_0x27_20_4.h>
 #endif
 
 // Character that ends the command lines
@@ -64,9 +67,15 @@
 #endif // ! DHCP
 #endif // ETHERNET
 
-#define DEFAULT_RECEIVE_ENDINGTIMEOUT 35L // milliseconds
-#define DEFAULT_CAPTURESIZE 200U // must be even
-#define DEFAULT_BEGINTIMEOUT 10000UL // milliseconds
+#ifdef DECODEIR
+
+#define ENDINGTIMEOUT 40L // milliseconds
+#define CAPTURESIZE 500U // If DECODEIR then we probably have much memory...
+#else
+#define ENDINGTIMEOUT 35L // milliseconds
+#define CAPTURESIZE 200U // must be even
+#endif
+#define BEGINTIMEOUT 10000UL // milliseconds
 // This quantity is added to all gaps and subtracted from all marks.
 #define IRRECEIVER_MARK_EXCESS 50
 

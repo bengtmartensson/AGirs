@@ -754,7 +754,7 @@ boolean processCommand(const String& line, Stream& stream) {
         uint16_t noSends = (uint16_t) tokenizer.getInt();
         String rest = tokenizer.getRest();
         IrSignal *irSignal = Pronto::parse(rest.c_str());
-        boolean status;
+        boolean status = false;
         if (irSignal != NULL) {
             status = sendIrSignal(*irSignal, noSends); // waits
             delete irSignal;

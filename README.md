@@ -51,6 +51,11 @@ the path to `config.h` in the included statement of `GirsLib/LedLcdManager.cpp`.
 ## Code organization
 There is a "library" (in the Arduino sense), `src/GirsLib`, which should be copied/moved/linked to the Arduino library area,
 typically `~/Arduino/libraries` or `C:\Arduino\libraries`.
+
+Another "library" (in the Arduino sense), `src/IrNamedCommand`, handles [named commands](http://harctoolbox.org/Girs.html#NamedRemotes).
+It is optional, and can be enabled by `#define`-ing  `NAMED_REMOTES`. In this case, the library should be copied/moved/linked to the Arduino library area,
+typically `~/Arduino/libraries` or `C:\Arduino\libraries`.
+
 The other sub-directories of `src` contain different sketches that can
 be compiled and run on the Arduino.
 
@@ -122,9 +127,11 @@ the other commands can be tested in this way.
 * Ethernet (if enabling the `ETHERNET` configure option). Contained in the Arduino IDE.
 * SPI (if enabling the `ETHERNET` or `LCD_I2C` configure option). Contained in the Arduino IDE.
 * Wire (if enabling the `LCD_I2C` configure option). Contained in the Arduino IDE.
-* [Arduino-LiquidCrystal-I2C](https://github.com/marcoschwartz/LiquidCrystal_I2C) version 1.1.3. (Version 1.1.1 will not work with current Arduino IDE, 1.1.2 probably will.)
-(The Frank de Brabander version does not work.)
+* [LiquidCrystal_I2C](https://github.com/marcoschwartz/LiquidCrystal_I2C) version 1.1.2 or later.
+ Can be installed by the library manager within the Arduino IDE
+  (Sketch -> Include library -> Manage libraries, name LiquidCrystal I2C (Category: Display)).
 Needed if defining `LCD_I2C`, i.e. connecting an LCD display with an I2C interface card.
+(Actually, it is presently [always needed](https://github.com/bengtmartensson/AGirs/issues/29).)
 
 ## Questions and answers
 
@@ -159,7 +166,7 @@ smallish W5100-based cards.
 
 It is believed that also the next generation of W5500 based shields, like the
 official [Arduino Ethernet Shield 2](https://www.arduino.cc/en/Main/ArduinoEthernetShield)
-work, but this has not yet been tested.
+work, but this has [not yet been tested](https://github.com/bengtmartensson/AGirs/issues/25).
 
 * What about "GirsLite"?
 
@@ -188,6 +195,10 @@ Just as GirsLite, this was just a certain configuration of AGirs,
 "optimized" for Lirc, supporting `TRANSMIT,
 NON_MOD` (optionally), `RECEIVE, LED, LCD, DECODE` (only to the LCD), `TRANSMITTERS`
 (only a dummy implementation).
+
+* How is "Girs" pronounced?
+
+It is pronounced like in "girl". The "language" Girs is written capitalized, the name of an implementation is usually written in lower case.
 
 ## License
 The entire work is licensed under the GPL2 "or later" license. Chris' as well as Ken's

@@ -130,8 +130,7 @@ the other commands can be tested in this way.
 * [LiquidCrystal_I2C](https://github.com/marcoschwartz/LiquidCrystal_I2C) version 1.1.2 or later.
  Can be installed by the library manager within the Arduino IDE
   (Sketch -> Include library -> Manage libraries, name LiquidCrystal I2C (Category: Display)).
-Needed if defining `LCD_I2C`, i.e. connecting an LCD display with an I2C interface card.
-(Actually, it is presently [always needed](https://github.com/bengtmartensson/AGirs/issues/29).)
+Needed also if not using an LCD display.
 
 ## Questions and answers
 

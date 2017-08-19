@@ -75,7 +75,7 @@ public:
         return invalidPin;
     }
 
-    static boolean receiverPullup(uint8_t receiverNo UNUSED) {
+    static bool receiverPullup(uint8_t receiverNo UNUSED) {
 
 #ifdef IRRECEIVER_1_PIN
         if (receiverNo == 1)
@@ -325,7 +325,7 @@ public:
 #endif
     }
 
-    static boolean sensorPullup(uint8_t sensorNo UNUSED) {
+    static bool sensorPullup(uint8_t sensorNo UNUSED) {
 
 #ifdef IRSENSOR_1_PIN
         if (sensorNo == 1)

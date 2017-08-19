@@ -25,10 +25,10 @@ unsigned int LedLcdManager::lcdColumns = 0;
 
 pin_t LedLcdManager::physicalLeds[maxLeds];
 led_t LedLcdManager::logicalLeds[maxLeds];
-boolean LedLcdManager::shouldTimeOut[maxLeds];
+bool LedLcdManager::shouldTimeOut[maxLeds];
 
 void LedLcdManager::setup(int8_t i2cAddress, uint8_t columns, uint8_t rows,
-        const pin_t physicalLeds_[], const pin_t logicalLeds_[], const boolean shouldTimeOut_[]) {
+        const pin_t physicalLeds_[], const pin_t logicalLeds_[], const bool shouldTimeOut_[]) {
     setupLcdI2c(i2cAddress, columns, rows);
     setupPhysicalLeds(physicalLeds_);
     setupLogicLeds(logicalLeds_);
@@ -36,7 +36,7 @@ void LedLcdManager::setup(int8_t i2cAddress, uint8_t columns, uint8_t rows,
     disableTurnOffTime();
 }
 
-boolean LedLcdManager::setPhysicalLed(led_t physicalLed, LedState state) {
+bool LedLcdManager::setPhysicalLed(led_t physicalLed, LedState state) {
     pin_t pin = physicalLeds[physicalLed-1];
     if (pin == invalidPin)
         return false;
@@ -59,7 +59,7 @@ LedLcdManager::LedState LedLcdManager::onOffBlinkParse(const char *value) {
                 : invalid;
 }
 
-boolean LedLcdManager::setLogicLed(led_t logicLed, LedState state) {
+bool LedLcdManager::setLogicLed(led_t logicLed, LedState state) {
     if (logicLed == invalidLed
             || logicLed <  1
             || logicLed > maxLeds
@@ -73,7 +73,7 @@ boolean LedLcdManager::setLogicLed(led_t logicLed, LedState state) {
     return setPhysicalLed(physicalLed, state);
 }
 
-boolean LedLcdManager::setupLogicLed(led_t logicLed, led_t physicalLed) {
+bool LedLcdManager::setupLogicLed(led_t logicLed, led_t physicalLed) {
     if (physicalLed == invalidLed)
         return false;
 
@@ -81,7 +81,7 @@ boolean LedLcdManager::setupLogicLed(led_t logicLed, led_t physicalLed) {
     return true;
 }
 
-boolean LedLcdManager::setupLogicLeds(const led_t logicalLeds_[maxLeds]) {
+bool LedLcdManager::setupLogicLeds(const led_t logicalLeds_[maxLeds]) {
     for (int i = 0; i < maxLeds; i++)
         logicalLeds[i] = logicalLeds_ == NULL ? i+1 : logicalLeds_[i];
     return true;
@@ -95,12 +95,12 @@ void LedLcdManager::setupPhysicalLeds(const led_t physicalLeds_[maxLeds]) {
     }
 }
 
-void LedLcdManager::setupShouldTimeOut(const boolean shouldTimeOut_[maxLeds]) {
+void LedLcdManager::setupShouldTimeOut(const bool shouldTimeOut_[maxLeds]) {
     for (int i = 0; i < maxLeds; i++)
         shouldTimeOut[i] = shouldTimeOut_ == NULL ? true : shouldTimeOut_[i];
 }
 
-void LedLcdManager::setupShouldTimeout(led_t logicLed, boolean state) {
+void LedLcdManager::setupShouldTimeout(led_t logicLed, bool state) {
     if (logicLed != invalidLed)
         shouldTimeOut[logicLed-1] = state;
 }
@@ -147,7 +147,7 @@ void LedLcdManager::checkTurnoff() {
         allOff(false);
 }
 
-void LedLcdManager::allOff(boolean force) {
+void LedLcdManager::allOff(bool force) {
 #ifdef LCD
     if (lcd) {
         lcd->noDisplay();
@@ -165,7 +165,7 @@ void LedLcdManager::disableTurnOffTime() {
     turnOffTime = (unsigned long) -1;
 }
 
-void LedLcdManager::lcdPrint(String& string, boolean clear, int x, int y) {
+void LedLcdManager::lcdPrint(String& string, bool clear, int x, int y) {
 #ifdef LCD
     if (!lcd)
         return;
@@ -178,7 +178,7 @@ void LedLcdManager::lcdPrint(String& string, boolean clear, int x, int y) {
     if (clear)
         lcd->clear();
 
-    boolean didPrint = false;
+    bool didPrint = false;
     Tokenizer tokenizer(string);
     while (true) {
         String line = tokenizer.getLine();

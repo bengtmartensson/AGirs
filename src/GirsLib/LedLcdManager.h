@@ -37,7 +37,7 @@ private:
     static led_t logicalLeds[maxLeds];
 
     /** Indicates which logical leds should time out. */
-    static boolean shouldTimeOut[maxLeds];
+    static bool shouldTimeOut[maxLeds];
 
     static milliseconds_t blinkTime;
 
@@ -54,7 +54,7 @@ private:
     //static LedLcdManager instance;
 
     static void setupPhysicalLeds(const pin_t physicalLeds[maxLeds]);
-    static void setupShouldTimeOut(const boolean shouldTimeOut[maxLeds]);
+    static void setupShouldTimeOut(const bool shouldTimeOut[maxLeds]);
     /*pin_t pled1, pin_t pled2 = invalidPin,
             pin_t pled3 = invalidPin, pin_t pled4 = invalidPin,
             pin_t pled5 = invalidPin, pin_t pled6 = invalidPin,
@@ -77,7 +77,7 @@ public:
     static void setup(int8_t i2cAddress = -1, uint8_t columns = defaultLcdColumns, uint8_t rows = defaultLcdRows,
             const pin_t physicalLeds[maxLeds] = NULL,
             const led_t logicalLeds[maxLeds] = NULL,
-            const boolean shouldTimeOut[maxLeds] = NULL);
+            const bool shouldTimeOut[maxLeds] = NULL);
 
     static void setup(int8_t i2cAddress, uint8_t columns, uint8_t rows,
             pin_t pled1, pin_t pled2 = invalidLed,
@@ -90,13 +90,13 @@ public:
             pin_t led5 = invalidPin, pin_t led6 = invalidPin,
             pin_t led7 = invalidPin, pin_t led8 = invalidPin);
 
-    void static lcdPrint(String& string, boolean clear = true, int x = 0, int y = -1);
-    void static lcdPrint(const char *str, boolean clear = true, int x = 0, int y = -1) {
+    void static lcdPrint(String& string, bool clear = true, int x = 0, int y = -1);
+    void static lcdPrint(const char *str, bool clear = true, int x = 0, int y = -1) {
         String string(str);
         lcdPrint(string, clear, x, y);
     };
 #ifdef ARDUINO
-    void static lcdPrint(const __FlashStringHelper *pstr, boolean clear = true, int x = 0, int y = -1) {
+    void static lcdPrint(const __FlashStringHelper *pstr, bool clear = true, int x = 0, int y = -1) {
         String string(pstr);
         lcdPrint(string, clear, x, y);
     }
@@ -121,7 +121,7 @@ public:
 #endif
     }
 
-    static void allOff(boolean force);
+    static void allOff(bool force);
 
     static milliseconds_t getBlinkTime() {
         return blinkTime;
@@ -142,21 +142,21 @@ public:
     static void selfTest(const __FlashStringHelper *text);
 #endif
 
-    static boolean setPhysicalLed(led_t physicalLed, LedState state);
+    static bool setPhysicalLed(led_t physicalLed, LedState state);
 
-    static boolean setLogicLed(led_t logicLed, LedState state);
+    static bool setLogicLed(led_t logicLed, LedState state);
 
-    static boolean setLogicLed(led_t logicLed, const char *state) {
+    static bool setLogicLed(led_t logicLed, const char *state) {
         return setLogicLed(logicLed, onOffBlinkParse(state));
     };
 
     static LedState onOffBlinkParse(const char *value);
 
-    static void setupShouldTimeout(led_t logicLed, boolean state);
+    static void setupShouldTimeout(led_t logicLed, bool state);
 
-    static boolean setupLogicLed(led_t loginLed, led_t physicalLed);
+    static bool setupLogicLed(led_t loginLed, led_t physicalLed);
 
-    static boolean setupLogicLeds(const led_t array[maxLeds]);
+    static bool setupLogicLeds(const led_t array[maxLeds]);
 
     static void setupLedGroundPins() {
 #ifdef SIGNAL_LED_1_GND

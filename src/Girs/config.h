@@ -171,7 +171,11 @@
 // Include one file describing the pin configuration
 // Use one in GirsLib, or write your own.
 #ifdef ARDUINO
+#ifdef ARDUINO_AVR_MEGA2560
+#include <girs_pins_mega2560_rear.h>
+#else
 #include <girs_pins.h> // Generic
+#endif
 #else // ! ARDUINO
 // For compiling a version to test on the PC, not to flash onto the Arduino.
 #include <girs_pins_dummy.h>

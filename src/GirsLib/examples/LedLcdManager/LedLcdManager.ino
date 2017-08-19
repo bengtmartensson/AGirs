@@ -20,7 +20,7 @@
 #include <LedLcdManager.h>
 
 unsigned long then = millis();
-boolean didit = false;
+bool didit = false;
 
 void setup() {
     LedLcdManager::setupLedGroundPins();
@@ -28,7 +28,7 @@ void setup() {
             (const pin_t[]) {SIGNAL_LED_1, SIGNAL_LED_2, SIGNAL_LED_3, SIGNAL_LED_4,
                     SIGNAL_LED_5, SIGNAL_LED_6, SIGNAL_LED_7, SIGNAL_LED_8 }
             ,NULL//,(const led_t[]) {8, 7, 6, 5, 4, 3, 2, 1},
-            ,(const boolean[]) {false, true, false, true, false, true, true, false}//true, true, true, true }
+            ,(const bool[]) {false, true, false, true, false, true, true, false}//true, true, true, true }
     );
     LedLcdManager::selfTest("Welcome to\nLedLcdManager!");
 }

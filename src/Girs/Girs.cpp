@@ -163,7 +163,7 @@ IPAddress peer(PEER_IP);
 #endif // ETHERNET
 
 #ifdef RESET
-boolean reset = false;
+bool reset = false;
 #endif
 
 #define modulesSupported EXPAND_AND_QUOTE(Base TRANSMIT_NAME CAPTURE_NAME RENDERER_NAME RECEIVE_NAME DECODER_NAME LED_NAME LCD_NAME PARAMETERS_NAME NAMED_COMMANDS_NAME )
@@ -171,7 +171,7 @@ boolean reset = false;
 #define PROGNAME "AGirs"
 #endif
 #ifndef VERSION
-#define VERSION "2017-03-11"
+#define VERSION "2017-08-19"
 #endif
 #define okString "OK"
 #define errorString "ERROR"
@@ -179,7 +179,7 @@ boolean reset = false;
 
 #ifdef TRANSMIT
 
-boolean sendIrSignal(const IrSignal &irSignal, unsigned int noSends=1) {
+bool sendIrSignal(const IrSignal &irSignal, unsigned int noSends=1) {
     if (noSends == 0)
         return false;
 #ifdef TRANSMITLED
@@ -255,7 +255,7 @@ void decodeOrDump(IrReader *irReader, Stream& stream) {
 #endif // !DECODER
 }
 
-boolean receive(Stream& stream) {
+bool receive(Stream& stream) {
     IrReceiverSampler *irReceiver = IrReceiverSampler::getInstance();
     if (irReceiver == NULL)
         irReceiver = IrReceiverSampler::newIrReceiverSampler(captureSize,
@@ -277,7 +277,7 @@ boolean receive(Stream& stream) {
         delay(beginTimeout);
 #endif
         LedLcdManager::checkTurnoff();
-    boolean ready = irReceiver->isReady();
+    bool ready = irReceiver->isReady();
     irReceiver->disable();
 #ifdef RECEIVELED
      LedLcdManager::setLogicLed(receiveled, LedLcdManager::off);
@@ -291,7 +291,7 @@ boolean receive(Stream& stream) {
 
 #ifdef CAPTURE
 
-boolean capture(Stream& stream) {
+bool capture(Stream& stream) {
     IrWidget *irWidget = IrWidgetAggregating::newIrWidgetAggregating(captureSize,
             GirsUtils::sensorPullup(sensorNo));
     if (irWidget == NULL)
@@ -330,7 +330,7 @@ boolean capture(Stream& stream) {
 //#include "my_named_remotes.inc"
 extern const IrNamedRemoteSet remoteSet;
 
-boolean sendNamedCommand(Stream& stream, String& remoteName, String& commandName, unsigned int noSends) {
+bool sendNamedCommand(Stream& stream, String& remoteName, String& commandName, unsigned int noSends) {
     const IrNamedRemote* remote = remoteSet.getIrNamedRemote(remoteName.c_str());
     if (remote == NULL) {
         stream.println(F("No such remote"));
@@ -343,7 +343,7 @@ boolean sendNamedCommand(Stream& stream, String& remoteName, String& commandName
         return false;
     }
     const IrSignal *irSignal = command->getIrSignal();
-    boolean status = sendIrSignal(*irSignal, noSends); // waits, blinks
+    bool status = sendIrSignal(*irSignal, noSends); // waits, blinks
     delete irSignal;
     return status;
 }
@@ -492,20 +492,20 @@ void info(Stream& stream) {
 }
 #endif
 
-boolean isPrefix(const String& cmd, const char *string) {
+bool isPrefix(const String& cmd, const char *string) {
     return strncmp(cmd.c_str(), string, cmd.length()) == 0;
 }
 
-boolean isPrefix(const char *string, const String& cmd) {
+bool isPrefix(const char *string, const String& cmd) {
     return strncmp(cmd.c_str(), string, strlen(string)) == 0;
 }
 
 #ifdef ARDUINO
-boolean isPrefix(const String& cmd, const __FlashStringHelper *pstring) {
+bool isPrefix(const String& cmd, const __FlashStringHelper *pstring) {
     return strncmp_PF(cmd.c_str(), (uint_farptr_t) pstring, cmd.length()) == 0;
 }
 
-boolean isPrefix(const __FlashStringHelper *pstring, const String& cmd) {
+bool isPrefix(const __FlashStringHelper *pstring, const String& cmd) {
     return strncmp_PF(cmd.c_str(), (uint_farptr_t) pstring, strlen_PF((uint_farptr_t) pstring)) == 0;
 }
 #endif
@@ -549,9 +549,9 @@ String readCommand(Stream& stream) {
     return line;
 }
 
-boolean processCommand(const String& line, Stream& stream) {
+bool processCommand(const String& line, Stream& stream) {
 #ifdef SESSION
-    boolean quit = false;
+    bool quit = false;
 #endif
     Tokenizer tokenizer(line);
     String cmd = tokenizer.getToken();
@@ -587,7 +587,7 @@ boolean processCommand(const String& line, Stream& stream) {
         if (isPrefix(cmd, F("led"))) {
         pin_t no = (pin_t) tokenizer.getInt();
         String value = tokenizer.getToken();
-        boolean success = LedLcdManager::setLogicLed(no, value.c_str());
+        bool success = LedLcdManager::setLogicLed(no, value.c_str());
         stream.println(success ? F(okString) : F(errorString));
     } else
 #endif // LED
@@ -698,7 +698,7 @@ boolean processCommand(const String& line, Stream& stream) {
 #ifdef RECEIVE
         // TODO: option for force decoding off
         if (isPrefix(cmd, F("receive"))) { // receive
-        boolean status = receive(stream);
+        bool status = receive(stream);
         if (!status)
             stream.println(F(errorString));
     } else
@@ -709,7 +709,7 @@ boolean processCommand(const String& line, Stream& stream) {
         uint16_t noSends = (uint16_t) tokenizer.getInt();
         String remoteName = tokenizer.getToken();
         String commandName = tokenizer.getToken();
-        boolean success = sendNamedCommand(stream, remoteName, commandName, noSends);
+        bool success = sendNamedCommand(stream, remoteName, commandName, noSends);
         if (success)
             stream.println(okString);
     } else
@@ -744,7 +744,7 @@ boolean processCommand(const String& line, Stream& stream) {
         for (uint16_t i = 0; i < endingLength; i++)
             ending[i] = tokenizer.getMicroseconds();
         IrSignal irSignal(intro, introLength, repeat, repeatLength, ending, endingLength, frequency);
-        boolean status = sendIrSignal(irSignal, noSends); // waits
+        bool status = sendIrSignal(irSignal, noSends); // waits
         stream.println(status ? F(okString) : F(errorString));
     } else
 #endif // TRANSMIT
@@ -754,7 +754,7 @@ boolean processCommand(const String& line, Stream& stream) {
         uint16_t noSends = (uint16_t) tokenizer.getInt();
         String rest = tokenizer.getRest();
         IrSignal *irSignal = Pronto::parse(rest.c_str());
-        boolean status = false;
+        bool status = false;
         if (irSignal != NULL) {
             status = sendIrSignal(*irSignal, noSends); // waits
             delete irSignal;
@@ -787,7 +787,7 @@ boolean processCommand(const String& line, Stream& stream) {
             stream.print(F("no such protocol: "));
             stream.println(protocol);
         }
-        boolean status = false;
+        bool status = false;
         if (irSignal != NULL) {
             status = sendIrSignal(*irSignal, noSends); // waits, blinks
             delete irSignal;
@@ -816,7 +816,7 @@ boolean processCommand(const String& line, Stream& stream) {
     return true;
 }
 
-boolean readProcessOneCommand(Stream& stream) {
+bool readProcessOneCommand(Stream& stream) {
     String line = readCommand(stream);
 #ifdef SERIAL_DEBUG
     Serial.println("Command: " + line);
@@ -825,7 +825,7 @@ boolean readProcessOneCommand(Stream& stream) {
 }
 
 #if defined(ETHERNET)
-boolean readProcessOneTcpCommand(EthernetClient& client) {
+bool readProcessOneTcpCommand(EthernetClient& client) {
     while (client.available() == 0) {
         LedLcdManager::checkTurnoff();
 #ifdef BEACON
@@ -914,7 +914,7 @@ void loop() {
 #else // !SERVER
     IPAddress peer(PEER_IP);
     EthernetClient client;
-    boolean status = client.connect(peer, PEER_PORT);
+    bool status = client.connect(peer, PEER_PORT);
     if (!status)
         return;
 #ifdef SERIAL_DEBUG

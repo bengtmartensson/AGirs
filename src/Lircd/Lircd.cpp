@@ -255,26 +255,26 @@ void setup() {
 #endif // SERIAL_DEBUG
 }
 
-boolean isPrefix(const String& cmd, const char *string) {
+bool isPrefix(const String& cmd, const char *string) {
     return strncmp(cmd.c_str(), string, cmd.length()) == 0;
 }
 
-boolean isPrefix(const char *string, const String& cmd) {
+bool isPrefix(const char *string, const String& cmd) {
     return strncmp(cmd.c_str(), string, strlen(string)) == 0;
 }
 
-boolean isPrefix(const String& cmd, const __FlashStringHelper *pstring) {
+bool isPrefix(const String& cmd, const __FlashStringHelper *pstring) {
     return strncmp_PF(cmd.c_str(), (uint_farptr_t) pstring, cmd.length()) == 0;
 }
 
-boolean isPrefix(const __FlashStringHelper *pstring, const String& cmd) {
+bool isPrefix(const __FlashStringHelper *pstring, const String& cmd) {
     return strncmp_PF(cmd.c_str(), (uint_farptr_t) pstring, strlen_PF((uint_farptr_t) pstring)) == 0;
 }
 
 // Process one command.
-boolean readProcessOneCommand(Stream& stream) {
+bool readProcessOneCommand(Stream& stream) {
 #ifdef ETHERNET_SESSION
-    boolean quit = false;
+    bool quit = false;
 #endif
 #ifdef COMMANDLED
     LedLcdManager::setLogicLed(commandled, LedLcdManager::on);
@@ -321,7 +321,7 @@ boolean readProcessOneCommand(Stream& stream) {
         myprintln(stream, F("SUCCESS"));
         pin_t no = (pin_t) tokenizer.getInt();
         String value = tokenizer.getToken();
-        boolean success = LedLcdManager::setLogicLed(no, value.c_str());
+        bool success = LedLcdManager::setLogicLed(no, value.c_str());
         stream.println(success ? F(okString) : F(errorString));
     } else
 #endif // LED
@@ -506,7 +506,7 @@ boolean readProcessOneCommand(Stream& stream) {
     return true;
 }
 
-boolean readProcessOneTcpCommand(EthernetClient& client) {
+bool readProcessOneTcpCommand(EthernetClient& client) {
     while (client.available() == 0) {
         LedLcdManager::checkTurnoff();
 #ifdef BEACON

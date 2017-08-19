@@ -140,8 +140,6 @@ Needed if defining `LCD_I2C`, i.e. connecting an LCD display with an I2C interfa
 Use the `girs` driver contained in the recent official upstream Lirc distribution.
 This is described in a document `girs.html`, also contained in the distro.
 The document is also [available online](http://lirc.org/html/girs.html).
-At the time of this writing, that document is not quite up-to-data; the recent version
-is available [here](https://sourceforge.net/u/bengtmartensson/lirc/ci/a299fed7bb0b1f99f3e7ac82707a138bfb183cdb/tree/doc/plugindocs/girs.html).
 
 * What are Makefiles doing in an Arduino project?
 

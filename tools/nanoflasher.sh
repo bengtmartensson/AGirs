@@ -19,6 +19,10 @@ BAUD=57600
 
 HEXFILE=$1
 
-${AVRDUDE} -C${AVRDUDE_CONF} \
+if [ -f ${AVRDUDE_CONF} ] ; then
+   AVRDUDE_CONF_OPTION=-C${AVRDUDE_CONF}
+fi
+
+${AVRDUDE} ${AVRDUDE_CONF_OPTION} \
      -v -p${PART} -c${PROGRAMMER_ID} -P${PORT} -b${BAUD} -D \
      -Uflash:w:${HEXFILE}:i

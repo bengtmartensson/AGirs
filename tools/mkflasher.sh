@@ -52,7 +52,13 @@ cat $TMPDIR/$SKETCH.ino.hex >> ${OUTFILE}
 cat >> ${OUTFILE} <<EOF2
 EOF
 
-\${AVRDUDE} -C\${AVRDUDE_CONF} \\
+if [ -f \${AVRDUDE_CONF} ] ; then
+   AVRDUDE_CONF_OPTION=-C\${AVRDUDE_CONF}
+else
+   AVRDUDE_CONF_OPTION=
+fi
+
+\${AVRDUDE} \${AVRDUDE_CONF_OPTION} \\
      -v -p\${PART} -c\${PROGRAMMER_ID} -P\${PORT} -b\${BAUD} -D \\
      -Uflash:w:\${HEXFILE}:i
 

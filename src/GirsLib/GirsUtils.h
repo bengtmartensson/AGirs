@@ -1,7 +1,7 @@
 #ifndef GIRSUTILS_H
 #define	GIRSUTILS_H
 
-#include <LedLcdManager.h> // for led_t
+#include "LedLcdManager.h" // for led_t
 #include <MultiDecoder.h>  // for MultiDecoder::Type
 #ifdef ARDUINO
 #include <IPAddress.h>

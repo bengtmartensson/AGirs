@@ -172,18 +172,18 @@
 // Use one in GirsLib, or write your own.
 #ifdef ARDUINO
 #ifdef ARDUINO_AVR_MEGA2560
-#include <girs_pins_mega2560_rear.h>
+#include "../hardware-config/girs_pins_mega2560_rear.h"
 #else
-#include <girs_pins.h> // Generic
+#include "../hardware-config/girs_pins.h" // Generic
 #endif
 #else // ! ARDUINO
 // For compiling a version to test on the PC, not to flash onto the Arduino.
-#include <girs_pins_dummy.h>
+#include "../hardware-config/girs_pins_dummy.h"
 #endif
 
 // If LCD support desired, include appropriate hardware description
 #ifdef LCD
-#include <lcd_0x3F_20_4.h>
+#include "../hardware-config/lcd_0x3F_20_4.h"
 #endif // ! LCD
 
 #ifdef ETHERNET

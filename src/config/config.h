@@ -1,0 +1,1 @@
+#include "GirsLite.config.h"

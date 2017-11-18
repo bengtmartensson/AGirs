@@ -1,0 +1,2 @@
+This directory contains sources for testing of the sources on a local host,
+"SIL (software-in-the-loop"). It is not to be compile for the Arduino target.

@@ -15,9 +15,9 @@ You should have received a copy of the GNU General Public License along with
 this program. If not, see http://www.gnu.org/licenses/.
 */
 
-#include "config.h"
-#include "LedLcdManager.h"
-#include <GirsUtils.h>
+#include "config/config.h"
+#include "GirsLib/LedLcdManager.h"
+#include "GirsLib/GirsUtils.h"
 #ifdef ARDUINO
 #include <avr/pgmspace.h>
 #else
@@ -75,9 +75,9 @@ this program. If not, see http://www.gnu.org/licenses/.
 #endif
 
 #ifdef NAMED_COMMANDS
-#include "IrNamedRemoteSet.h"
-#include "NamedNec1Command.h"
-#include "NamedRc5Command.h"
+#include "IrNamedCommand/IrNamedRemoteSet.h"
+#include "IrNamedCommand/NamedNec1Command.h"
+#include "IrNamedCommand/NamedRc5Command.h"
 #endif
 
 #ifdef BEACON
@@ -177,9 +177,15 @@ bool reset = false;
 #define errorString "ERROR"
 #define timeoutString "."
 
+// If SKETCH is defined, generate a runnable sketch with loop() and setup()
+#ifdef SKETCH
+#define girs_loop loop
+#define gits_setup setup
+#endif // SKETCH
+
 #ifdef TRANSMIT
 
-bool sendIrSignal(const IrSignal &irSignal, unsigned int noSends=1) {
+static bool sendIrSignal(const IrSignal &irSignal, unsigned int noSends=1) {
     if (noSends == 0)
         return false;
 #ifdef TRANSMITLED
@@ -208,7 +214,7 @@ bool sendIrSignal(const IrSignal &irSignal, unsigned int noSends=1) {
 
 #endif // TRANSMIT
 
-void flushIn(Stream &stream UNUSED) {
+static void flushIn(Stream &stream UNUSED) {
 #ifdef ARDUINO
     while (stream.available())
         stream.read();
@@ -217,7 +223,7 @@ void flushIn(Stream &stream UNUSED) {
 
 #ifdef RECEIVE
 
-void decodeOrDump(IrReader *irReader, Stream& stream) {
+static void decodeOrDump(IrReader *irReader, Stream& stream) {
 #ifdef DECODER
     MultiDecoder multiDecoder(*irReader);
 #ifdef LCD
@@ -255,7 +261,7 @@ void decodeOrDump(IrReader *irReader, Stream& stream) {
 #endif // !DECODER
 }
 
-bool receive(Stream& stream) {
+static bool receive(Stream& stream) {
     IrReceiverSampler *irReceiver = IrReceiverSampler::getInstance();
     if (irReceiver == NULL)
         irReceiver = IrReceiverSampler::newIrReceiverSampler(captureSize,
@@ -291,7 +297,7 @@ bool receive(Stream& stream) {
 
 #ifdef CAPTURE
 
-bool capture(Stream& stream) {
+static bool capture(Stream& stream) {
     IrWidget *irWidget = IrWidgetAggregating::newIrWidgetAggregating(captureSize,
             GirsUtils::sensorPullup(sensorNo));
     if (irWidget == NULL)
@@ -330,7 +336,7 @@ bool capture(Stream& stream) {
 //#include "my_named_remotes.inc"
 extern const IrNamedRemoteSet remoteSet;
 
-bool sendNamedCommand(Stream& stream, String& remoteName, String& commandName, unsigned int noSends) {
+static bool sendNamedCommand(Stream& stream, String& remoteName, String& commandName, unsigned int noSends) {
     const IrNamedRemote* remote = remoteSet.getIrNamedRemote(remoteName.c_str());
     if (remote == NULL) {
         stream.println(F("No such remote"));
@@ -348,7 +354,7 @@ bool sendNamedCommand(Stream& stream, String& remoteName, String& commandName, u
     return status;
 }
 
-void dumpRemote(Stream& stream, String& name) {
+static void dumpRemote(Stream& stream, String& name) {
     if (name.length() == 0) {
         for (unsigned int i = 0; i < remoteSet.getNoIrNamedRemotes(); i++) {
             stream.print(remoteSet.getIrNamedRemotes()[i]->getName());
@@ -372,7 +378,7 @@ void dumpRemote(Stream& stream, String& name) {
 
 #ifdef LISTEN
 
-void listen(Stream& stream) {
+static void listen(Stream& stream) {
     do {
         receive(stream);
     } while (stream.available() == 0);
@@ -380,7 +386,7 @@ void listen(Stream& stream) {
 
 #endif
 
-void setup() {
+void girs_setup() {
     LedLcdManager::setupLedGroundPins();
     GirsUtils::setupReceivers();
     GirsUtils::setupSensors();
@@ -492,11 +498,11 @@ void info(Stream& stream) {
 }
 #endif
 
-bool isPrefix(const String& cmd, const char *string) {
+static inline bool isPrefix(const String& cmd, const char *string) {
     return strncmp(cmd.c_str(), string, cmd.length()) == 0;
 }
 
-bool isPrefix(const char *string, const String& cmd) {
+static inline bool isPrefix(const char *string, const String& cmd) {
     return strncmp(cmd.c_str(), string, strlen(string)) == 0;
 }
 
@@ -510,7 +516,7 @@ bool isPrefix(const __FlashStringHelper *pstring, const String& cmd) {
 }
 #endif
 
-String readCommand(Stream& stream) {
+static String readCommand(Stream& stream) {
 #if defined(COMMANDLED) & defined(LED)
     LedLcdManager::setLogicLed(commandled, LedLcdManager::on);
 #endif
@@ -549,7 +555,7 @@ String readCommand(Stream& stream) {
     return line;
 }
 
-bool processCommand(const String& line, Stream& stream) {
+static bool processCommand(const String& line, Stream& stream) {
 #ifdef SESSION
     bool quit = false;
 #endif
@@ -816,7 +822,7 @@ bool processCommand(const String& line, Stream& stream) {
     return true;
 }
 
-bool readProcessOneCommand(Stream& stream) {
+static bool readProcessOneCommand(Stream& stream) {
     String line = readCommand(stream);
 #ifdef SERIAL_DEBUG
     Serial.println("Command: " + line);
@@ -838,7 +844,7 @@ bool readProcessOneTcpCommand(EthernetClient& client) {
 }
 #endif
 
-void loop() {
+void girs_loop() {
     LedLcdManager::checkTurnoff();
 #ifdef ETHERNET
 #ifdef BEACON

@@ -1,8 +1,5 @@
 // Configuration for Arduino Micro with components soldered on the PCB.
 
-#ifndef GIRS_PINS_MICRO_H
-#define GIRS_PINS_MICRO_H
-
 #ifndef ARDUINO_AVR_MICRO
 #error This file is for Micro only
 #endif
@@ -35,5 +32,3 @@
 #ifdef TRANSMIT
 // Send pin 9
 #endif
-
-#endif // ! GIRS_PINS_MICRO_H

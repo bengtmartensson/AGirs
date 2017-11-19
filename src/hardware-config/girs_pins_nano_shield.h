@@ -1,8 +1,5 @@
 // Configuration for my Arduino Nano shield.
 
-#ifndef GIRS_PINS_NANO_H
-#define GIRS_PINS_NANO_H
-
 #ifndef ARDUINO_AVR_NANO
 #error This file is for Nano only
 #endif
@@ -32,5 +29,3 @@
 #ifdef NON_MOD
 #define NON_MOD_PIN 9
 #endif
-
-#endif // ! GIRS_PINS_NANO_H

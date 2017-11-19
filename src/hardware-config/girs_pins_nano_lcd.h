@@ -1,8 +1,5 @@
 // Configuration for Arduino Nano with components soldered on the PCB.
 
-#ifndef GIRS_PINS_NANO_LCD_H
-#define GIRS_PINS_NANO_LCD_H
-
 #ifndef ARDUINO_AVR_NANO
 #error This file is for Nano only
 #endif
@@ -34,5 +31,3 @@
 #ifdef TRANSMIT
 // Send pin 3
 #endif
-
-#endif // ! GIRS_PINS_NANO_LCD_H

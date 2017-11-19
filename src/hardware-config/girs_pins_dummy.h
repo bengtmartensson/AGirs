@@ -1,10 +1,7 @@
 // Dummy pin Configuration
 
-#ifndef GIRS_PINS_DUMMY
-#define GIRS_PINS_DUMMY
-
 #ifdef ARDUINO
-#error This file is not for flashin on Arduino
+#error This file is not for flashing on Arduino
 #endif
 
 #ifdef LED
@@ -48,5 +45,3 @@
 #ifdef NON_MOD
 #define NON_MOD_PIN 3
 #endif
-
-#endif // ! GIRS_PINS_DUMMY

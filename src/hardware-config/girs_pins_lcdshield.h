@@ -1,9 +1,6 @@
 // Configuration for Arduino * with LCD shield.
 // Makes very little sense on non-Uno's.
 
-#ifndef GIRS_PINS_LCDSHIELD_H
-#define GIRS_PINS_LCDSHIELD_H
-
 #ifdef ARDUINO_AVR_NANO
 #error This file is not for Nano
 #elif defined(ARDUINO_AVR_MICRO)
@@ -37,5 +34,3 @@
 #ifdef TRANSMIT
 // Send pin 3
 #endif
-
-#endif // ! GIRS_PINS_DEFAULT_H

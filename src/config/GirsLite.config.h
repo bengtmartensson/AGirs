@@ -6,8 +6,7 @@
 // Define for IrScrutinizer/Lirc optimized version
 #define GIRSLITE
 
-// Properties
-// Girs modules to implement, see http://www.harctoolbox.org/Girs.html
+// Define Girs modules to implement, see http://www.harctoolbox.org/Girs.html
 
 // Displayed in greeting messages
 #define PROGNAME "GirsLite"
@@ -23,7 +22,7 @@
 // Receive demodulated IR signals, require demodulating IR sensor (TSMP* or equivalent)
 #define RECEIVE
 
-// Use LEDs as debugging LEDs.
+// Use LEDs & define command "led"
 #define LED
 
 // Allow to change the parameters, like timeouts
@@ -54,6 +53,7 @@
 
 // Light this when listening for command on the input stream
 #define COMMANDLED 2
+
 #endif // LED
 
 // Character that ends the command lines
@@ -62,22 +62,17 @@
 // Hardware configuration
 
 // Include one file describing the pin configuration
-// Use one in GirsLib, or write your own.
+// Use one of the provided, or write your own.
 #include "hardware-config/girs_pins.h" // Generic
 
 // Without PARAMETERS, these are really not defaults,
 // they are the non-changeable values.
 #define DEFAULT_BEGINTIMEOUT 10000UL // milliseconds
 #define DEFAULT_CAPTURE_ENDINGTIMEOUT 100L // milliseconds
-
 #define DEFAULT_RECEIVE_ENDINGTIMEOUT 50L // milliseconds
 
 // Size of capture and receive arrays
 #define DEFAULT_CAPTURESIZE 400U // must be even
-
-#define serialBaud 115200
-#define serialTimeout 5000L
-
 
 #ifdef RECEIVE
 // This quantity is added to all gaps and subtracted from all marks when receiving.
@@ -88,5 +83,10 @@
 // This quantity is added to all gaps and subtracted from all marks when capturing.
 #define IRSENSOR_MARK_EXCESS -10
 #endif
+
+#if !defined(ETHERNET) | defined(SERIAL_DEBUG)
+#define serialBaud 115200
+#define serialTimeout 5000L
+#endif // !defined(ETHERNET) | defined(SERIAL_DEBUG)
 
 #endif // ! CONFIG_H

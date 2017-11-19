@@ -1,8 +1,5 @@
 // Configuration for Arduino Leonardo
 
-#ifndef GIRS_PINS_DEFAULT_H
-#define GIRS_PINS_DEFAULT_H
-
 #ifdef ARDUINO_AVR_NANO
 #error This file is not for Nano
 #elif defined(ARDUINO_AVR_MICRO)
@@ -34,5 +31,3 @@
 #ifdef TRANSMIT
 // Send pin 3/9
 #endif
-
-#endif // ! GIRS_PINS_DEFAULT_H

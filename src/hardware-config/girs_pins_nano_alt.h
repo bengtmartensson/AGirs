@@ -1,8 +1,5 @@
 // Configuration for Arduino Nano with receiver on the ICSP pin
 
-#ifndef GIRS_PINS_NANO_H
-#define GIRS_PINS_NANO_H
-
 #ifndef ARDUINO_AVR_NANO
 #error This file is for Nano only
 #endif
@@ -27,5 +24,3 @@
 #ifdef TRANSMIT
 // Send pin 3
 #endif
-
-#endif // ! GIRS_PINS_NANO_H

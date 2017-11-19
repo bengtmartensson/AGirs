@@ -1,8 +1,5 @@
 // Configuration for Arduino Mega2560
 
-#ifndef GIRS_PINS_MEGA2560_H
-#define GIRS_PINS_MEGA2560_H
-
 #ifndef ARDUINO_AVR_MEGA2560
 #error This file is for AVR_MEGA2560 only
 #endif
@@ -47,8 +44,6 @@
 #ifdef NON_MOD
 #define NON_MOD_PIN 3
 #endif
-
-#endif // ! GIRS_PINS_MEGA2560_H
 
 /* From http://busyducks.com/ascii-art-arduinos                              +-----+
 

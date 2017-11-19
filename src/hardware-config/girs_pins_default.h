@@ -1,8 +1,5 @@
 // Configuration for Arduino Uno and similar.
 
-#ifndef GIRS_PINS_DEFAULT_H
-#define GIRS_PINS_DEFAULT_H
-
 #ifdef ARDUINO_AVR_NANO
 #error This file is not for Nano
 #elif defined(ARDUINO_AVR_MICRO)
@@ -45,8 +42,6 @@
 #ifdef NON_MOD
 #define NON_MOD_PIN 10
 #endif
-
-#endif // ! GIRS_PINS_DEFAULT_H
 
 /* From http://busyducks.com/ascii-art-arduinos                             +-----+
 

@@ -1,6 +1,3 @@
-#ifndef GIRS_PINS_H
-#define GIRS_PINS_H
-
 #if defined(ARDUINO_AVR_NANO)
 // Configuration for Arduino Nano with components soldered on the PCB.
 #include "girs_pins_nano.h"
@@ -15,5 +12,3 @@
 // Generic configuration for Uno-like boards
 #include "girs_pins_default.h"
 #endif
-
-#endif // ! GIRS_PINS_H

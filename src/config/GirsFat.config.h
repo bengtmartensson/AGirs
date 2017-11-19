@@ -15,6 +15,8 @@
 // Displayed in greeting messages
 #define PROGNAME "GirsLite"
 
+// VERSION is defined in Girs[Lite].cpp; should normally not be changed here.
+
 // Transmit IR signals, requires IR Leds.
 #define TRANSMIT
 
@@ -24,8 +26,14 @@
 // Receive demodulated IR signals, require demodulating IR sensor (TSMP* or equivalent)
 #define RECEIVE
 
-// Use LEDs, define command "led!
+// Use LEDs & define command "led"
 #define LED
+
+// Allow to change the parameters, like timeouts
+#define PARAMETERS
+
+// Support sending signals without modulation, e.g. with RF module.
+//#define NON_MOD
 
 // Defines command "memory" reporting free (SRAM) memory.
 //#define FREEMEM
@@ -169,7 +177,7 @@
 // Hardware configuration
 
 // Include one file describing the pin configuration
-// Use one in GirsLib, or write your own.
+// Use one provided, or write your own.
 #ifdef ARDUINO
 #ifdef ARDUINO_AVR_MEGA2560
 #include "../hardware-config/girs_pins_mega2560_rear.h"
@@ -209,17 +217,21 @@
 #define LARGE_RAM
 #endif
 
-// Defaults
 
 // Character that ends the command lines
 #define EOLCHAR '\r'
 
-#define DEFAULT_BEGINTIMEOUT 10000UL // milliseconds
+// Hardware configuration
 
-#if !defined(ETHERNET) | defined(SERIAL_DEBUG)
-#define serialBaud 115200
-#define serialTimeout 5000L
-#endif // !defined(ETHERNET) | defined(SERIAL_DEBUG)
+// Include one file describing the pin configuration
+// Use one of the provided, or write your own.
+#include "hardware-config/girs_pins.h" // Generic
+
+// Without PARAMETERS, these are really not defaults,
+// they are the non-changeable values.
+#define DEFAULT_BEGINTIMEOUT 10000UL // milliseconds
+#define DEFAULT_CAPTURE_ENDINGTIMEOUT 100L // milliseconds
+#define DEFAULT_RECEIVE_ENDINGTIMEOUT 50L // milliseconds
 
 #ifdef DECODER
 // If using the decoder, be sure to end a capture before the repeat sequence.
@@ -230,9 +242,9 @@
 
 #ifdef CAPTURE
 #define DEFAULT_CAPTURE_ENDINGTIMEOUT 100L // milliseconds
-// Size of capture and receive arrays
 #endif
 
+// Size of capture and receive arrays
 #if defined(CAPTURE) | defined(RECEIVE)
 #ifdef LARGE_RAM
 #define DEFAULT_CAPTURESIZE 500U // must be even
@@ -242,13 +254,18 @@
 #endif
 
 #ifdef RECEIVE
-// This quantity is added to all gaps and subtracted from all marks.
+// This quantity is added to all gaps and subtracted from all marks when receiving.
 #define IRRECEIVER_MARK_EXCESS 50
 #endif
 
 #ifdef CAPTURE
-// This quantity is added to all gaps and subtracted from all marks.
+// This quantity is added to all gaps and subtracted from all marks when capturing.
 #define IRSENSOR_MARK_EXCESS -10
 #endif
+
+#if !defined(ETHERNET) | defined(SERIAL_DEBUG)
+#define serialBaud 115200
+#define serialTimeout 5000L
+#endif // !defined(ETHERNET) | defined(SERIAL_DEBUG)
 
 #endif // ! CONFIG_H

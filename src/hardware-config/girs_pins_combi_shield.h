@@ -1,7 +1,4 @@
-// Configuration for Arduino Uno and similar.
-
-#ifndef GIRS_PINS_DEFAULT_H
-#define GIRS_PINS_DEFAULT_H
+// Configuration for a shield for Arduino Uno and similar.
 
 #ifdef ARDUINO_AVR_NANO
 #error This file is not for Nano
@@ -42,5 +39,3 @@
 #ifdef NON_MOD
 #define NON_MOD_PIN 10
 #endif
-
-#endif // ! GIRS_PINS_DEFAULT_H

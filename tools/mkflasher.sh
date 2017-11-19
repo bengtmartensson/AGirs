@@ -7,7 +7,7 @@
 ARDUINO=arduino
 TMPDIR=/tmp/nanobuild
 SKETCH=GirsLite
-FILE=src/$SKETCH/$SKETCH.ino
+FILE=examples/$SKETCH/$SKETCH.ino
 PACKAGE=arduino
 ARCHITECTURE=avr
 BOARD=nano
@@ -15,12 +15,14 @@ CPU=atmega328
 ZIP=zip
 #VERBOSE=--verbose
 
-VERSION=`grep 'define VERSION' src/$SKETCH/$SKETCH.cpp | sed -e 's/#define VERSION //' -e 's/"//g'`
+VERSION=`grep 'version=' library.properties | sed -e 's/version=//'`
 
 OUTFILE=$SKETCH-$VERSION-$BOARD-flasher.sh
 
 rm -rf $TMPDIR $OUTFILE
 
+# I _think_ that this command requires AGirs at least to be accessible
+# in the standard Arduino path, for example ~/Arduino/libraries.
 $ARDUINO  --verify --pref build.path=$TMPDIR ${VERBOSE} \
 	  --board ${PACKAGE}:${ARCHITECTURE}:${BOARD}:cpu=${CPU} \
 	  $FILE
@@ -29,6 +31,7 @@ cat > ${OUTFILE} <<EOF1
 #!/bin/sh
 
 # Flashing of the ${PACKAGE} ${BOARD}, using avrdude installed like Fedora.
+# Sometimes root access is required, depending on the system configuration.
 
 if [ \$# -eq 1 ] ; then
     PORT=\$1

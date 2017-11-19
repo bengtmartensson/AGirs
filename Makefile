@@ -13,11 +13,16 @@ DOXYGEN := doxygen
 XSLTPROC := xsltproc
 
 DEBUGFLAGS=-g
-WARNINGFLAGS=-Wall -Werror -Wextra
+WARNINGFLAGS=-Wall -Wextra
 BOARD=nano
 
 DOXYFILE := tools/keywords_txt_generator.doxy
 TRANSFORMATION := tools/doxygen2keywords.xsl
+
+# Should poiint to the directory where the Infrared4Arduino
+# (https://github.com/bengtmartensson/Infrared4Arduino)
+# sources are located. Only used for SIL test.
+INFRARED4ARDUINO_DIR=../Infrared4Arduino
 
 # Get VERSION from the version in library.properties
 VERSION=$(subst version=,,$(shell grep version= library.properties))
@@ -46,17 +51,20 @@ keywords.txt: xml/index.xml
 xml/index.xml: $(DOXYFILE)
 	$(DOXYGEN) $(DOXYFILE)
 
-#VPATH=tests src
+lib: libGirs.a
+
+INCLUDES=-I$(INFRARED4ARDUINO_DIR)/src -Isrc/config
+VPATH=src src/GirsLib src/IrNamedCommand
 
 #.PRECIOUS: test1
 
-OBJS=\
+OBJS=Girs.o GirsUtils.o LedLcdManager.o Tokenizer.o IrNamedRemote.o IrNamedRemoteSet.o
 
 libGirs.a: $(OBJS)
 	$(AR) rs $@ $(OBJS)
 
 %.o: %.cpp
-	$(CXX) -Isrc -std=c++11 $(BOARDDEFINES) $(WARNINGFLAGS) $(OPTIMIZEFLAGS) $(DEBUGFLAGS) -c $<
+	$(CXX) -std=c++11 $(INCLUDES) $(BOARDDEFINES) $(WARNINGFLAGS) $(OPTIMIZEFLAGS) $(DEBUGFLAGS) -c $<
 
 #test%: test%.o libInfrared.a
 #	$(CXX) -o $@ $< -L. -lInfrared
@@ -86,6 +94,6 @@ spotless: distclean
 
 build-tests:
 
-test:
+test: lib
 
-.PHONY: clean distclean spotless version keywords flasher flash-nano
+.PHONY: clean distclean spotless version keywords flasher flash-nano lib

@@ -961,8 +961,8 @@ void girs_loop() {
 
 #ifndef ARDUINO
 int main() {
-    setup();
+    girs_setup();
     while (true)
-        loop();
+        girs_loop();
 }
 #endif

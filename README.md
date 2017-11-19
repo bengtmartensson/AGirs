@@ -8,22 +8,9 @@ for interact with other programs. communicating over a serial line
 (accepting incoming requests) or client (initiating connections).
 
 It is build on top of the low-level library called [Infrared4Arduino](https://github.com/bengtmartensson/Infrared4Arduino).
-This is basically a descendant of a library called IRremote, published by
-Ken Shirriff in [his blog](http://www.righto.com/2009/08/multi-protocol-infrared-remote-library.html),
-now maintained [here](https://github.com/z3t0/Arduino-IRremote).
-It uses Michael Dreher's
-IrWidget [(article in
-German)](http://www.mikrocontroller.net/articles/High-Speed_capture_mit_ATmega_Timer),
-see also [this forum
-contribution](http://www.hifi-remote.com/forums/viewtopic.php?p=111876#111876).
-Michael's code is included, in somewhat modified form, in the files
-`IrWidget.[cpp,h]` and `IrWidgetAggregating.[cpp,h]`.
-The influence of [Chris Young's IRLib](http://tech.cyborg5.com/irlib/),
-maintained on [Github](https://github.com/cyborg5/IRLib), is acknowledged.
-However, the source code of the present projects is not, with the exception of the file
-`IRremoteBoardDefs.h`, derived from IRremote or IRLib.
+(See that project's README.md for its history.)
 
-The project contains a library, contained in the directory GirsLib,
+~~The project contains a library, contained in the directory GirsLib,
 and a few applications, presently Girs, GirsLite, Listener,
 and others. The directory GirsLib should
 be copied to
@@ -34,7 +21,7 @@ interactive program. Listener is a uni-directional program that just
 emits decodes on the serial interface. It is intended to be used in
 conjunction with my Java program
 [dispatcher](https://github.com/bengtmartensson/dispatcher). (It may
-possibly be discontinued in the future.)
+possibly be discontinued in the future.)~~
 
 ## Configuration
 It is a modular program that is heavily based on CPP symbols, defined
@@ -58,12 +45,6 @@ typically `~/Arduino/libraries` or `C:\Arduino\libraries`.
 
 The other sub-directories of `src` contain different sketches that can
 be compiled and run on the Arduino.
-
-Due to the quirks of the preprocessor of the Arduino IDE, the following rule is used:
-The _program_`.ino` is kept empty, except for some dummy `#include`s,
-necessary for the IDE to find the libraries. The real code goes into _program_`.cpp`.
-For further motivation, see [this article](http://www.gammon.com.au/forum/?id=12625).
-(however, "Third" therein does not appear to be valid with current software.)
 
 ## Hardware configuration
 I have written a [fairly detailed description](http://www.harctoolbox.org/arduino_nano.html)
@@ -198,7 +179,7 @@ NON_MOD` (optionally), `RECEIVE, LED, LCD, DECODE` (only to the LCD), `TRANSMITT
 It is pronounced like in "girl". The "language" Girs is written capitalized, the name of an implementation is usually written in lower case.
 
 ## License
-The entire work is licensed under the GPL2 "or later" license. Chris' as well as Ken's
-code is licensed under the LGPL 2.1-license. Michael's code carries the
+The entire work is licensed under the GPL2 "or later" license, just as Infrared4Arduino. Michael's code
+(that is contained in Infrared4Arduino) carries the
 GPL2-license, although he is [willing to agree to "or later
 versions"](http://www.hifi-remote.com/forums/viewtopic.php?p=112586#112586).

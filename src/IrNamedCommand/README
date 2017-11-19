@@ -1,1 +1,3 @@
 These classes only depend on Infrared4Arduino. It could theoretically be a library on it own.
+
+Compare https://github.com/bengtmartensson/AGirs/issues/30.

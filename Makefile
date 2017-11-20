@@ -58,7 +58,7 @@ VPATH=src src/GirsLib src/IrNamedCommand
 
 #.PRECIOUS: test1
 
-OBJS=Girs.o GirsUtils.o LedLcdManager.o Tokenizer.o IrNamedRemote.o IrNamedRemoteSet.o
+OBJS=Girs.o GirsUtils.o LedLcdManager.o Tokenizer.o
 
 libGirs.a: $(OBJS)
 	$(AR) rs $@ $(OBJS)

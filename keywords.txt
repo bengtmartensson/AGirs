@@ -8,14 +8,8 @@
 #######################################
 
 GirsUtils	KEYWORD1
-IrNamedCommand	KEYWORD1
-IrNamedRawCommand	KEYWORD1
-IrNamedRemote	KEYWORD1
-IrNamedRemoteSet	KEYWORD1
 LedLcdManager	KEYWORD1
 LiquidCrystal_I2C	KEYWORD1
-NamedNec1Command	KEYWORD1
-NamedRc5Command	KEYWORD1
 Tokenizer	KEYWORD1
 
 #######################################
@@ -33,30 +27,6 @@ setupLeds	KEYWORD2
 setupReceivers	KEYWORD2
 setupSensors	KEYWORD2
 sensorPullup	KEYWORD2
-IrNamedCommand	KEYWORD2
-IrNamedCommand	KEYWORD2
-~IrNamedCommand	KEYWORD2
-getIrSignal	KEYWORD2
-getName	KEYWORD2
-IrNamedRawCommand	KEYWORD2
-IrNamedRawCommand	KEYWORD2
-~IrNamedRawCommand	KEYWORD2
-getIrSignal	KEYWORD2
-IrNamedRemote	KEYWORD2
-IrNamedRemote	KEYWORD2
-~IrNamedRemote	KEYWORD2
-IrNamedRemote	KEYWORD2
-getName	KEYWORD2
-getIrNamedCommand	KEYWORD2
-getAllCommands	KEYWORD2
-getNoCommands	KEYWORD2
-IrNamedRemoteSet	KEYWORD2
-IrNamedRemoteSet	KEYWORD2
-IrNamedRemoteSet	KEYWORD2
-~IrNamedRemoteSet	KEYWORD2
-getIrNamedRemote	KEYWORD2
-getIrNamedRemotes	KEYWORD2
-getNoIrNamedRemotes	KEYWORD2
 setupPhysicalLeds	KEYWORD2
 setupShouldTimeOut	KEYWORD2
 setupLcdI2c	KEYWORD2
@@ -122,13 +92,6 @@ send	KEYWORD2
 write4bits	KEYWORD2
 expanderWrite	KEYWORD2
 pulseEnable	KEYWORD2
-NamedNec1Command	KEYWORD2
-NamedNec1Command	KEYWORD2
-~NamedNec1Command	KEYWORD2
-getIrSignal	KEYWORD2
-NamedRc5Command	KEYWORD2
-~NamedRc5Command	KEYWORD2
-getIrSignal	KEYWORD2
 trim	KEYWORD2
 Tokenizer	KEYWORD2
 ~Tokenizer	KEYWORD2
@@ -141,6 +104,7 @@ getFrequency	KEYWORD2
 server	KEYWORD2
 sendIrSignal	KEYWORD2
 flushIn	KEYWORD2
+remoteSet	KEYWORD2
 myprintln	KEYWORD2
 myprintln	KEYWORD2
 myprintln	KEYWORD2
@@ -175,10 +139,6 @@ main	KEYWORD2
 girs_setup	KEYWORD2
 girs_loop	KEYWORD2
 TOKEN2INT	KEYWORD2
-stream	KEYWORD2
-setup	KEYWORD2
-loop	KEYWORD2
-main	KEYWORD2
 
 #######################################
 # Constants (LITERAL1)

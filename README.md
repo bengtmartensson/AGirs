@@ -10,18 +10,15 @@ for interact with other programs. communicating over a serial line
 It is build on top of the low-level library called [Infrared4Arduino](https://github.com/bengtmartensson/Infrared4Arduino).
 (See that project's README.md for its history.)
 
-~~The project contains a library, contained in the directory GirsLib,
-and a few applications, presently Girs, GirsLite, Listener,
-and others. The directory GirsLib should
-be copied to
-the library area, typically `$HOME/Arduino/libraries/GirsLib`, while the
+The project contains a few applications, presently Girs, GirsLite, Listener,
+and others. The
 application directories can be processed by the Arduino IDE
 directly. The directory Girs contains the AGirs application
 interactive program. Listener is a uni-directional program that just
 emits decodes on the serial interface. It is intended to be used in
 conjunction with my Java program
 [dispatcher](https://github.com/bengtmartensson/dispatcher). (It may
-possibly be discontinued in the future.)~~
+possibly be discontinued in the future.)
 
 ## Configuration
 It is a modular program that is heavily based on CPP symbols, defined
@@ -34,15 +31,7 @@ combinations will be detected and will generate a compilation error.
 
 
 ## Code organization
-~~There is a "library" (in the Arduino sense), `src/GirsLib`, which should be copied/moved/linked to the Arduino library area,
-typically `~/Arduino/libraries` or `C:\Arduino\libraries`.
-
-Another "library" (in the Arduino sense), `src/IrNamedCommand`, handles [named commands](http://harctoolbox.org/Girs.html#NamedRemotes).
-It is optional, and can be enabled by `#define`-ing  `NAMED_REMOTES`. In this case, the library should be copied/moved/linked to the Arduino library area,
-typically `~/Arduino/libraries` or `C:\Arduino\libraries`.
-
-The other sub-directories of `src` contain different sketches that can
-be compiled and run on the Arduino.~~
+TODO.
 
 ## Hardware configuration
 I have written a [fairly detailed description](http://www.harctoolbox.org/arduino_nano.html)

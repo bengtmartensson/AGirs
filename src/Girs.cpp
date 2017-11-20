@@ -75,9 +75,7 @@ this program. If not, see http://www.gnu.org/licenses/.
 #endif
 
 #ifdef NAMED_COMMANDS
-#include "IrNamedCommand/IrNamedRemoteSet.h"
-#include "IrNamedCommand/NamedNec1Command.h"
-#include "IrNamedCommand/NamedRc5Command.h"
+#error NAMED_COMMANDS is presently not supported
 #endif
 
 #ifdef BEACON

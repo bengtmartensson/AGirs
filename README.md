@@ -25,18 +25,16 @@ possibly be discontinued in the future.)~~
 
 ## Configuration
 It is a modular program that is heavily based on CPP symbols, defined
-in the configuration file `config.h`. This determines the capacities of the
+in the configuration file `src/config/config.h`. This determines the capacities of the
 compiled program, and adapts the configuration to the underlying
-hardware. The options are (somewhat) documented in `Girs/config.h`.
+hardware. The options are (somewhat) documented in `src/config/GirsFat.config.h`.
 Not all combination are sensible or implemented. Some, but not all,
 of the non-sensible
 combinations will be detected and will generate a compilation error.
 
-Caused by the limitations of the Arduino build process, it may be necessary to adjust
-the path to `config.h` in the included statement of `GirsLib/LedLcdManager.cpp`.
 
 ## Code organization
-There is a "library" (in the Arduino sense), `src/GirsLib`, which should be copied/moved/linked to the Arduino library area,
+~~There is a "library" (in the Arduino sense), `src/GirsLib`, which should be copied/moved/linked to the Arduino library area,
 typically `~/Arduino/libraries` or `C:\Arduino\libraries`.
 
 Another "library" (in the Arduino sense), `src/IrNamedCommand`, handles [named commands](http://harctoolbox.org/Girs.html#NamedRemotes).
@@ -44,7 +42,7 @@ It is optional, and can be enabled by `#define`-ing  `NAMED_REMOTES`. In this ca
 typically `~/Arduino/libraries` or `C:\Arduino\libraries`.
 
 The other sub-directories of `src` contain different sketches that can
-be compiled and run on the Arduino.
+be compiled and run on the Arduino.~~
 
 ## Hardware configuration
 I have written a [fairly detailed description](http://www.harctoolbox.org/arduino_nano.html)

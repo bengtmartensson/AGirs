@@ -6,9 +6,6 @@
 // Define for IrScrutinizer/Lirc optimized version
 //#define GIRSLITE
 
-// Define for pure listener (not yet implemented)
-//#define LISTENER
-
 // Define Girs modules to implement, see http://www.harctoolbox.org/Girs.html
 #ifdef GIRSLITE
 
@@ -60,12 +57,7 @@
 
 #endif // LED
 
-#elif defined(LISTENER) // ! GIRSLITE
-
-#error LISTENER not yet implemented
-#define PROGNAME Listener
-
-#else // ! LISTENER
+#else //  ! GIRSLITE
 
 #define PROGNAME "AGirs"
 
@@ -133,9 +125,9 @@
 
 #endif // LED
 
-#endif // ! LISTENER
+#endif // ! GIRSLITE
 
-// Define if using Ethernet (TCP or UDP) as the communication channel
+// Define if using Ethernet (TCP) as the communication channel
 //#define ETHERNET
 
 // Print received commands on the LCD display
@@ -146,24 +138,20 @@
 // Issues some debug messages on the serial port
 #define SERIAL_DEBUG
 
-// If SERVER but not USEUDP are defined, the progam runs in "telnet" mode,
+// If SERVER is defined, the progam runs in "telnet" mode,
 // waiting for incoming tcp connections on port PORT.  If none is
 // defined, try to initiate tcp connection to PEER_IP, port
 // PEER_PORT. In both cases, connection is interrupted when input is
-// received.  If USEUDP is defined, use UDP instead. Input is then ignored.
+// received.
 // For some reason I do not understand, when SERVER is defined, the first line
 // is discarded by server.available().
 
-// multi-command session, otherwise close after one command. Ignored if USEUDP defined,
-// while meaningless.
+// multi-command session, otherwise close after one command.
 #define SESSION
 
 // Wait for incoming connections, for "telnet-ting" to the Arduino
 // If not defined, the Arduino tries to establish a connection to PEER_IP at port PEER_PORT
 #define SERVER
-
-// NOTE: do NOT use UDP as preprocessor symbol, it makes Ethernet.h go haywire.
-//#define USEUDP
 
 #define SDCARD_ON_ETHERSHIELD_PIN 4 // there is a pin4 to be selected low
 

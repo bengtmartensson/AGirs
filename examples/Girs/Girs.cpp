@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2014,2015 Bengt Martensson.
+Copyright (C) 2014,2015,2017 Bengt Martensson.
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -148,15 +148,11 @@ static const uint8_t receiverNo = 1;
 #endif
 
 #ifdef ETHERNET
-#ifdef USEUDP
-EthernetUDP udp;
-#else // !USEUDP
 #ifdef SERVER
 EthernetServer server(PORT);
 #else
 IPAddress peer(PEER_IP);
 #endif
-#endif // !USEUDP
 
 #endif // ETHERNET
 
@@ -368,16 +364,6 @@ static void dumpRemote(Stream& stream, String& name) {
 }
 #endif
 
-#ifdef LISTEN
-
-static void listen(Stream& stream) {
-    do {
-        receive(stream);
-    } while (stream.available() == 0);
-}
-
-#endif
-
 void setup() {
     LedLcdManager::setupLedGroundPins();
     GirsUtils::setupReceivers();
@@ -398,11 +384,7 @@ void setup() {
 #endif
 #ifdef LCD
 #ifdef ETHERNET
-#ifdef USEUDP
-    LedLcdManager::lcdPrint(F("UDP"), false, 0, 2);
-#else
     LedLcdManager::lcdPrint(F("TCP"), false, 0, 2);
-#endif
 #ifdef SERVER
     LedLcdManager::lcdPrint(F(",Srv"), false);
 #else
@@ -438,16 +420,9 @@ void setup() {
             "", "", "", "http://arduino/nosuchfile.html");
 #endif
 
-#ifdef USEUDP
-#ifndef SERVER
-#error Client mode for UDP not implementd
-#endif
-    udp.begin(PORT);
-#else
 #ifdef SERVER
     server.begin();
 #endif // SERVER
-#endif // USEUDP
 
 #endif // ETHERNET
 
@@ -565,13 +540,6 @@ static bool processCommand(const String& line, Stream& stream) {
         capture(stream);
     } else
 #endif // CAPTURE
-
-#ifdef LISTEN
-        if (isPrefix(cmd, F("listen"))) {
-            listen(stream);
-        stream.println(F(okString));
-    } else
-#endif // LISTEN
 
 #ifdef LCD
         if (isPrefix(cmd, F("lcd"))) { //LCD
@@ -842,33 +810,6 @@ void loop() {
 #ifdef BEACON
     Beacon::checkSend();
 #endif
-#ifdef USEUDP
-#ifdef SERVER
-    int packetSize = udp.parsePacket();
-    if (packetSize) {
-        IPAddress remote = udp.remoteIP();
-#ifdef SERIAL_DEBUG
-        Serial.print("Received packet of size ");
-        Serial.println(packetSize);
-        Serial.print("From ");
-        Serial.print(remote);
-        Serial.print(", port ");
-        Serial.println(udp.remotePort());
-#endif
-        LedLcdManager::lcdPrint("UDP: " + ip2string(remote), true, 0, 0); // TODO: #ifdef...
-        LedLcdManager::lcdPrint("@" + String(udp.remotePort(), DEC), false, 0, 1);
-        String peek(char(udp.peek()));
-        LedLcdManager::lcdPrint(peek, false, 0, 2);
-
-        udp.beginPacket(udp.remoteIP(), udp.remotePort());
-        readProcessOneCommand(udp);
-        udp.endPacket();
-    } else {
-        delay(10);
-        LedLcdManager::checkTurnoff();
-    }
-#endif // SERVER
-#else // ! USEUDP
 
 #ifdef SERVER
     EthernetClient client = server.available();
@@ -932,7 +873,6 @@ void loop() {
         client.flush();
     client.stop();
 
-#endif // !USEUDP
 #else // ! ETHERNET
 
 #ifdef ARDUINO

@@ -1,20 +1,23 @@
 // Configuration options
 
-#ifndef CONFIG_H
-#define CONFIG_H
+#pragma once
 
-// Define for IrScrutinizer/Lirc optimized version
-#define GIRSLITE
-
-// Define Girs modules to implement, see http://www.harctoolbox.org/Girs.html
+// This is GirsLite, a configuration optimized for IrScrutinizer and Lirc.
 
 // Displayed in greeting messages
 #define PROGNAME "GirsLite"
 
-// VERSION is defined in Girs[Lite].cpp; should normally not be changed here.
+// VERSION is defined in GirsLib/version.h,
+// (which is generated from library.properties),
+// and should normally not be changed here.
+
+// Define Girs modules to implement, see http://www.harctoolbox.org/Girs.html
 
 // Transmit IR signals, requires IR Leds.
 #define TRANSMIT
+
+// Render some known protocols, presently NEC1 and RC%
+#define RENDERER
 
 // Capture IR signals, requires non-demodulating IR sensor (TSMP58000, QSE159, etc)
 #define CAPTURE
@@ -22,17 +25,40 @@
 // Receive demodulated IR signals, require demodulating IR sensor (TSMP* or equivalent)
 #define RECEIVE
 
+//#define DECODER
+//#define DECODELED
+
+// LCD display with I2C connection. Defines a command "lcd".
+//#define LCD
+
 // Use LEDs & define command "led"
 #define LED
 
 // Allow to change the parameters, like timeouts
 #define PARAMETERS
+//#define NAMED_COMMANDS
+
+// Define to have the receive command report the duration, even if DECODE is defined
+// and a decode was found. Use this for Lirc.
+//#define DONT_REPORT_DECODES
+
+// Have parameters for transmitled etc.
+//#define CONFIGURABLE_LEDS
 
 // Support sending signals without modulation, e.g. with RF module.
 //#define NON_MOD
 
+// Reset command, use at own risk
+//#define RESET
+
 // Defines command "memory" reporting free (SRAM) memory.
 //#define FREEMEM
+
+// Command "info"
+//#define INFO
+
+// Command "hex", sending Pronto hex signals
+//#define PRONTO
 
 #ifdef LED
 
@@ -61,6 +87,13 @@
 
 // Hardware configuration
 
+// Define an LCD symbol to use
+#ifdef LCD
+#define LCD_0x3F_20_4
+//#define LCD_0x27_20_4
+//#define LCD_0x27_16_2
+#endif // LCD
+
 // Include one file describing the pin configuration
 // Use one of the provided, or write your own.
 #include <girs_hw_config.h> // Generic
@@ -88,5 +121,3 @@
 #define serialBaud 115200
 #define serialTimeout 5000L
 #endif // !defined(ETHERNET) | defined(SERIAL_DEBUG)
-
-#endif // ! CONFIG_H

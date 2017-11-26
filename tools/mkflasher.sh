@@ -6,7 +6,8 @@
 
 ARDUINO=arduino
 TMPDIR=/tmp/nanobuild
-SKETCH=GirsLite
+SKETCH=Girs
+PRODUCT=GirsLite
 FILE=examples/$SKETCH/$SKETCH.ino
 PACKAGE=arduino
 ARCHITECTURE=avr
@@ -17,7 +18,7 @@ ZIP=zip
 
 VERSION=`grep 'version=' library.properties | sed -e 's/version=//'`
 
-OUTFILE=$SKETCH-$VERSION-$BOARD-flasher.sh
+OUTFILE=$PRODUCT-$VERSION-$BOARD-flasher.sh
 
 rm -rf $TMPDIR $OUTFILE
 
@@ -69,10 +70,10 @@ rm -f \${HEXFILE}
 EOF2
 
 chmod +x ${OUTFILE}
-cp $TMPDIR/$SKETCH.ino.hex $SKETCH-$VERSION-$BOARD.hex
+cp $TMPDIR/$SKETCH.ino.hex $PRODUCT-$VERSION-$BOARD.hex
 
 # Github rejects files ending with .sh
 $ZIP ${OUTFILE}.zip ${OUTFILE}
-$ZIP $SKETCH-$VERSION-$BOARD.hex.zip $SKETCH-$VERSION-$BOARD.hex
+$ZIP $PRODUCT-$VERSION-$BOARD.hex.zip $PRODUCT-$VERSION-$BOARD.hex
 
 echo Created $OUTFILE and ${OUTFILE}.zip

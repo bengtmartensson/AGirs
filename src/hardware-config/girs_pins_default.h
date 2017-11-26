@@ -1,3 +1,5 @@
+#pragma once
+
 // Configuration for Arduino Uno and similar.
 
 #ifdef ARDUINO_AVR_NANO
@@ -6,7 +8,6 @@
 #error This file is not for Micro
 #endif
 
-#ifdef LED
 #define SIGNAL_LED_1 13
 #define SIGNAL_LED_2 A1
 #define SIGNAL_LED_3 A2
@@ -18,30 +19,21 @@
 #ifndef NON_MOD
 //#define SIGNAL_LED_8 9
 #endif
-#endif
 
-#if defined(CAPTURE)
 #define IRSENSOR_1_PIN 8
 // capture pin (ICP) 8/4/49
 //#define IRSENSOR_1_PULLUP
-#endif
 
-#ifdef RECEIVE
 #define IRRECEIVER_1_PIN 5
 //#define IRRECEIVER_1_PULLUP
 #define IRRECEIVER_2_PIN 4
 #define IRRECEIVER_3_PIN 9
 #define IRRECEIVER_4_PIN 8 // Non-demodulating sensor
 //#define IRRECEIVER_4_PIN IRSENSOR_1_PIN // Non-demodulating sensor
-#endif
 
-#ifdef TRANSMIT
 // Send pin 3/9
-#endif
 
-#ifdef NON_MOD
 #define NON_MOD_PIN 10
-#endif
 
 /* From http://busyducks.com/ascii-art-arduinos                             +-----+
 

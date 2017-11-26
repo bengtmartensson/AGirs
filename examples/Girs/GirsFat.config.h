@@ -1,21 +1,21 @@
 // Configuration options
 
-#ifndef CONFIG_H
-#define CONFIG_H
-
-// Define for IrScrutinizer/Lirc optimized version
-//#define GIRSLITE
-
-// Define Girs modules to implement, see http://www.harctoolbox.org/Girs.html
-#ifdef GIRSLITE
+#pragma once
 
 // Displayed in greeting messages
-#define PROGNAME "GirsLite"
+#define PROGNAME "AGirs"
 
-// VERSION is defined in Girs[Lite].cpp; should normally not be changed here.
+// VERSION is defined in GirsLib/version.h,
+// (which is generated from library.properties),
+// and should normally not be changed here.
+
+// Define Girs modules to implement, see http://www.harctoolbox.org/Girs.html
 
 // Transmit IR signals, requires IR Leds.
 #define TRANSMIT
+
+// Render some known protocols, presently NEC1 and RC%
+#define RENDERER
 
 // Capture IR signals, requires non-demodulating IR sensor (TSMP58000, QSE159, etc)
 #define CAPTURE
@@ -23,52 +23,20 @@
 // Receive demodulated IR signals, require demodulating IR sensor (TSMP* or equivalent)
 #define RECEIVE
 
+//#define DECODER
+//#define DECODELED
+
+// LCD display with I2C connection. Defines a command "lcd".
+#define LCD
+
 // Use LEDs & define command "led"
 #define LED
 
 // Allow to change the parameters, like timeouts
 #define PARAMETERS
 
-// Support sending signals without modulation, e.g. with RF module.
-//#define NON_MOD
-
-// Defines command "memory" reporting free (SRAM) memory.
-//#define FREEMEM
-
-#ifdef LED
-
-#ifdef TRANSMIT
-// Light this led when transmission is taking place
-#define TRANSMITLED 4
-#endif
-
-#ifdef RECEIVE
-// Light this when receive is pending
-#define RECEIVELED 3
-#endif
-
-#ifdef CAPTURE
-// Light this when capture is pending
-#define CAPTURELED 3
-#endif
-
-// Light this when listening for command on the input stream
-#define COMMANDLED 2
-
-#endif // LED
-
-#else //  ! GIRSLITE
-
-#define PROGNAME "AGirs"
-
-#define TRANSMIT
-#define RENDERER
-#define CAPTURE
-#define RECEIVE
-#define DECODER
-#define DECODELED
-#define PARAMETERS
-#define LISTEN
+// Allow commands to be called by names, grouped in "remotes"
+// (Not yet implemented.)
 //#define NAMED_COMMANDS
 
 // Define to have the receive command report the duration, even if DECODE is defined
@@ -78,19 +46,13 @@
 // Have parameters for transmitled etc.
 #define CONFIGURABLE_LEDS
 
-// LCD display with I2C connection. Defines a command "lcd".
-#define LCD
-
-// implements a command "led".
-#define LED
-
 // Support sending signals without modulation, e.g. with RF module.
-#define NON_MOD
+//#define NON_MOD
 
 // Reset command, use at own risk
 #define RESET
 
-// Report free memory (for debugging). Command "memory".
+// Defines command "memory" reporting free (SRAM) memory.
 #define FREEMEM
 
 // Command "info"
@@ -124,8 +86,6 @@
 //#define COMMANDLED 1
 
 #endif // LED
-
-#endif // ! GIRSLITE
 
 // Define if using Ethernet (TCP) as the communication channel
 //#define ETHERNET
@@ -164,24 +124,6 @@
 
 // Hardware configuration
 
-// Include one file describing the pin configuration
-// Use one provided, or write your own.
-//#ifdef ARDUINO
-//#ifdef ARDUINO_AVR_MEGA2560
-//#include "../hardware-config/girs_pins_mega2560_rear.h"
-//#else
-//#include "../hardware-config/girs_pins.h" // Generic
-//#endif
-//#else // ! ARDUINO
-//// For compiling a version to test on the PC, not to flash onto the Arduino.
-//#include "../hardware-config/girs_pins_dummy.h"
-//#endif
-//
-//// If LCD support desired, include appropriate hardware description
-//#ifdef LCD
-//#include "../hardware-config/lcd_0x3F_20_4.h"
-//#endif // ! LCD
-
 #ifdef ETHERNET
 #ifndef SERVER
 // Host the program tries to contact
@@ -201,19 +143,25 @@
 #define PORT       33333
 #endif // ETHERNET
 
-#if defined(ARDUINO_AVR_MEGA2560)
-#define LARGE_RAM
-#endif
-
-
 // Character that ends the command lines
 #define EOLCHAR '\r'
 
 // Hardware configuration
 
+// Define an LCD symbol to use
+#ifdef LCD
+#define LCD_0x3F_20_4
+//#define LCD_0x27_20_4
+//#define LCD_0x27_16_2
+#endif // LCD
+
 // Include one file describing the pin configuration
 // Use one of the provided, or write your own.
 #include <girs_hw_config.h> // Generic
+
+#if defined(ARDUINO_AVR_MEGA2560)
+#define LARGE_RAM
+#endif
 
 // Without PARAMETERS, these are really not defaults,
 // they are the non-changeable values.
@@ -255,5 +203,3 @@
 #define serialBaud 115200
 #define serialTimeout 5000L
 #endif // !defined(ETHERNET) | defined(SERIAL_DEBUG)
-
-#endif // ! CONFIG_H

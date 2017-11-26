@@ -53,11 +53,12 @@ xml/index.xml: $(DOXYFILE)
 
 lib: libGirs.a
 
-INCLUDES=-I$(INFRARED4ARDUINO_DIR)/src -Isrc/config
-VPATH=src src/GirsLib src/IrNamedCommand
+INCLUDES=-I$(INFRARED4ARDUINO_DIR)/src -Isrc
+VPATH=src src/GirsLib examples/Girs
 
 #.PRECIOUS: test1
 
+# TODO: compile Girs.o separately, in tests/Girs
 OBJS=Girs.o GirsUtils.o LedLcdManager.o Tokenizer.o
 
 libGirs.a: $(OBJS)

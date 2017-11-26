@@ -1,3 +1,5 @@
+#pragma once
+
 // This file determines the configuration of the built program.
 // Feel free to be creative here; you can include pre-built files, you can replace
 // the file with your content, you can include pre-built files and override values in them,

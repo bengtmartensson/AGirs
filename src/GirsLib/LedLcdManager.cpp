@@ -3,12 +3,8 @@
 
 // This should be taken from config.h, but the Arduino IDE does not seem
 // to allow for this. User friendlyness taken to a new level...
-#ifdef ARDUINO
-#if ! defined(ARDUINO_AVR_MICRO)
+#if defined(ARDUINO) & ! defined(ARDUINO_AVR_MICRO)
 #define LCD
-#endif
-#else
-#include "config.h"
 #endif
 
 #include "LedLcdManager.h"

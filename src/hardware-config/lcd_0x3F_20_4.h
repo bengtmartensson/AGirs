@@ -1,6 +1,4 @@
-#ifndef LCD_I2C
-#define LCD_I2C
-#endif
+#pragma once
 
 #define LCD_I2C_ADDRESS 0x3F
 #define LCD_WIDTH 20

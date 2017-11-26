@@ -893,8 +893,8 @@ void loop() {
 
 #ifndef ARDUINO
 int main() {
-    girs_setup();
+    setup();
     while (true)
-        girs_loop();
+        loop();
 }
 #endif

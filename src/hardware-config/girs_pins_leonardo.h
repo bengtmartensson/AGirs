@@ -1,3 +1,5 @@
+#pragma once
+
 // Configuration for Arduino Leonardo
 
 #ifdef ARDUINO_AVR_NANO
@@ -6,7 +8,6 @@
 #error This file is not for Micro
 #endif
 
-#ifdef LED
 #define SIGNAL_LED_1 13
 #define SIGNAL_LED_2 A1
 #define SIGNAL_LED_3 A2
@@ -15,19 +16,12 @@
 #define SIGNAL_LED_6 6
 #define SIGNAL_LED_7 7
 #define SIGNAL_LED_8 8
-#endif
 
-#if defined(CAPTURE)
-// capture pin (ICP) 8/4/49
-#endif
+// capture pin (ICP) 4
 
-#ifdef RECEIVE
+#define IRSENSOR_1_PIN 4
+
 #define IRRECEIVER_1_PIN 5
-#endif
-#ifdef RECEIVER_2
 #define IRRECEIVER_2_PIN 12
-#endif
 
-#ifdef TRANSMIT
 // Send pin 3/9
-#endif

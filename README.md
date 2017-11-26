@@ -161,6 +161,13 @@ Just as GirsLite, this was just a certain configuration of AGirs,
 NON_MOD` (optionally), `RECEIVE, LED, LCD, DECODE` (only to the LCD), `TRANSMITTERS`
 (only a dummy implementation).
 
+* Can I keep and maintain the `config.h` in another location, for example together with
+my own sketch?
+
+No, the present Arduino IDE does not support this.
+I an not aware of a clean solution. Sorry.
+Fiddling with the library's `config.h` for project specific configurations defeats the very idea of a library.
+
 * How is "Girs" pronounced?
 
 It is pronounced like in "girl". The "language" Girs is written capitalized, the name of an implementation is usually written in lower case.

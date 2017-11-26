@@ -15,7 +15,7 @@ You should have received a copy of the GNU General Public License along with
 this program. If not, see http://www.gnu.org/licenses/.
 */
 
-#include "config/config.h"
+#include "config.h"
 #include "GirsLib/LedLcdManager.h"
 #include "GirsLib/GirsUtils.h"
 #ifdef ARDUINO
@@ -174,12 +174,6 @@ bool reset = false;
 #define okString "OK"
 #define errorString "ERROR"
 #define timeoutString "."
-
-// If SKETCH is defined, generate a runnable sketch with loop() and setup()
-#ifdef SKETCH
-#define girs_loop loop
-#define gits_setup setup
-#endif // SKETCH
 
 #ifdef TRANSMIT
 
@@ -384,7 +378,7 @@ static void listen(Stream& stream) {
 
 #endif
 
-void girs_setup() {
+void setup() {
     LedLcdManager::setupLedGroundPins();
     GirsUtils::setupReceivers();
     GirsUtils::setupSensors();
@@ -842,7 +836,7 @@ bool readProcessOneTcpCommand(EthernetClient& client) {
 }
 #endif
 
-void girs_loop() {
+void loop() {
     LedLcdManager::checkTurnoff();
 #ifdef ETHERNET
 #ifdef BEACON

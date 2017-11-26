@@ -77,7 +77,7 @@
 #define DECODELED
 #define PARAMETERS
 #define LISTEN
-#define NAMED_COMMANDS
+//#define NAMED_COMMANDS
 
 // Define to have the receive command report the duration, even if DECODE is defined
 // and a decode was found. Use this for Lirc.
@@ -178,21 +178,21 @@
 
 // Include one file describing the pin configuration
 // Use one provided, or write your own.
-#ifdef ARDUINO
-#ifdef ARDUINO_AVR_MEGA2560
-#include "../hardware-config/girs_pins_mega2560_rear.h"
-#else
-#include "../hardware-config/girs_pins.h" // Generic
-#endif
-#else // ! ARDUINO
-// For compiling a version to test on the PC, not to flash onto the Arduino.
-#include "../hardware-config/girs_pins_dummy.h"
-#endif
-
-// If LCD support desired, include appropriate hardware description
-#ifdef LCD
-#include "../hardware-config/lcd_0x3F_20_4.h"
-#endif // ! LCD
+//#ifdef ARDUINO
+//#ifdef ARDUINO_AVR_MEGA2560
+//#include "../hardware-config/girs_pins_mega2560_rear.h"
+//#else
+//#include "../hardware-config/girs_pins.h" // Generic
+//#endif
+//#else // ! ARDUINO
+//// For compiling a version to test on the PC, not to flash onto the Arduino.
+//#include "../hardware-config/girs_pins_dummy.h"
+//#endif
+//
+//// If LCD support desired, include appropriate hardware description
+//#ifdef LCD
+//#include "../hardware-config/lcd_0x3F_20_4.h"
+//#endif // ! LCD
 
 #ifdef ETHERNET
 #ifndef SERVER
@@ -225,7 +225,7 @@
 
 // Include one file describing the pin configuration
 // Use one of the provided, or write your own.
-#include "hardware-config/girs_pins.h" // Generic
+#include <girs_hw_config.h> // Generic
 
 // Without PARAMETERS, these are really not defaults,
 // they are the non-changeable values.

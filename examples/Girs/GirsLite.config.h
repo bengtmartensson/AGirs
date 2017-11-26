@@ -63,7 +63,7 @@
 
 // Include one file describing the pin configuration
 // Use one of the provided, or write your own.
-#include "hardware-config/girs_pins.h" // Generic
+#include <girs_hw_config.h> // Generic
 
 // Without PARAMETERS, these are really not defaults,
 // they are the non-changeable values.

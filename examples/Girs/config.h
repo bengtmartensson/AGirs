@@ -22,6 +22,6 @@
 
 #else
 
-#error Please change src/GirsLib/config.h according to your needs and wishes.
+#error Your platform is currently not supported. Please extend examples/Girs/config.h according to your needs and wishes.
 
 #endif

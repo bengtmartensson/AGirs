@@ -4,7 +4,6 @@
 
 #include "config.h"
 #include <InfraredTypes.h>
-//#include <LedLcdManager.h>
 
 #ifdef ETHERNET
 #include <Ethernet.h>

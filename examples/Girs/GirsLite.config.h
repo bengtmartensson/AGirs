@@ -16,8 +16,8 @@
 // Transmit IR signals, requires IR Leds.
 #define TRANSMIT
 
-// Render some known protocols, presently NEC1 and RC%
-#define RENDERER
+// Render some known protocols, presently NEC1 and RC5
+//#define RENDERER
 
 // Capture IR signals, requires non-demodulating IR sensor (TSMP58000, QSE159, etc)
 #define CAPTURE

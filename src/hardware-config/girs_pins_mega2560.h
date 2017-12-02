@@ -22,6 +22,8 @@
 
 // capture pin (ICP) 49
 
+// send pin 9
+
 #define IRSENSOR_1_PIN 49
 //#ifdef IRSENSOR_1_PULLUP
 // not presently implemented

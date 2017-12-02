@@ -14,7 +14,7 @@
 // Transmit IR signals, requires IR Leds.
 #define TRANSMIT
 
-// Render some known protocols, presently NEC1 and RC%
+// Render some known protocols, presently NEC1 and RC5
 #define RENDERER
 
 // Capture IR signals, requires non-demodulating IR sensor (TSMP58000, QSE159, etc)
@@ -23,8 +23,8 @@
 // Receive demodulated IR signals, require demodulating IR sensor (TSMP* or equivalent)
 #define RECEIVE
 
-//#define DECODER
-//#define DECODELED
+#define DECODER
+#define DECODELED
 
 // LCD display with I2C connection. Defines a command "lcd".
 #define LCD
@@ -47,7 +47,7 @@
 #define CONFIGURABLE_LEDS
 
 // Support sending signals without modulation, e.g. with RF module.
-//#define NON_MOD
+#define NON_MOD
 
 // Reset command, use at own risk
 #define RESET
@@ -88,7 +88,7 @@
 #endif // LED
 
 // Define if using Ethernet (TCP) as the communication channel
-//#define ETHERNET
+#define ETHERNET
 
 // Print received commands on the LCD display
 //#define DEBUG_CMD

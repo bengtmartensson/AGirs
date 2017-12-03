@@ -2,6 +2,5 @@
 // Do not delete unless you know what you do.
 
 
-#include <GirsUtils.h>
+#include "config.h"
 #include <IrReceiverSampler.h>
-#include <LiquidCrystal_I2C.h>

@@ -1,6 +1,6 @@
 # Opponator
 
-This is a demo program for tranlating IR -> Serial.
+This is a demo program for translating IR -> Serial.
 
 As the name suggests, it operates an Oppo Bluray/DVD player. It receives an IR signal, and
 sends a command to the RS232 serial port.

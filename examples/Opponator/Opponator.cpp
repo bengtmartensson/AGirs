@@ -22,36 +22,36 @@ this program. If not, see http://www.gnu.org/licenses/.
  * (see http://download.oppodigital.com/BDP103/BDP103_RS232_Protocol_v1.2.2.pdf)
  * It can also issue query commands, and display the result on an LCD screen.
  */
+
+#include "config.h"
 #include <Arduino.h>
 #include <IrReceiverSampler.h>
 #include <Nec1Decoder.h>
-#include <LedLcdManager.h>
-
-#include <lcd_0x27_16_2.h>
-
-#define IRRECEIVER_1_PIN 5
-//#define IRRECEIVER_1_GND 6
-//#define IRRECEIVER_1_VSS 7
-//#define IRRECEIVER_1_PULLUP
+#include "GirsLib/LedLcdManager.h"
+#include "GirsLib/GirsUtils.h"
 
 #ifdef ARDUINO
-#ifdef XARDUINO_AVR_MEGA2560
-Stream& stream = Serial1;
-#else  // !ARDUINO_AVR_MEGA2560
+//#ifdef ARDUINO_AVR_MEGA2560
+//Stream& stream = Serial1;
+//#else  // !ARDUINO_AVR_MEGA2560
 Stream& stream = Serial;
-#endif // ! ARDUINO_AVR_MEGA2560
+//#endif // ! ARDUINO_AVR_MEGA2560
 #else  // ! ARDUINO
 Stream stream(std::cout);
 #endif // ! ARDUINO
 
-#include <GirsUtils.h> // Must come AFTER pin declarations and such!!
+#ifndef PROGNAME
+#define PROGNAME "Opponator"
+#endif
+#ifndef VERSION
+#include "GirsLib/version.h"
+#endif
 
 // Remote the thing is reacting to
-static const int selectedD = 114;
-static const int selectedS = 205;
+static const int selectedD = 108;//114;
+static const int selectedS = 104;//205;
 
-#define PROGNAME "Opponator"
-#define VERSION "2015-10-29"
+static IrReceiverSampler* irReceiver;
 
 void send(String payload) {
     stream.print("#" + payload + "\r");
@@ -83,7 +83,7 @@ void action(IrReader *irReader) {
             case 6: // Play
                 send("PLA");
                 break;
-            case 14: // Power
+            case 86://14: // Power
                 send("POW");
                 break;
             case 18: // Goto
@@ -105,10 +105,18 @@ void action(IrReader *irReader) {
                 break;
         }
     }
+#ifdef DEBUG
+    else {
+        irReader->dump(stream);
+        stream.println(decoder.isValid() ? "valid" : "invalid");
+        stream.println(decoder.getD());
+        stream.println(decoder.getS());
+        stream.println(decoder.getF());
+    }
+#endif
 }
 
 void loop() {
-    IrReceiverSampler *irReceiver = IrReceiverSampler::getInstance();
     irReceiver->enable();
     while (!irReceiver->isReady()) {
         LedLcdManager::checkTurnoff();
@@ -124,11 +132,11 @@ void setup() {
     LedLcdManager::lcdPrint(F(VERSION), false, 0, 1);
 
 #ifdef ARDUINO
-    Serial.begin(9600);
+    Serial.begin(serialBaud);
 #endif
 
-    IrReceiverSampler::newIrReceiverSampler(IrReader::defaultCaptureLength,
-            IRRECEIVER_1_PIN, IRRECEIVER_1_PULLUP_VALUE);
+    irReceiver = IrReceiverSampler::newIrReceiverSampler(IrReader::defaultCaptureLength,
+            IRRECEIVER_1_PIN, IRRECEIVER_1_PULLUP_VALUE, IRRECEIVER_MARK_EXCESS, DEFAULT_BEGINTIMEOUT, DEFAULT_ENDINGTIMEOUT);
 }
 
 #ifndef ARDUINO

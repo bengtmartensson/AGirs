@@ -16,12 +16,9 @@ this program. If not, see http://www.gnu.org/licenses/.
 */
 
 #include "config.h"
-#include "LedLcdManager.h"
-#include <GirsUtils.h>
+#include "GirsLib/LedLcdManager.h"
+#include "GirsLib/GirsUtils.h"
 #include <IrReceiverSampler.h>
-#ifdef DECODEIR
-#include <DecodeIRClass.h>
-#endif
 
 #ifdef ETHERNET
 #include <Ethernet.h>
@@ -42,16 +39,16 @@ static LED_PARAMETER_CONST led_t receiveled = RECEIVELED;
 
 static IrReceiver *irReceiver = NULL;
 
+#ifndef PROGNAME
 #define PROGNAME "Listener"
-#define VERSION "2017-05-12"
+#endif // ! PROGNAME
+#ifndef VERSION
+#include "GirsLib/version.h"
+#endif // VERSION
 
 #ifdef ETHERNET
-#ifdef USEUDP
 static EthernetUDP udp;
 static IPAddress broadcastIp(BROADCAST_IP);
-#else // !USEUDP
-#error only UDP supported
-#endif // !USEUDP
 #endif // ETHERNET
 
 static char decode[100];
@@ -70,24 +67,6 @@ static void readOneDecode() {
     LedLcdManager::setLogicLed(receiveled, LedLcdManager::off);
 #endif
     int type;
-
-#ifdef DECODEIR
-    IrSequence *irSequence = irReceiver->toIrSequence();
-    DecodeIRClass decoder(*irSequence, IrSignal::defaultFrequency);
-    delete irSequence;
-    if (decoder.getProtocol()[0] != '\0') {
-#ifdef LCD
-        LedLcdManager::lcdPrint(decoder.getString1(), true, 0, 0);
-        LedLcdManager::lcdPrint(decoder.getString2(), false, 0, 1);
-#endif
-        strcpy(decode, decoder.getString1());
-        strcat(decode, decoder.getString2());
-    }
-    type = strncmp(decoder.getProtocol(), "NEC", 3) == 0 ? 3
-            : strncmp(decoder.getProtocol(), "RC5", 3) == 0 ? 4
-            : decoder.getProtocol()[0] != 0 ? 5 : 0;
-#else // ! DECODEIR
-
     MultiDecoder multiDecoder(*irReceiver);
 #ifdef LCD
     if (multiDecoder.getType() > MultiDecoder::noise) {
@@ -101,7 +80,6 @@ static void readOneDecode() {
     type = multiDecoder.getType();
     strncpy(decode, multiDecoder.getDecode(), 100);
 
-#endif // ! DECODEIR
     LedLcdManager::setLogicLed(GirsUtils::decode2logicalLed(type), LedLcdManager::blink);
     irReceiver->disable();
 }

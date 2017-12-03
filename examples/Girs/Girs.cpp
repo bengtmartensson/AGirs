@@ -148,12 +148,7 @@ static const uint8_t receiverNo = 1;
 #endif
 
 #ifdef ETHERNET
-#ifdef SERVER
 EthernetServer server(PORT);
-#else
-IPAddress peer(PEER_IP);
-#endif
-
 #endif // ETHERNET
 
 #ifdef RESET
@@ -385,12 +380,6 @@ void setup() {
 #ifdef LCD
 #ifdef ETHERNET
     LedLcdManager::lcdPrint(F("TCP"), false, 0, 2);
-#ifdef SERVER
-    LedLcdManager::lcdPrint(F(",Srv"), false);
-#else
-    LedLcdManager::lcdPrint(" " + String(peer[0], DEC) + "." + String(peer[1], DEC) + "."
-            + String(peer[2], DEC) + "." + String(peer[3], DEC) + "@" + String(PEER_PORT), false);
-#endif
 #ifdef SERIAL_DEBUG
     LedLcdManager::lcdPrint(F(",SerialDbg"), false);
 #endif
@@ -420,9 +409,7 @@ void setup() {
             "", "", "", "http://arduino/nosuchfile.html");
 #endif
 
-#ifdef SERVER
     server.begin();
-#endif // SERVER
 
 #endif // ETHERNET
 
@@ -523,7 +510,7 @@ static String readCommand(Stream& stream) {
 }
 
 static bool processCommand(const String& line, Stream& stream) {
-#ifdef SESSION
+#ifdef ETHERNET
     bool quit = false;
 #endif
     Tokenizer tokenizer(line);
@@ -655,7 +642,7 @@ static bool processCommand(const String& line, Stream& stream) {
     } else
 #endif // PARAMETERS
 
-#ifdef SESSION
+#ifdef ETHERNET
         if (cmd[0] == 'q') { // quit
         quit = true;
     } else
@@ -774,7 +761,7 @@ static bool processCommand(const String& line, Stream& stream) {
         return false;
 #endif
 
-#ifdef SESSION
+#ifdef ETHERNET
     if (quit)
         return false;
 #endif
@@ -811,7 +798,6 @@ void loop() {
     Beacon::checkSend();
 #endif
 
-#ifdef SERVER
     EthernetClient client = server.available();
     if (!client)
         return;
@@ -829,15 +815,12 @@ void loop() {
 
     while (client.read() != -1)
         LedLcdManager::checkTurnoff();
-#ifdef SESSION
+
     while (readProcessOneTcpCommand(client))
 #if defined(COMMANDLED) & defined(LED)
         LedLcdManager::setLogicLed(commandled, LedLcdManager::on)
 #endif
         ;
-#else
-    readProcessOneTcpCommand(client);
-#endif
 #ifdef LCD
     LedLcdManager::lcdPrint(F("Connection closed!"), true, 0, 0);
 #endif
@@ -850,25 +833,6 @@ void loop() {
     LedLcdManager::setLogicLed(commandled, LedLcdManager::off);
 #endif
 
-#else // !SERVER
-    IPAddress peer(PEER_IP);
-    EthernetClient client;
-    bool status = client.connect(peer, PEER_PORT);
-    if (!status)
-        return;
-#ifdef SERIAL_DEBUG
-    Serial.println(F("Connection!"));
-#endif
-#ifdef LCD
-    LedLcdManager::lcdPrint(F("Connection!"), true, 0, 0);
-#endif
-
-#ifdef SESSION
-    while
-#endif
-        (readProcessOneTcpCommand(client))
-        ;
-#endif // !SERVER
     if (client.connected())
         client.flush();
     client.stop();

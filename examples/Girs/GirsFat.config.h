@@ -98,20 +98,10 @@
 // Issues some debug messages on the serial port
 #define SERIAL_DEBUG
 
-// If SERVER is defined, the progam runs in "telnet" mode,
-// waiting for incoming tcp connections on port PORT.  If none is
-// defined, try to initiate tcp connection to PEER_IP, port
-// PEER_PORT. In both cases, connection is interrupted when input is
-// received.
-// For some reason I do not understand, when SERVER is defined, the first line
+// If ETHERNET is defined, the progam runs in "telnet" mode,
+// waiting for incoming tcp connections on port PORT.
+// For some reason I do not understand, the first line
 // is discarded by server.available().
-
-// multi-command session, otherwise close after one command.
-#define SESSION
-
-// Wait for incoming connections, for "telnet-ting" to the Arduino
-// If not defined, the Arduino tries to establish a connection to PEER_IP at port PEER_PORT
-#define SERVER
 
 #define SDCARD_ON_ETHERSHIELD_PIN 4 // there is a pin4 to be selected low
 
@@ -125,21 +115,16 @@
 // Hardware configuration
 
 #ifdef ETHERNET
-#ifndef SERVER
-// Host the program tries to contact
-#define PEER_IP 192,168,1,3
-
-// Port to be listened on
-#define PEER_PORT 44444
-#endif
 
 #define MACADDRESS 0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED
+
 #ifndef DHCP
 #define IPADDRESS  192,168,1,29
 #define GATEWAY    192,168,1,254
 #define DNSSERVER  192,168,1,4
 #define SUBNETMASK 255,255,255,0
 #endif // ! DHCP
+
 #define PORT       33333
 #endif // ETHERNET
 
@@ -148,7 +133,7 @@
 
 // Hardware configuration
 
-// Define an LCD symbol to use
+// Define an LCD symbol to use, if desired.
 #ifdef LCD
 #define LCD_0x3F_20_4
 //#define LCD_0x27_20_4

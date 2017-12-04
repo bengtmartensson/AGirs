@@ -30,6 +30,10 @@ this program. If not, see http://www.gnu.org/licenses/.
 #include "GirsLib/LedLcdManager.h"
 #include "GirsLib/GirsUtils.h"
 
+#ifndef LCD
+#error LCD is presently required
+#endif
+
 #ifdef ARDUINO
 //#ifdef ARDUINO_AVR_MEGA2560
 //Stream& stream = Serial1;
@@ -46,10 +50,6 @@ Stream stream(std::cout);
 #ifndef VERSION
 #include "GirsLib/version.h"
 #endif
-
-// Remote the thing is reacting to
-static const int selectedD = 108;//114;
-static const int selectedS = 104;//205;
 
 static IrReceiverSampler* irReceiver;
 

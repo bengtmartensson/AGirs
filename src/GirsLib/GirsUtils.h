@@ -1,7 +1,6 @@
-#ifndef GIRSUTILS_H
-#define	GIRSUTILS_H
+#pragma once
 
-#include <LedLcdManager.h> // for led_t
+#include "LedLcdManager.h" // for led_t
 #include <MultiDecoder.h>  // for MultiDecoder::Type
 #ifdef ARDUINO
 #include <IPAddress.h>
@@ -373,5 +372,3 @@ public:
 #define NON_MOD_PIN invalidPin
 #endif
 };
-
-#endif /* GIRSUTILS_H */

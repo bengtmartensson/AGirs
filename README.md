@@ -8,62 +8,34 @@ for interact with other programs. communicating over a serial line
 (accepting incoming requests) or client (initiating connections).
 
 It is build on top of the low-level library called [Infrared4Arduino](https://github.com/bengtmartensson/Infrared4Arduino).
-This is basically a descendant of a library called IRremote, published by
-Ken Shirriff in [his blog](http://www.righto.com/2009/08/multi-protocol-infrared-remote-library.html),
-now maintained [here](https://github.com/z3t0/Arduino-IRremote).
-It uses Michael Dreher's
-IrWidget [(article in
-German)](http://www.mikrocontroller.net/articles/High-Speed_capture_mit_ATmega_Timer),
-see also [this forum
-contribution](http://www.hifi-remote.com/forums/viewtopic.php?p=111876#111876).
-Michael's code is included, in somewhat modified form, in the files
-`IrWidget.[cpp,h]` and `IrWidgetAggregating.[cpp,h]`.
-The influence of [Chris Young's IRLib](http://tech.cyborg5.com/irlib/),
-maintained on [Github](https://github.com/cyborg5/IRLib), is acknowledged.
-However, the source code of the present projects is not, with the exception of the file
-`IRremoteBoardDefs.h`, derived from IRremote or IRLib.
+(See that project's [README.md](https://github.com/bengtmartensson/Infrared4Arduino/blob/master/README.md) for its history.)
 
-The project contains a library, contained in the directory GirsLib,
-and a few applications, presently Girs, GirsLite, Listener,
-and others. The directory GirsLib should
-be copied to
-the library area, typically `$HOME/Arduino/libraries/GirsLib`, while the
-application directories can be processed by the Arduino IDE
-directly. The directory Girs contains the AGirs application
+The project contains a few applications, presently Girs, (including the "light" version GirsLite), Listener,
+and a IR to serial converter.
+The directory `examples/Girs` contains the AGirs application
 interactive program. Listener is a uni-directional program that just
 emits decodes on the serial interface. It is intended to be used in
 conjunction with my Java program
-[dispatcher](https://github.com/bengtmartensson/dispatcher). (It may
-possibly be discontinued in the future.)
+[dispatcher](https://github.com/bengtmartensson/dispatcher).
+Finally, there is a IR-to-serial demonstration program is found as Opponator.
 
 ## Configuration
 It is a modular program that is heavily based on CPP symbols, defined
-in the configuration file `config.h`. This determines the capacities of the
+in the configuration file `examples/Girs/config.h`. This determines the capacities of the
 compiled program, and adapts the configuration to the underlying
-hardware. The options are (somewhat) documented in `Girs/config.h`.
+hardware. The options are (somewhat) documented in `examples/Girs/GirsFat.config.h`.
 Not all combination are sensible or implemented. Some, but not all,
 of the non-sensible
 combinations will be detected and will generate a compilation error.
 
-Caused by the limitations of the Arduino build process, it may be necessary to adjust
-the path to `config.h` in the included statement of `GirsLib/LedLcdManager.cpp`.
+If the preprocessor symbol `LCD` is defined in `src/GirsLib/LedLcdManager.cpp`
+(which is the default, except for the Arduino Micro), the library is configured
+with support for the LCD display, regardless of the settings in `config.h`.
+
 
 ## Code organization
-There is a "library" (in the Arduino sense), `src/GirsLib`, which should be copied/moved/linked to the Arduino library area,
-typically `~/Arduino/libraries` or `C:\Arduino\libraries`.
-
-Another "library" (in the Arduino sense), `src/IrNamedCommand`, handles [named commands](http://harctoolbox.org/Girs.html#NamedRemotes).
-It is optional, and can be enabled by `#define`-ing  `NAMED_REMOTES`. In this case, the library should be copied/moved/linked to the Arduino library area,
-typically `~/Arduino/libraries` or `C:\Arduino\libraries`.
-
-The other sub-directories of `src` contain different sketches that can
-be compiled and run on the Arduino.
-
-Due to the quirks of the preprocessor of the Arduino IDE, the following rule is used:
-The _program_`.ino` is kept empty, except for some dummy `#include`s,
-necessary for the IDE to find the libraries. The real code goes into _program_`.cpp`.
-For further motivation, see [this article](http://www.gammon.com.au/forum/?id=12625).
-(however, "Third" therein does not appear to be valid with current software.)
+The `src` directory and its subdirectories contains relatively minor support routines.
+The main code is contained in the "examples".
 
 ## Hardware configuration
 I have written a [fairly detailed description](http://www.harctoolbox.org/arduino_nano.html)
@@ -130,15 +102,16 @@ the other commands can be tested in this way.
 * [LiquidCrystal_I2C](https://github.com/marcoschwartz/LiquidCrystal_I2C) version 1.1.2 or later.
  Can be installed by the library manager within the Arduino IDE
   (Sketch -> Include library -> Manage libraries, name LiquidCrystal I2C (Category: Display)).
-Needed also if not using an LCD display.
+If the preprocessor symbol `LCD` is defined in `src/GirsLib/LedLcdManager.cpp`,
+this is needed also if not actually using an LCD display.
 
 ## Questions and answers
 
 * How do I setup Lirc to use this?
 
 Use the `girs` driver contained in the recent official upstream Lirc distribution.
-This is described in a document `girs.html`, also contained in the distro.
-The document is also [available online](http://lirc.org/html/girs.html).
+This is described in a document `girs.html`,
+[available online](http://lirc.org/html/girs.html). also contained in the (recent) distro.
 
 * What are Makefiles doing in an Arduino project?
 
@@ -178,6 +151,10 @@ versions 1.1.0 or later, as well as with Lirc, using  the Lirc
 `girs` driver by yours truly. Documentation is found with the [Lirc
 driver](http://lirc.org/html/girs), in the Lirc sources the file `girs.html`.
 
+* Were did the `example/GirsLite` directory go?
+It has been merged with `examples/Girs`. To build GirsLite, make sure that `examples/config.h`
+is configured as you desire.
+
 It is not an independent program, it is just AGirs
 with certain options enabled, namely
 the CPP symbols `TRANSMIT, CAPTURE, LED`, and (optionally) `NON_MOD`
@@ -193,12 +170,19 @@ Just as GirsLite, this was just a certain configuration of AGirs,
 NON_MOD` (optionally), `RECEIVE, LED, LCD, DECODE` (only to the LCD), `TRANSMITTERS`
 (only a dummy implementation).
 
+* Can I keep and maintain the `config.h` in another location, for example together with
+my own sketch?
+
+No, the present Arduino IDE does not support this.
+I an not aware of a clean solution. Sorry.
+Fiddling with the library's `config.h` for project specific configurations defeats the very idea of a library.
+
 * How is "Girs" pronounced?
 
 It is pronounced like in "girl". The "language" Girs is written capitalized, the name of an implementation is usually written in lower case.
 
 ## License
-The entire work is licensed under the GPL2 "or later" license. Chris' as well as Ken's
-code is licensed under the LGPL 2.1-license. Michael's code carries the
+The entire work is licensed under the GPL2 "or later" license, just as Infrared4Arduino. Michael's code
+(that is contained in Infrared4Arduino) carries the
 GPL2-license, although he is [willing to agree to "or later
 versions"](http://www.hifi-remote.com/forums/viewtopic.php?p=112586#112586).

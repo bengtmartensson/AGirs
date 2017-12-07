@@ -1,5 +1,4 @@
-#ifndef LEDLCDMANAGER_H
-#define	LEDLCDMANAGER_H
+#pragma once
 
 #include "Tokenizer.h"
 #include <InfraredTypes.h>
@@ -186,5 +185,3 @@ public:
 
     }
 };
-
-#endif	/* LEDLCDMANAGER_H */

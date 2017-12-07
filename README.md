@@ -8,30 +8,34 @@ for interact with other programs. communicating over a serial line
 (accepting incoming requests) or client (initiating connections).
 
 It is build on top of the low-level library called [Infrared4Arduino](https://github.com/bengtmartensson/Infrared4Arduino).
-(See that project's README.md for its history.)
+(See that project's [README.md](https://github.com/bengtmartensson/Infrared4Arduino/blob/master/README.md) for its history.)
 
-The project contains a few applications, presently Girs, GirsLite, Listener,
-and others. The
-application directories can be processed by the Arduino IDE
-directly. The directory Girs contains the AGirs application
+The project contains a few applications, presently Girs, (including the "light" version GirsLite), Listener,
+and a IR to serial converter.
+The directory `examples/Girs` contains the AGirs application
 interactive program. Listener is a uni-directional program that just
 emits decodes on the serial interface. It is intended to be used in
 conjunction with my Java program
-[dispatcher](https://github.com/bengtmartensson/dispatcher). (It may
-possibly be discontinued in the future.)
+[dispatcher](https://github.com/bengtmartensson/dispatcher).
+Finally, there is a IR-to-serial demonstration program is found as Opponator.
 
 ## Configuration
 It is a modular program that is heavily based on CPP symbols, defined
-in the configuration file `src/config/config.h`. This determines the capacities of the
+in the configuration file `examples/Girs/config.h`. This determines the capacities of the
 compiled program, and adapts the configuration to the underlying
-hardware. The options are (somewhat) documented in `src/config/GirsFat.config.h`.
+hardware. The options are (somewhat) documented in `examples/Girs/GirsFat.config.h`.
 Not all combination are sensible or implemented. Some, but not all,
 of the non-sensible
 combinations will be detected and will generate a compilation error.
 
+If the preprocessor symbol `LCD` is defined in `src/GirsLib/LedLcdManager.cpp`
+(which is the default, except for the Arduino Micro), the library is configured
+with support for the LCD display, regardless of the settings in `config.h`.
+
 
 ## Code organization
-TODO.
+The `src` directory and its subdirectories contains relatively minor support routines.
+The main code is contained in the "examples".
 
 ## Hardware configuration
 I have written a [fairly detailed description](http://www.harctoolbox.org/arduino_nano.html)
@@ -98,15 +102,16 @@ the other commands can be tested in this way.
 * [LiquidCrystal_I2C](https://github.com/marcoschwartz/LiquidCrystal_I2C) version 1.1.2 or later.
  Can be installed by the library manager within the Arduino IDE
   (Sketch -> Include library -> Manage libraries, name LiquidCrystal I2C (Category: Display)).
-Needed also if not using an LCD display.
+If the preprocessor symbol `LCD` is defined in `src/GirsLib/LedLcdManager.cpp`,
+this is needed also if not actually using an LCD display.
 
 ## Questions and answers
 
 * How do I setup Lirc to use this?
 
 Use the `girs` driver contained in the recent official upstream Lirc distribution.
-This is described in a document `girs.html`, also contained in the distro.
-The document is also [available online](http://lirc.org/html/girs.html).
+This is described in a document `girs.html`,
+[available online](http://lirc.org/html/girs.html). also contained in the (recent) distro.
 
 * What are Makefiles doing in an Arduino project?
 
@@ -145,6 +150,10 @@ without all options. It is meant to be used with
 versions 1.1.0 or later, as well as with Lirc, using  the Lirc
 `girs` driver by yours truly. Documentation is found with the [Lirc
 driver](http://lirc.org/html/girs), in the Lirc sources the file `girs.html`.
+
+* Were did the `example/GirsLite` directory go?
+It has been merged with `examples/Girs`. To build GirsLite, make sure that `examples/config.h`
+is configured as you desire.
 
 It is not an independent program, it is just AGirs
 with certain options enabled, namely

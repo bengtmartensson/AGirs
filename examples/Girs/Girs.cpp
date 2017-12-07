@@ -197,12 +197,14 @@ static bool sendIrSignal(const IrSignal &irSignal, unsigned int noSends=1) {
 
 #endif // TRANSMIT
 
+# if defined(RECEIVE) | defined(CAPTURE)
 static void flushIn(Stream &stream UNUSED) {
 #ifdef ARDUINO
     while (stream.available())
         stream.read();
 #endif
 }
+#endif
 
 #ifdef RECEIVE
 

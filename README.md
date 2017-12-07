@@ -151,16 +151,17 @@ versions 1.1.0 or later, as well as with Lirc, using  the Lirc
 `girs` driver by yours truly. Documentation is found with the [Lirc
 driver](http://lirc.org/html/girs), in the Lirc sources the file `girs.html`.
 
-* Were did the `example/GirsLite` directory go?
-It has been merged with `examples/Girs`. To build GirsLite, make sure that `examples/config.h`
-is configured as you desire.
-
 It is not an independent program, it is just AGirs
 with certain options enabled, namely
 the CPP symbols `TRANSMIT, CAPTURE, LED`, and (optionally) `NON_MOD`
 defined. Alternatively, if `RECEIVE` is defined, but not `CAPTURE`, the
 program mimics the capture command with a demodulating sensor, for
 usage with IrScrutinizer without a non-demodulating sensor.
+
+* Were did the `example/GirsLite` directory go?
+
+It has been merged with `examples/Girs`. To build GirsLite, make sure that `examples/config.h`
+is configured as you desire.
 
 * What about Girs4Lirc?
 

@@ -66,7 +66,6 @@ static void readOneDecode() {
 #ifdef RECEIVELED
     LedLcdManager::setLogicLed(receiveled, LedLcdManager::off);
 #endif
-    int type;
     MultiDecoder multiDecoder(*irReceiver);
 #ifdef LCD
     if (multiDecoder.getType() > MultiDecoder::noise) {
@@ -77,7 +76,7 @@ static void readOneDecode() {
             LedLcdManager::lcdSetCursor(0, 1); // prepare for dittos
     }
 #endif
-    type = multiDecoder.getType();
+    MultiDecoder::Type type = multiDecoder.getType();
     strncpy(decode, multiDecoder.getDecode(), 100);
 
     LedLcdManager::setLogicLed(GirsUtils::decode2logicalLed(type), LedLcdManager::blink);

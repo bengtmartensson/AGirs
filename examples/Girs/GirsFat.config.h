@@ -90,6 +90,10 @@
 // Define if using Ethernet (TCP) as the communication channel
 #define ETHERNET
 
+// Define to 2 to use the Ethernet2 library
+// (using the W5500 based cards, like the Arduino Ethernet2 shield).
+#define ETHERNET_REVISION 1
+
 // Print received commands on the LCD display
 //#define DEBUG_CMD
 

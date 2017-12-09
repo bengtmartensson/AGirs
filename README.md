@@ -42,6 +42,10 @@ If the preprocessor symbol `LCD` is defined in `src/GirsLib/LedLcdManager.cpp`
 (which is the default, except for the Arduino Micro), the library is configured
 with support for the LCD display, regardless of the settings in `config.h`.
 
+### Ethernet support
+Both the library `Ethernet` as well as the library `Ethernet2` are supported. If the CPP
+symbol `ETHERNET_REVISION` has the value 2, the latter will be used.
+This applies both to the Girs application as well as to the Listener.
 
 ## Hardware configuration
 I have written a [fairly detailed description](http://www.harctoolbox.org/arduino_nano.html)
@@ -110,6 +114,7 @@ the other commands can be tested in this way.
   (Sketch -> Include library -> Manage libraries, name LiquidCrystal I2C (Category: Display)).
 If the preprocessor symbol `LCD` is defined in `src/GirsLib/LedLcdManager.cpp`,
 this is needed also if not actually using an LCD display.
+* (Optional) [Beacon](https://github.com/bengtmartensson/ABeacon) for an AMX compatible ethernet beacon. 
 
 ## Questions and answers
 

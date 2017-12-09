@@ -5,20 +5,8 @@
 #include "config.h"
 #include <InfraredTypes.h>
 
-#ifdef ETHERNET
-#include <Ethernet.h>
-#endif
-
 #ifdef LCD
 #include <LiquidCrystal_I2C.h>
 #include <Wire.h>
 #include <SPI.h>
-#endif
-
-#ifdef NAMED_COMMAND
-#include "IrNamedRemote.h"
-#endif
-
-#ifdef BEACON
-#include <Beacon.h>
 #endif

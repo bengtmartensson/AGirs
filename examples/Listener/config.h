@@ -18,6 +18,10 @@
 // Define if using Ethernet (TCP or UDP) as the communication channel
 #define ETHERNET
 
+// Define to 2 to use the Ethernet2 library
+// (using the W5500 based cards, like the Arduino Ethernet2 shield).
+#define ETHERNET_REVISION 1
+
 // If LCD support desired, include appropriate hardware description
 #ifdef LCD
 #define LCD_0x27_16_2

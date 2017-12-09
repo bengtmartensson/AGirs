@@ -21,7 +21,13 @@ this program. If not, see http://www.gnu.org/licenses/.
 #include <IrReceiverSampler.h>
 
 #ifdef ETHERNET
+
+#if defined(ETHERNET_REVISION) & (ETHERNET_REVISION == 2)
+#include <Ethernet2.h>
+#else
 #include <Ethernet.h>
+#endif
+
 #include <IPAddress.h>
 #ifdef BEACON
 #include <Beacon.h>

@@ -4,22 +4,32 @@ server](http://www.harctoolbox.org/Girs.html) for the Arduino. That
 is, it is an interactive server that can send and receive IR signals,
 with some bells and whistles. The interactive server is mainly meant
 for interact with other programs. communicating over a serial line
-(likely in USB disguise), TCP-, or UDP sockets, acting as server
-(accepting incoming requests) or client (initiating connections).
+(likely in USB disguise), or TCP-sockets.
 
 It is build on top of the low-level library called [Infrared4Arduino](https://github.com/bengtmartensson/Infrared4Arduino).
-(See that project's [README.md](https://github.com/bengtmartensson/Infrared4Arduino/blob/master/README.md) for its history.)
 
-The project contains a few applications, presently Girs, (including the "light" version GirsLite), Listener,
-and a IR to serial converter.
-The directory `examples/Girs` contains the AGirs application
-interactive program. Listener is a uni-directional program that just
-emits decodes on the serial interface. It is intended to be used in
-conjunction with my Java program
-[dispatcher](https://github.com/bengtmartensson/dispatcher).
-Finally, there is a IR-to-serial demonstration program is found as Opponator.
+The main content of the project is an applications,
+_Girs_ (including the "light" version _GirsLite_), which constitutes the server.
+There is also another application, _Listener_, which is a uni-directional program that just
+emits decodes on the serial interface.
+(It can for example to be used in conjunction with my Java program
+[dispatcher](https://github.com/bengtmartensson/dispatcher)).
+Finally, there is a IR-to-serial demonstration program; an IR to serial converter (_Opponator_).
+These application are found as subdirectories of the directory `examples`.
+The subdirectory `src` contains a fairly small amount of supporting functionality,
+forming a library in the traditional Arduino sense.
 
-## Configuration
+This slighty unlogical organization is due to the wish to be compatible with the current
+[Arduino library specification](https://github.com/arduino/Arduino/wiki/Arduino-IDE-1.5:-Library-specification),
+required/desired for inclusion in the Arduino library manager.
+(There is presently no "Arduino application manager".)
+
+For compilation with the Arduino IDE, the library
+[Infrared4Arduino](https://github.com/bengtmartensson/Infrared4Arduino) and, preferably,
+the [LiquidCrystal_I2C](https://github.com/marcoschwartz/LiquidCrystal_I2C) (version 1.1.2 or later)
+should be installed with the Arduino library manager.
+
+## Configuration files
 It is a modular program that is heavily based on CPP symbols, defined
 in the configuration file `examples/Girs/config.h`. This determines the capacities of the
 compiled program, and adapts the configuration to the underlying
@@ -32,10 +42,6 @@ If the preprocessor symbol `LCD` is defined in `src/GirsLib/LedLcdManager.cpp`
 (which is the default, except for the Arduino Micro), the library is configured
 with support for the LCD display, regardless of the settings in `config.h`.
 
-
-## Code organization
-The `src` directory and its subdirectories contains relatively minor support routines.
-The main code is contained in the "examples".
 
 ## Hardware configuration
 I have written a [fairly detailed description](http://www.harctoolbox.org/arduino_nano.html)
@@ -110,8 +116,8 @@ this is needed also if not actually using an LCD display.
 * How do I setup Lirc to use this?
 
 Use the `girs` driver contained in the recent official upstream Lirc distribution.
-This is described in a document `girs.html`,
-[available online](http://lirc.org/html/girs.html). also contained in the (recent) distro.
+This is described [here](http://lirc.org/html/girs.html).
+also contained in the (recent) distro as `girs.html`.
 
 * What are Makefiles doing in an Arduino project?
 
@@ -171,7 +177,7 @@ Just as GirsLite, this was just a certain configuration of AGirs,
 NON_MOD` (optionally), `RECEIVE, LED, LCD, DECODE` (only to the LCD), `TRANSMITTERS`
 (only a dummy implementation).
 
-* Can I keep and maintain the `config.h` in another location, for example together with
+* Can I keep and maintain the library configuration in another location, for example together with
 my own sketch?
 
 No, the present Arduino IDE does not support this.

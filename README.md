@@ -101,20 +101,18 @@ the other commands can be tested in this way.
 
 ## Dependencies
 
-* [Infrared4Arduino](https://github.com/bengtmartensson/Infrared4Arduino) by myself.
-  Current version is 1.0.1. Can be installed by the library manager within the Arduino IDE
+* [`Infrared4Arduino`](https://github.com/bengtmartensson/Infrared4Arduino) by myself.
+  Current version is 1.0.1. Can be installed by the library manager within the Arduino IDE.
   (Sketch -> Include library -> Manage libraries, name Infrared (Category: Others)).
-  In earlier versions
-  of this project, this was integrated in AGirs, but it is now an independent project.
-* Ethernet (if enabling the `ETHERNET` configure option). Contained in the Arduino IDE.
-* SPI (if enabling the `ETHERNET` or `LCD_I2C` configure option). Contained in the Arduino IDE.
-* Wire (if enabling the `LCD_I2C` configure option). Contained in the Arduino IDE.
-* [LiquidCrystal_I2C](https://github.com/marcoschwartz/LiquidCrystal_I2C) version 1.1.2 or later.
- Can be installed by the library manager within the Arduino IDE
-  (Sketch -> Include library -> Manage libraries, name LiquidCrystal I2C (Category: Display)).
+* `Ethernet`,  alternatively `Ethernet2` (if enabling the `ETHERNET` configure option).
+* `SPI` (if enabling the `ETHERNET` or `LCD_I2C` configure option). Contained in the Arduino IDE.
+* `Wire` (if enabling the `LCD_I2C` configure option). Contained in the Arduino IDE.
+* [`LiquidCrystal_I2C`](https://github.com/marcoschwartz/LiquidCrystal_I2C) version 1.1.2 or later.
+ Available in the Arduino library manager.
 If the preprocessor symbol `LCD` is defined in `src/GirsLib/LedLcdManager.cpp`,
 this is needed also if not actually using an LCD display.
-* (Optional) [Beacon](https://github.com/bengtmartensson/ABeacon) for an AMX compatible ethernet beacon. 
+* (Optional) [`Beacon`](https://github.com/bengtmartensson/ABeacon) for an AMX compatible Ethernet beacon.
+ It is also available in the Arduino library manager with the name `Beacon`.
 
 ## Questions and answers
 

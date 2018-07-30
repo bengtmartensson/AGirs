@@ -45,6 +45,9 @@ with support for the LCD display, regardless of the settings in `config.h`.
 ### Ethernet support
 Both the library `Ethernet` as well as the library `Ethernet2` are supported. If the CPP
 symbol `ETHERNET_REVISION` has the value 2, the latter will be used.
+However, it is better to use version 2.0.0 (or later) of the `Ethernet`
+library, since it supports both chips (W5100 and W5500), auto-detecting during runtime.
+
 This applies both to the Girs application as well as to the Listener.
 
 ## Hardware configuration
@@ -104,7 +107,8 @@ the other commands can be tested in this way.
 * [`Infrared4Arduino`](https://github.com/bengtmartensson/Infrared4Arduino) by myself.
   Current version is 1.0.1. Can be installed by the library manager within the Arduino IDE.
   (Sketch -> Include library -> Manage libraries, name Infrared (Category: Others)).
-* `Ethernet`,  alternatively `Ethernet2` (if enabling the `ETHERNET` configure option).
+* `Ethernet`,  alternatively `Ethernet2` (if enabling the `ETHERNET` configure option),
+   preferably version 2.0.0 (or later).
 * `SPI` (if enabling the `ETHERNET` or `LCD_I2C` configure option). Contained in the Arduino IDE.
 * `Wire` (if enabling the `LCD_I2C` configure option). Contained in the Arduino IDE.
 * [`LiquidCrystal_I2C`](https://github.com/marcoschwartz/LiquidCrystal_I2C) version 1.1.2 or later.
@@ -143,9 +147,9 @@ Only cards based on the W5100 chip (and compatible), like the
 shield](https://www.arduino.cc/en/Main/ArduinoEthernetShield).  There are both cheap clones of the original available, as well as
 smallish W5100-based cards.
 
-It is believed that also the next generation of W5500 based shields, like the
+Also the next generation of W5500 based shields, like the
 official [Arduino Ethernet Shield 2](https://www.arduino.cc/en/Main/ArduinoEthernetShield)
-work, but this has [not yet been tested](https://github.com/bengtmartensson/AGirs/issues/25).
+work. For this, the preferred way is to use the `Ethernet` library version 2.0.0 (or later).
 
 * What about "GirsLite"?
 

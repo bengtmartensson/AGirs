@@ -43,10 +43,9 @@ If the preprocessor symbol `LCD` is defined in `src/GirsLib/LedLcdManager.cpp`
 with support for the LCD display, regardless of the settings in `config.h`.
 
 ### Ethernet support
-Both the library `Ethernet` as well as the library `Ethernet2` are supported. If the CPP
-symbol `ETHERNET_REVISION` has the value 2, the latter will be used.
-However, it is better to use version 2.0.0 (or later) of the `Ethernet`
-library, since it supports both chips (W5100 and W5500), auto-detecting during runtime.
+If using an Ethernet shield with W5500 or W5200 chip, be sure that the
+Ethernet library version 2.0.0 or later is used,
+since it supports all W5*00 chips, auto-detecting during runtime.
 
 This applies both to the Girs application as well as to the Listener.
 
@@ -107,8 +106,7 @@ the other commands can be tested in this way.
 * [`Infrared4Arduino`](https://github.com/bengtmartensson/Infrared4Arduino) by myself.
   Current version is 1.0.1. Can be installed by the library manager within the Arduino IDE.
   (Sketch -> Include library -> Manage libraries, name Infrared (Category: Others)).
-* `Ethernet`,  alternatively `Ethernet2` (if enabling the `ETHERNET` configure option),
-   preferably version 2.0.0 (or later).
+* `Ethernet`, preferably version 2.0.0 or later.
 * `SPI` (if enabling the `ETHERNET` or `LCD_I2C` configure option). Contained in the Arduino IDE.
 * `Wire` (if enabling the `LCD_I2C` configure option). Contained in the Arduino IDE.
 * [`LiquidCrystal_I2C`](https://github.com/marcoschwartz/LiquidCrystal_I2C) version 1.1.2 or later.
@@ -142,14 +140,14 @@ this is not universally accepted terminology (yet!).
 
 * What Ethernet modules are supported?
 
-Only cards based on the W5100 chip (and compatible), like the
+Only cards based on the W5100, W5200, and W5500 chip (and compatible), like the
 [official
 shield](https://www.arduino.cc/en/Main/ArduinoEthernetShield).  There are both cheap clones of the original available, as well as
 smallish W5100-based cards.
 
 Also the next generation of W5500 based shields, like the
 official [Arduino Ethernet Shield 2](https://www.arduino.cc/en/Main/ArduinoEthernetShield)
-work. For this, the preferred way is to use the `Ethernet` library version 2.0.0 (or later).
+work. For this, use the `Ethernet` library version 2.0.0 (or later).
 
 * What about "GirsLite"?
 

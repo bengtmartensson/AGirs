@@ -90,12 +90,6 @@
 // Define if using Ethernet (TCP) as the communication channel
 #define ETHERNET
 
-// Define to 2 to use the Ethernet2 library
-// (using the W5500 based cards, like the Arduino Ethernet2 shield).
-// However, it is better to use version 2.0.0 (or later) of the "Ethernet"
-// library, since it supports both chips, auto-detecting during runtime.
-#define ETHERNET_REVISION 1
-
 // Print received commands on the LCD display
 //#define DEBUG_CMD
 

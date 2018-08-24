@@ -809,13 +809,9 @@ void loop() {
 #ifdef SERIAL_DEBUG
     Serial.println(F("Connection!"));
 #endif
-    client.println(F(PROGNAME));
 #if defined(COMMANDLED) & defined(LED)
     LedLcdManager::setLogicLed(commandled, LedLcdManager::on);
 #endif
-
-    while (client.read() != -1)
-        LedLcdManager::checkTurnoff();
 
     while (readProcessOneTcpCommand(client))
 #if defined(COMMANDLED) & defined(LED)

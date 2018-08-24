@@ -26,6 +26,11 @@
 #define DECODER
 #define DECODELED
 
+// Use the DecodeIR library instead of Infrared4Arduino's decoder.
+// Requires the library with the same name to be installed.
+// Warning: Will not run on anything substantially smaller than Mega.
+#define DECODEIR
+
 // LCD display with I2C connection. Defines a command "lcd".
 #define LCD
 
@@ -41,7 +46,7 @@
 
 // Define to have the receive command report the duration, even if DECODE is defined
 // and a decode was found. Use this for Lirc.
-#define DONT_REPORT_DECODES
+//#define DONT_REPORT_DECODES
 
 // Have parameters for transmitled etc.
 #define CONFIGURABLE_LEDS
@@ -158,9 +163,9 @@
 // they are the non-changeable values.
 #define DEFAULT_BEGINTIMEOUT 10000UL // milliseconds
 #define DEFAULT_CAPTURE_ENDINGTIMEOUT 100L // milliseconds
-#define DEFAULT_RECEIVE_ENDINGTIMEOUT 50L // milliseconds
+//#define DEFAULT_RECEIVE_ENDINGTIMEOUT 50L // milliseconds
 
-#ifdef DECODER
+#if defined(DECODER) && ! defined(DECODEIR)
 // If using the decoder, be sure to end a capture before the repeat sequence.
 #define DEFAULT_RECEIVE_ENDINGTIMEOUT 30L // milliseconds
 #else

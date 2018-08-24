@@ -68,7 +68,11 @@ this program. If not, see http://www.gnu.org/licenses/.
 #ifndef RECEIVE
 #error DECODER without RECEIVE is nonsensical, aborting.
 #endif
+#ifdef DECODEIR
+#include <DecodeIRClass.h>
+#else
 #include <MultiDecoder.h>
+#endif
 #endif
 
 #ifdef RENDERER
@@ -161,7 +165,7 @@ EthernetServer server(PORT);
 bool reset = false;
 #endif
 
-#define modulesSupported EXPAND_AND_QUOTE(Base TRANSMIT_NAME CAPTURE_NAME RENDERER_NAME RECEIVE_NAME DECODER_NAME LED_NAME LCD_NAME PARAMETERS_NAME NAMED_COMMANDS_NAME )
+#define modulesSupported EXPAND_AND_QUOTE(Base TRANSMIT_NAME CAPTURE_NAME RENDERER_NAME RECEIVE_NAME DECODER_NAME DECODEIR_NAME LED_NAME LCD_NAME PARAMETERS_NAME NAMED_COMMANDS_NAME )
 #ifndef PROGNAME
 #define PROGNAME "AGirs"
 #endif
@@ -216,6 +220,26 @@ static void flushIn(Stream &stream UNUSED) {
 
 static void decodeOrDump(IrReader *irReader, Stream& stream) {
 #ifdef DECODER
+#ifdef DECODEIR
+    IrSequence *irSequence = irReader->toIrSequence();
+    DecodeIRClass decoder(*irSequence);
+    delete irSequence;
+
+#ifdef LCD
+//    if (!irReader->isEmpty()) {
+//        String s = String(decoder.getProtocol()) + " "
+//                + String(decoder.getD()) + " "
+//                + ((decoder.getS() != -1) ? (String(decoder.getS()) + " ") : "")
+//                + String(decoder.getF());
+//        Serial.println(s);
+//        LedLcdManager::lcdPrint(s, true, 0, 0);
+////        if (decoder.getMiscMessage()[0])
+////            LedLcdManager::lcdPrint(decoder.getMiscMessage(), false, 0, 1);
+////        if (decoder.getErrorMessage()[0])
+////            LedLcdManager::lcdPrint(decoder.getErrorMessage(), false, 0, 2);
+//    }
+#endif
+#else // ! DECODEIR
     MultiDecoder multiDecoder(*irReader);
 #ifdef LCD
     if (multiDecoder.getType() > MultiDecoder::noise) {
@@ -230,9 +254,31 @@ static void decodeOrDump(IrReader *irReader, Stream& stream) {
 #ifdef DECODELED
     LedLcdManager::setLogicLed(DECODELED(multiDecoder.getType()), LedLcdManager::blink);
 #endif
-#endif
+#endif // ! DECODEIR
+#endif // DECODER
 
 #if defined(DECODER) & ! defined(DONT_REPORT_DECODES) // lircd does its own decoding
+#ifdef DECODEIR
+    stream.print(decoder.getProtocol());
+    stream.print(" ");
+    stream.print(decoder.getD());
+    stream.print(" ");
+    if (decoder.getS() != -1) {
+        stream.print(decoder.getS());
+        stream.print(" ");
+    }
+    stream.print(decoder.getF());
+    if (decoder.getMiscMessage()[0]) {
+        stream.print(" ");
+        stream.print(decoder.getMiscMessage());
+    }
+    if (decoder.getErrorMessage()[0]) {
+        stream.print(" ");
+        stream.print(decoder.getErrorMessage());
+    }
+    stream.println();
+
+#else  // ! DECODEIR
     switch (multiDecoder.getType()) {
         case MultiDecoder::noise:
             // ignore
@@ -244,12 +290,13 @@ static void decodeOrDump(IrReader *irReader, Stream& stream) {
             stream.println(multiDecoder.getDecode()); // also for timeout
             break;
     }
+#endif
 #else  // ! (defined(DECODER) & ! defined(DONT_REPORT_DECODES))
     if (irReader->isEmpty())
         stream.println(F(timeoutString));
     else
         irReader->dump(stream);
-#endif // !DECODER
+#endif // ! (defined(DECODER) & ! defined(DONT_REPORT_DECODES))
 }
 
 static bool receive(Stream& stream) {

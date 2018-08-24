@@ -179,6 +179,12 @@
 #define DECODER_NAME
 #endif
 
+#ifdef DECODEIR
+#define DECODEIR_NAME DecodeIR
+#else
+#define DECODEIR_NAME
+#endif
+
 #ifdef LED
 #define LED_NAME Led
 #else

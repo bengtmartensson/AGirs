@@ -84,7 +84,7 @@ libGirs.a: $(OBJS)
 doc: api-doc/index.html
 	$(BROWSER) $<
 
-api-doc/index.html xml/index.xml: $(wildcard src/* src/*/*) README.md
+api-doc/index.html xml/index.xml: $(wildcard src/* src/*/*) README.md $(VERSION_H)
 	$(DOXYGEN) $(DOXYFILE) > /dev/null
 
 gh-pages: api-doc/index.html

@@ -28,6 +28,10 @@ $ARDUINO  --verify --pref build.path=$TMPDIR ${VERBOSE} \
 	  --board ${PACKAGE}:${ARCHITECTURE}:${BOARD}:cpu=${CPU} \
 	  $FILE
 
+if [ "$?" -ne 0 ] ; then
+    exit $?
+fi
+
 cat > ${OUTFILE} <<EOF1
 #!/bin/sh
 

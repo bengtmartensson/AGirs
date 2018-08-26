@@ -1,9 +1,13 @@
-#pragma once
+/**
+ * @file config.h
+ * @brief User configuration file.
+ * This file determines the configuration of the built program.
+ * Feel free to be creative here; you can include pre-built files, you can replace
+ * the file with your content, you can include pre-built files and override values
+ * in them, or ...
+ */
 
-// This file determines the configuration of the built program.
-// Feel free to be creative here; you can include pre-built files, you can replace
-// the file with your content, you can include pre-built files and override values in them,
-// or ...
+#pragma once
 
 #ifdef ARDUINO_AVR_UNO
 // Support sending signals without modulation, e.g. with RF module.

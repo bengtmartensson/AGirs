@@ -154,7 +154,7 @@ EthernetServer server(PORT);
 bool reset = false;
 #endif
 
-#define modulesSupported EXPAND_AND_QUOTE(Base TRANSMIT_NAME CAPTURE_NAME RENDERER_NAME RECEIVE_NAME DECODER_NAME LED_NAME LCD_NAME PARAMETERS_NAME NAMED_COMMANDS_NAME )
+#define modulesSupported EXPAND_AND_QUOTE(Base TRANSMIT_NAME CAPTURE_NAME RENDERER_NAME RECEIVE_NAME DECODER_NAME LED_NAME LCD_NAME PARAMETERS_NAME NAMED_COMMANDS_NAME PRONTO_NAME)
 #ifndef PROGNAME
 #define PROGNAME "AGirs"
 #endif
@@ -416,13 +416,13 @@ void setup() {
 
 #if defined(ARDUINO) & !defined(ETHERNET) | defined(SERIAL_DEBUG)
 
-    Serial.begin(serialBaud);
+    Serial.begin(SERIALBAUD);
 #if defined(ARDUINO_AVR_LEONARDO) | defined(ARDUINO_AVR_MICRO)
     while (!Serial)
         ; // wait for serial port to connect. "Needed for Leonardo only"
 #endif
     Serial.println(F(PROGNAME " " VERSION));
-    Serial.setTimeout(serialTimeout);
+    Serial.setTimeout(SERIALTIMEOUT);
 
 #ifdef ETHERNET
     Serial.println(Ethernet.localIP());

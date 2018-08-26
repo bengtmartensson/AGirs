@@ -63,7 +63,7 @@ flash-nano: $(FLASHER)
 
 lib: libGirs.a
 
-INCLUDES=-I$(INFRARED4ARDUINO_DIR)/src -Isrc
+INCLUDES=-I$(INFRARED4ARDUINO_DIR)/src -Isrc -Iattic/src-sil/LcdI2C
 VPATH=src src/GirsLib examples/Girs
 
 #.PRECIOUS: test1

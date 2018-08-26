@@ -38,6 +38,19 @@ cat > ${OUTFILE} <<EOF1
 # Flashing of the ${PACKAGE} ${BOARD}, using avrdude installed like Fedora.
 # Sometimes root access is required, depending on the system configuration.
 
+# Usage:
+# ${OUTFILE} [-n] [<PORT>]
+#
+# where -n is for boards with the "new" bootloader, called optiboot.
+# <PORT> is the device name, default /dev/ttyUSB0.
+
+if [ "\$1" = "-n" ] ; then
+    BAUD=115200
+    shift
+else
+    BAUD=57600
+fi
+
 if [ \$# -eq 1 ] ; then
     PORT=\$1
 else
@@ -48,7 +61,6 @@ AVRDUDE=/usr/bin/avrdude
 AVRDUDE_CONF=/etc/avrdude/avrdude.conf
 PART=atmega328p
 PROGRAMMER_ID=arduino
-BAUD=57600
 
 HEXFILE=/tmp/flasher\$\$
 

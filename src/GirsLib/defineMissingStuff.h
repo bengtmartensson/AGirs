@@ -197,6 +197,12 @@
 #define NAMED_COMMANDS_NAME
 #endif
 
+#ifdef PRONTO
+#define PRONTO_NAME Pronto
+#else
+#define PRONTO_NAME
+#endif
+
 #ifdef TRANSMITTERS
 #define TRANSMITTERS_NAME Transmitters
 #else

@@ -42,6 +42,182 @@ If the preprocessor symbol `LCD` is defined in `src/GirsLib/LedLcdManager.cpp`
 (which is the default, except for the Arduino Micro), the library is configured
 with support for the LCD display, regardless of the settings in `config.h`.
 
+## Modules and interactive commands
+
+### General
+The program takes commands from its input stream, and write responses on its output stream.
+The general concept is presented [here](http://www.harctoolbox.org/Girs.html).
+A command input consists of one single line, terminated with a carrage return (binary 0x0d).
+Output is also presented as a single line, terminated with a carrage return.
+Needless to say, these lines can be long. On a successful execution, typically "OK"
+is returned.
+
+The communication can take place with another program or with a human using a
+version of a serial terminal. The command names can, in this implementation,
+be shortened as long as they are unique. Generally speaking, error handling
+and plausibility checking are presently basically non-existent...
+
+The program runs in a single thread, with no multitasking whatsoever.
+Also, even in the Ethernet version, only one concurrent session is supported.
+
+### [Base commands](http://www.harctoolbox.org/Girs.html#Base)
+These commands are always present in a Girs server. They correspond to the `Base` module.
+#### version
+*Input*: `version`
+
+*Output*: The program name followed by the version string. Example: `AGirs 1.0.0`.
+
+#### modules
+*Input*: `modules`
+
+*Output*: Returns list of implemented modules, separated by whitespace.
+Example: `Base Transmit Capture Renderer Receive Decoder Led Lcd Parameters`.
+
+Comment: A communicating peer evaluates this, in order to find out the capabilities of
+the Girs implementation. Both IrScrutinizer and the Lirc Girs driver do this, and adjust
+their behavior accordingly.
+
+### [NamedRemotes](http://www.harctoolbox.org/Girs.html#NamedRemotes)
+Presently not implemented, but is [planned](https://github.com/bengtmartensson/AGirs/issues/37).
+
+### [Transmit](http://www.harctoolbox.org/Girs.html#Transmit)
+Supported if the CPP symbol `TRANSMIT` is defined in the configuration.
+#### transmit
+*Input*: `send <no_sends> <frequency> <length_intro> <length_repeat>  <durations...>`
+
+*Output*: `OK`
+
+Semantics:
+* `<no_sends>` denotes the number of times to send the signal.
+* `<frequency>` denotes the modulation frequency in Hz (not kHz as in some other programs!). The value 0
+is treated as "no modulaton", and sent to a non-modulating sender, if configured.
+* `<length_intro>` denotes how many of the numbers supplied as `<durations...>`
+are to be considered as belonging to the intro sequence,
+* `<length_repeat>` denotes how many of the numbers supplied as `<durations...>`
+are be considered as belonging to the repeat sequence (following the intro sequence durations),
+* `<length_ending>` (normally 0) denotes how many of the numbers supplied as `<durations...>`
+are to be considered as belonging to the ending sequence, following after the repeat durations,
+* `<durations>` the durations in micro seconds, making up the intro-, repeat-, and ending sequence,
+according to the preceding parameters.
+
+The intro sequence is always sent exactly one. If it is empty, the repeat sequence is sent `<no_sends>` times,
+otherwise `<no_sends>` - 1 times. Finally, the (normally empty) ending sequence is sent once.
+
+### [Capture](http://www.harctoolbox.org/Girs.html#Capture)
+Available if configured with the `CAPTURE` option.
+
+*Input*: `analyze`
+
+*Output* (Normal): `f=<frequency> <durations with signs...>`
+
+*Output* (Timeout): `.`
+
+Semantics:
+* `<frequency>` is the measured modulation frequency.
+* `<durations with signs...>` the measured durations in micro seconds; flashes with "+",
+gaps as "-".
+
+### [Receive](http://www.harctoolbox.org/Girs.html#Receive)
+Available if configured with the `RECEIVE` option.
+
+*Input*: `analyze`
+
+*Output* (Normal): `<durations with signs...>
+
+*Output* (Timeout): `.`
+
+Semantics:
+* `<durations with signs...>` the measured durations in micro seconds; flashes with "+",
+gaps as "-".
+
+### Render
+Available if configured with the RENDER option.
+
+*Input*: `transmit <no_sends> <protocol> <protocol_parameters>`
+
+*Output* (normal): `OK`
+
+*Output* (Syntax error): `<error message>`
+
+Semantics:
+* `<no_sends>` number of times to send signal
+* `<protocol_name>` name of protocol, presently `NEC1` and `RC5`-
+* `<protocol_parameters>` protocol parameters, dependent on protocol.
+
+*Example*: `transmit 1 rc5 0 12`.
+This turns on or off most Philips TVs.
+
+### Decoder
+Available if configured with the `DECODER` option. No additional interactive commands,
+instead the `receive`-d commands are attempted to be decoded, and optionally
+display on an LCD display.
+
+### LED
+Available if configured with the `LED` option.
+
+*Input*: `led <logical_led_nr> on|off|blink`
+
+*Output*: `OK`.
+
+Turns on/off/blinks the LED with the given logical number.
+
+### LCD
+Available if configured with the `LCD` option.
+
+*Input*: `lcd <message>`
+
+*Output*: `OK`
+
+Shows the message `<message>` on a connected LCD display for a certain time.
+
+### Parameters
+Available if configured with the `PARAMETERS` option. The allows to inspect and
+to change some parameters.
+
+*Input*: `parameter <parameter_name> [<parameter_value>]`
+
+*Output:* `<parameter_name>=<parameter_value>`
+
+Semantics: If `<parameter_value>` is given, the value is assigned to the
+named parameter, if possible. If not given, the present value is reported.
+
+#### Named of available adjustable parameters:
+The adjustable parameters depend on the configuration options.
+A few of these are listed next.
+
+* `beginTimeout`: time in milliseconds until timeout by not detected signal
+* `captureEndingTimeout`: time in milliseconds for capture ending marking end of signal
+* `receiveEndingTimeout`: time in milliseconds for receive ending marking end of signal
+* `captureSize`: size, in number of durations, of captured (received) signals. Must be even.
+
+### Pronto
+Available if configured with the `PRONTO` option.
+
+*Input*: `hex <no_sends> <pronto_hex_signal>`
+
+*Output*: `OK`.
+
+Semantics:
+* `<no_sends>` number of times to send signal
+* `<pronto_hex_signal>` Pronto hex form IR signal. Always start with `0000`.
+
+Sends the given signal the requested number of times.
+
+### Info
+Available if configured with the option `INFO`.
+
+*Input*: info
+
+*Output*: Information on current platform;
+for example `Board: Arduino Mega2560, CPU frequency: 16000000L`
+
+### Memory
+Available if configured with the option `FREEMEM`.
+
+*Input*: memory
+
+*Output*: number of free bytes.
+
 ### Ethernet support
 If using an Ethernet shield with W5500 or W5200 chip, be sure that the
 Ethernet library version 2.0.0 or later is used,
@@ -127,12 +303,21 @@ this is needed also if not actually using an LCD display.
 Use the `girs` driver contained in the recent official upstream Lirc distribution.
 This is described [here](http://lirc.org/html/girs.html).
 also contained in the (recent) distro as `girs.html`.
+Configuration options: use TRANSMIT if sending is desired, and RECEIVE if receiving is desired.
+CAPTURE is not meaningful for Lirc. Turn on PARAMETERS -- Lircd adjust the ending timeout.
+If using DECODE and an LCD display (which is cool, but useless), be sure to
+define DONT_REPORT_DECODES. Use of Ethernet connections are supported.
+Due to the inner workings of Lirc, it is advantageous not define both TRANSMIT and RECEIVE
+unless you really need it.
 
 * What are Makefiles doing in an Arduino project?
 
 To build the project for the Arduino, use the Arduino IDE from [arduino.cc](https://www.arduino.cc/en/Main/Software),
 as in most Arduino projects.
-The Makefile is used for building a "Software-in-the-loop" test version for the PC; of interest for developers only.
+The Makefile is used for building a "Software-in-the-loop" test version for the PC;
+of interest for developers only.
+It is also used for maintainer work, like generating API documentation with Doxygen,
+as well as generating keywords.txt. Feel free to learn from it!
 
 * What is the difference between
   ["receive"](http://www.harctoolbox.org/Glossary.html#ReceivingIrSignals)

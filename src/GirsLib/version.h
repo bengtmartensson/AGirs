@@ -1,2 +1,6 @@
 // This file was automatically generated from library.properties; do not edit.
-#define VERSION "1.0.0"
+/**
+ * Version of the current library.
+ * Taken from the version in library.properties.
+ */
+#define VERSION "1.0.1"

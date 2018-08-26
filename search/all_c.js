@@ -7,5 +7,6 @@ var searchData=
   ['printvariable',['printVariable',['../classGirsUtils.html#a27796224cae4c8e7e674c7d62324435b',1,'GirsUtils']]],
   ['processcommand',['processCommand',['../Girs_8cpp.html#a2717c6a361e905fc1d043a6489d70e67',1,'Girs.cpp']]],
   ['progname',['PROGNAME',['../Girs_8cpp.html#a8c9afb758de9a0355c93fc926b8ce6b1',1,'PROGNAME():&#160;Girs.cpp'],['../GirsFat_8config_8h.html#a8c9afb758de9a0355c93fc926b8ce6b1',1,'PROGNAME():&#160;GirsFat.config.h'],['../GirsLite_8config_8h.html#a8c9afb758de9a0355c93fc926b8ce6b1',1,'PROGNAME():&#160;GirsLite.config.h'],['../Listener_8cpp.html#a8c9afb758de9a0355c93fc926b8ce6b1',1,'PROGNAME():&#160;Listener.cpp']]],
-  ['pronto',['PRONTO',['../GirsFat_8config_8h.html#a3916e8e3146101253f9824813f80e1d8',1,'GirsFat.config.h']]]
+  ['pronto',['PRONTO',['../GirsFat_8config_8h.html#a3916e8e3146101253f9824813f80e1d8',1,'GirsFat.config.h']]],
+  ['pronto_5fname',['PRONTO_NAME',['../defineMissingStuff_8h.html#aa5c655bb9a196ff68fdbec6fd6287458',1,'defineMissingStuff.h']]]
 ];

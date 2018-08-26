@@ -1,5 +1,10 @@
 var searchData=
 [
-  ['ip2string',['ip2string',['../classGirsUtils.html#a724100ced2bc0f1edb9abf5c5458c12b',1,'GirsUtils']]],
-  ['isprefix',['isPrefix',['../Girs_8cpp.html#a71995f10b808bb0e75bc91430b663377',1,'isPrefix(const String &amp;cmd, const char *string):&#160;Girs.cpp'],['../Girs_8cpp.html#acdb3f52c80bcc8df170bccd2e22c1c50',1,'isPrefix(const char *string, const String &amp;cmd):&#160;Girs.cpp'],['../Girs_8cpp.html#a7727acc806c407a5f319e1cbe0991ad4',1,'isPrefix(const String &amp;cmd, const __FlashStringHelper *pstring):&#160;Girs.cpp'],['../Girs_8cpp.html#a1c968e214150cdd1ead50026dea02e83',1,'isPrefix(const __FlashStringHelper *pstring, const String &amp;cmd):&#160;Girs.cpp']]]
+  ['getblinktime',['getBlinkTime',['../classLedLcdManager.html#a3e4543fa9e61338f5607b8a8a00786f5',1,'LedLcdManager']]],
+  ['getfrequency',['getFrequency',['../classTokenizer.html#a4b72042e54cde99f9c9e919d83412eb3',1,'Tokenizer']]],
+  ['getint',['getInt',['../classTokenizer.html#aa79e2f40286f9b21a7d4d4837f6f269c',1,'Tokenizer']]],
+  ['getline',['getLine',['../classTokenizer.html#aedafbd1268f442ead4a37a64cefc646b',1,'Tokenizer']]],
+  ['getmicroseconds',['getMicroseconds',['../classTokenizer.html#a80d083c06a0cedb9597670164d63dd0f',1,'Tokenizer']]],
+  ['getrest',['getRest',['../classTokenizer.html#a3e270f7c5a596463697edbf3df71d9a2',1,'Tokenizer']]],
+  ['gettoken',['getToken',['../classTokenizer.html#a47e99cef2672a4be3fb546ab12a6ea47',1,'Tokenizer']]]
 ];

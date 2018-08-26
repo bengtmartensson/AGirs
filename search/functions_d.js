@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['_7etokenizer',['~Tokenizer',['../classTokenizer.html#a3f60f887953edf0f95ba5f36102f7017',1,'Tokenizer']]]
+  ['updateturnofftime',['updateTurnOffTime',['../classLedLcdManager.html#acec530936d41b89c8ddf8a96b6b801c7',1,'LedLcdManager']]]
 ];

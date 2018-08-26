@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['freeram',['freeRam',['../classGirsUtils.html#a89314dd44f30a800849ec3e609ab37ac',1,'GirsUtils']]]
+  ['decode2logicalled',['decode2logicalLed',['../classGirsUtils.html#afc823cd5a83fb94f86508ada492cddd8',1,'GirsUtils']]],
+  ['decodeordump',['decodeOrDump',['../Girs_8cpp.html#a8e0a3f5d6b68e0ac8f0af4ec175abc65',1,'Girs.cpp']]]
 ];

@@ -71,8 +71,106 @@ $(function() {
 <p>This slighty unlogical organization is due to the wish to be compatible with the current <a href="https://github.com/arduino/Arduino/wiki/Arduino-IDE-1.5:-Library-specification">Arduino library specification</a>, required/desired for inclusion in the Arduino library manager. (There is presently no "Arduino application manager".)</p>
 <p>For compilation with the Arduino IDE, the library <a href="https://github.com/bengtmartensson/Infrared4Arduino">Infrared4Arduino</a> and, preferably, the <a href="https://github.com/marcoschwartz/LiquidCrystal_I2C">LiquidCrystal_I2C</a> (version 1.1.2 or later) should be installed with the Arduino library manager.</p>
 <h2>Configuration files</h2>
-<p>It is a modular program that is heavily based on CPP symbols, defined in the configuration file <code><a class="el" href="Girs_2config_8h.html">examples/Girs/config.h</a></code>. This determines the capacities of the compiled program, and adapts the configuration to the underlying hardware. The options are (somewhat) documented in <code><a class="el" href="GirsFat_8config_8h.html">examples/Girs/GirsFat.config.h</a></code>. Not all combination are sensible or implemented. Some, but not all, of the non-sensible combinations will be detected and will generate a compilation error.</p>
+<p>It is a modular program that is heavily based on CPP symbols, defined in the configuration file <code><a class="el" href="Girs_2config_8h.html">examples/Girs/config.h</a></code>. This determines the capacities of the compiled program, and adapts the configuration to the underlying hardware. The options are (somewhat) documented in <code><a class="el" href="GirsFat_8config_8h.html" title="Complete configuration options. ">examples/Girs/GirsFat.config.h</a></code>. Not all combination are sensible or implemented. Some, but not all, of the non-sensible combinations will be detected and will generate a compilation error.</p>
 <p>If the preprocessor symbol <code>LCD</code> is defined in <code><a class="el" href="LedLcdManager_8cpp.html">src/GirsLib/LedLcdManager.cpp</a></code> (which is the default, except for the Arduino Micro), the library is configured with support for the LCD display, regardless of the settings in <code>config.h</code>.</p>
+<h2>Modules and interactive commands</h2>
+<h3>General</h3>
+<p>The program takes commands from its input stream, and write responses on its output stream. The general concept is presented <a href="http://www.harctoolbox.org/Girs.html">here</a>. A command input consists of one single line, terminated with a carrage return (binary 0x0d). Output is also presented as a single line, terminated with a carrage return. Needless to say, these lines can be long. On a successful execution, typically "OK" is returned.</p>
+<p>The communication can take place with another program or with a human using a version of a serial terminal. The command names can, in this implementation, be shortened as long as they are unique. Generally speaking, error handling and plausibility checking are presently basically non-existent...</p>
+<p>The program runs in a single thread, with no multitasking whatsoever. Also, even in the Ethernet version, only one concurrent session is supported.</p>
+<h3><a href="http://www.harctoolbox.org/Girs.html#Base">Base commands</a></h3>
+<p>These commands are always present in a Girs server. They correspond to the <code>Base</code> module. </p><h4>version</h4>
+<p><em>Input</em>: <code>version</code></p>
+<p><em>Output</em>: The program name followed by the version string. Example: <code>AGirs 1.0.0</code>.</p>
+<h4>modules</h4>
+<p><em>Input</em>: <code>modules</code></p>
+<p><em>Output</em>: Returns list of implemented modules, separated by whitespace. Example: <code>Base Transmit Capture Renderer Receive Decoder Led Lcd Parameters</code>.</p>
+<p>Comment: A communicating peer evaluates this, in order to find out the capabilities of the Girs implementation. Both IrScrutinizer and the Lirc Girs driver do this, and adjust their behavior accordingly.</p>
+<h3><a href="http://www.harctoolbox.org/Girs.html#NamedRemotes">NamedRemotes</a></h3>
+<p>Presently not implemented, but is <a href="https://github.com/bengtmartensson/AGirs/issues/37">planned</a>.</p>
+<h3><a href="http://www.harctoolbox.org/Girs.html#Transmit">Transmit</a></h3>
+<p>Supported if the CPP symbol <code>TRANSMIT</code> is defined in the configuration. </p><h4>transmit</h4>
+<p><em>Input</em>: <code>send &lt;no_sends&gt; &lt;frequency&gt; &lt;length_intro&gt; &lt;length_repeat&gt; &lt;durations...&gt;</code></p>
+<p><em>Output</em>: <code>OK</code></p>
+<p>Semantics:</p><ul>
+<li><code>&lt;no_sends&gt;</code> denotes the number of times to send the signal.</li>
+<li><code>&lt;frequency&gt;</code> denotes the modulation frequency in Hz (not kHz as in some other programs!). The value 0 is treated as "no modulaton", and sent to a non-modulating sender, if configured.</li>
+<li><code>&lt;length_intro&gt;</code> denotes how many of the numbers supplied as <code>&lt;durations...&gt;</code> are to be considered as belonging to the intro sequence,</li>
+<li><code>&lt;length_repeat&gt;</code> denotes how many of the numbers supplied as <code>&lt;durations...&gt;</code> are be considered as belonging to the repeat sequence (following the intro sequence durations),</li>
+<li><code>&lt;length_ending&gt;</code> (normally 0) denotes how many of the numbers supplied as <code>&lt;durations...&gt;</code> are to be considered as belonging to the ending sequence, following after the repeat durations,</li>
+<li><code>&lt;durations&gt;</code> the durations in micro seconds, making up the intro-, repeat-, and ending sequence, according to the preceding parameters.</li>
+</ul>
+<p>The intro sequence is always sent exactly one. If it is empty, the repeat sequence is sent <code>&lt;no_sends&gt;</code> times, otherwise <code>&lt;no_sends&gt;</code> - 1 times. Finally, the (normally empty) ending sequence is sent once.</p>
+<h3><a href="http://www.harctoolbox.org/Girs.html#Capture">Capture</a></h3>
+<p>Available if configured with the <code>CAPTURE</code> option.</p>
+<p><em>Input</em>: <code>analyze</code></p>
+<p><em>Output</em> (Normal): <code>f=&lt;frequency&gt; &lt;durations with signs...&gt;</code></p>
+<p><em>Output</em> (Timeout): <code>.</code></p>
+<p>Semantics:</p><ul>
+<li><code>&lt;frequency&gt;</code> is the measured modulation frequency.</li>
+<li><code>&lt;durations with signs...&gt;</code> the measured durations in micro seconds; flashes with "+", gaps as "-".</li>
+</ul>
+<h3><a href="http://www.harctoolbox.org/Girs.html#Receive">Receive</a></h3>
+<p>Available if configured with the <code>RECEIVE</code> option.</p>
+<p><em>Input</em>: <code>analyze</code></p>
+<p><em>Output</em> (Normal): `&lt;durations with signs...&gt;</p>
+<p><em>Output</em> (Timeout): <code>.</code></p>
+<p>Semantics:</p><ul>
+<li><code>&lt;durations with signs...&gt;</code> the measured durations in micro seconds; flashes with "+", gaps as "-".</li>
+</ul>
+<h3>Render</h3>
+<p>Available if configured with the RENDER option.</p>
+<p><em>Input</em>: <code>transmit &lt;no_sends&gt; &lt;protocol&gt; &lt;protocol_parameters&gt;</code></p>
+<p><em>Output</em> (normal): <code>OK</code></p>
+<p><em>Output</em> (Syntax error): <code>&lt;error message&gt;</code></p>
+<p>Semantics:</p><ul>
+<li><code>&lt;no_sends&gt;</code> number of times to send signal</li>
+<li><code>&lt;protocol_name&gt;</code> name of protocol, presently <code>NEC1</code> and <code>RC5</code>-</li>
+<li><code>&lt;protocol_parameters&gt;</code> protocol parameters, dependent on protocol.</li>
+</ul>
+<p><em>Example</em>: <code>transmit 1 rc5 0 12</code>. This turns on or off most Philips TVs.</p>
+<h3>Decoder</h3>
+<p>Available if configured with the <code>DECODER</code> option. No additional interactive commands, instead the <code>receive</code>-d commands are attempted to be decoded, and optionally display on an LCD display.</p>
+<h3>LED</h3>
+<p>Available if configured with the <code>LED</code> option.</p>
+<p><em>Input</em>: <code>led &lt;logical_led_nr&gt; on|off|blink</code></p>
+<p><em>Output</em>: <code>OK</code>.</p>
+<p>Turns on/off/blinks the LED with the given logical number.</p>
+<h3>LCD</h3>
+<p>Available if configured with the <code>LCD</code> option.</p>
+<p><em>Input</em>: <code>lcd &lt;message&gt;</code></p>
+<p><em>Output</em>: <code>OK</code></p>
+<p>Shows the message <code>&lt;message&gt;</code> on a connected LCD display for a certain time.</p>
+<h3>Parameters</h3>
+<p>Available if configured with the <code>PARAMETERS</code> option. The allows to inspect and to change some parameters.</p>
+<p><em>Input</em>: <code>parameter &lt;parameter_name&gt; [&lt;parameter_value&gt;]</code></p>
+<p><em>Output:</em> <code>&lt;parameter_name&gt;=&lt;parameter_value&gt;</code></p>
+<p>Semantics: If <code>&lt;parameter_value&gt;</code> is given, the value is assigned to the named parameter, if possible. If not given, the present value is reported.</p>
+<h4>Named of available adjustable parameters:</h4>
+<p>The adjustable parameters depend on the configuration options. A few of these are listed next.</p>
+<ul>
+<li><code>beginTimeout</code>: time in milliseconds until timeout by not detected signal</li>
+<li><code>captureEndingTimeout</code>: time in milliseconds for capture ending marking end of signal</li>
+<li><code>receiveEndingTimeout</code>: time in milliseconds for receive ending marking end of signal</li>
+<li><code>captureSize</code>: size, in number of durations, of captured (received) signals. Must be even.</li>
+</ul>
+<h3>Pronto</h3>
+<p>Available if configured with the <code>PRONTO</code> option.</p>
+<p><em>Input</em>: <code>hex &lt;no_sends&gt; &lt;pronto_hex_signal&gt;</code></p>
+<p><em>Output</em>: <code>OK</code>.</p>
+<p>Semantics:</p><ul>
+<li><code>&lt;no_sends&gt;</code> number of times to send signal</li>
+<li><code>&lt;pronto_hex_signal&gt;</code> Pronto hex form IR signal. Always start with <code>0000</code>.</li>
+</ul>
+<p>Sends the given signal the requested number of times.</p>
+<h3>Info</h3>
+<p>Available if configured with the option <code>INFO</code>.</p>
+<p><em>Input</em>: info</p>
+<p><em>Output</em>: Information on current platform; for example <code>Board: Arduino Mega2560, CPU frequency: 16000000L</code></p>
+<h3>Memory</h3>
+<p>Available if configured with the option <code>FREEMEM</code>.</p>
+<p><em>Input</em>: memory</p>
+<p><em>Output</em>: number of free bytes.</p>
 <h3>Ethernet support</h3>
 <p>If using an Ethernet shield with W5500 or W5200 chip, be sure that the Ethernet library version 2.0.0 or later is used, since it supports all W5*00 chips, auto-detecting during runtime.</p>
 <p>This applies both to the Girs application as well as to the Listener.</p>
@@ -89,6 +187,8 @@ Mega2560 (ATmega2560)          9            49
 <p>RF signals (433 MHz and other carrier frequencies) do not use the IR typical modulation. Also there are a few IR protocols (like <a href="http://www.hifi-remote.com/forums/viewtopic.php?t=14186&amp;start=40">Revox, Barco, Archer</a>) not using modulation. These signals can be sent by defining the symbol <code>NON_MOD</code>, and connecting some hardware capable of sending non-modulated signals (IR- <em>or</em> RF-) to the GPIO pin defined as <code>NON_MOD_PIN</code>. Then transmitted signals having frequency 0 will be directed to that device. (Later versions may use different syntax and semantic.)</p>
 <h2>Testing</h2>
 <p>The flashed unit can be tested with a standard terminal program, like the serial monitor of the Arduino IDE. For this, set the baud rate to 115200, and the line ending to carriage return. It is now possible to communicate with the unit using the <a href="http://www.harctoolbox.org/Girs.html">commands of Girs</a>. Just type the command to the program, and the unit will respond. Exactly which commands are available depends on the configuration. In all cases, the <code>version</code> and the <code>modules</code> commands are available. If <code>receive</code> is implemented, just type "`r`" (without the quotes), followed by return, and fire a suitable IR signal at the receiver. The raw capture will be output to the terminal program. Using the clipboard, it can be pasted to IrScrutinizer, and analyzed. Of course, also the other commands can be tested in this way.</p>
+<h2>API</h2>
+<p><a href="http://bengtmartensson.github.io/AGirs">Up-to-date API, generated by Doxygen</a>.</p>
 <h2>Dependencies</h2>
 <ul>
 <li><a href="https://github.com/bengtmartensson/Infrared4Arduino"><code>Infrared4Arduino</code></a> by myself. Current version is 1.0.1. Can be installed by the library manager within the Arduino IDE. (Sketch -&gt; Include library -&gt; Manage libraries, name Infrared (Category: Others)).</li>
@@ -102,11 +202,11 @@ Mega2560 (ATmega2560)          9            49
 <ul>
 <li>How do I setup Lirc to use this?</li>
 </ul>
-<p>Use the <code>girs</code> driver contained in the recent official upstream Lirc distribution. This is described <a href="http://lirc.org/html/girs.html">here</a>. also contained in the (recent) distro as <code>girs.html</code>.</p>
+<p>Use the <code>girs</code> driver contained in the recent official upstream Lirc distribution. This is described <a href="http://lirc.org/html/girs.html">here</a>. also contained in the (recent) distro as <code>girs.html</code>. Configuration options: use TRANSMIT if sending is desired, and RECEIVE if receiving is desired. CAPTURE is not meaningful for Lirc. Turn on PARAMETERS &ndash; Lircd adjust the ending timeout. If using DECODE and an LCD display (which is cool, but useless), be sure to define DONT_REPORT_DECODES. Use of Ethernet connections are supported. Due to the inner workings of Lirc, it is advantageous not define both TRANSMIT and RECEIVE unless you really need it.</p>
 <ul>
 <li>What are Makefiles doing in an Arduino project?</li>
 </ul>
-<p>To build the project for the Arduino, use the Arduino IDE from <a href="https://www.arduino.cc/en/Main/Software">arduino.cc</a>, as in most Arduino projects. The Makefile is used for building a "Software-in-the-loop" test version for the PC; of interest for developers only.</p>
+<p>To build the project for the Arduino, use the Arduino IDE from <a href="https://www.arduino.cc/en/Main/Software">arduino.cc</a>, as in most Arduino projects. The Makefile is used for building a "Software-in-the-loop" test version for the PC; of interest for developers only. It is also used for maintainer work, like generating API documentation with Doxygen, as well as generating keywords.txt. Feel free to learn from it!</p>
 <ul>
 <li>What is the difference between <a href="http://www.harctoolbox.org/Glossary.html#ReceivingIrSignals">"receive"</a> and <a href="http://www.harctoolbox.org/Glossary.html#Capturing">"capture"</a>?</li>
 </ul>
@@ -142,7 +242,7 @@ Mega2560 (ATmega2560)          9            49
 </div></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Sat Aug 25 2018 08:21:27 for AGirs by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Sun Aug 26 2018 19:55:58 for AGirs by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.14
 </small></address>

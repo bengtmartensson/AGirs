@@ -67,7 +67,8 @@ $(function() {
 <div class="header">
   <div class="summary">
 <a href="#define-members">Macros</a> &#124;
-<a href="#func-members">Functions</a>  </div>
+<a href="#func-members">Functions</a> &#124;
+<a href="#var-members">Variables</a>  </div>
   <div class="headertitle">
 <div class="title">Girs.cpp File Reference</div>  </div>
 </div><!--header-->
@@ -76,17 +77,23 @@ $(function() {
 <code>#include &quot;<a class="el" href="LedLcdManager_8h_source.html">GirsLib/LedLcdManager.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="GirsUtils_8h_source.html">GirsLib/GirsUtils.h</a>&quot;</code><br />
 <code>#include &lt;avr/pgmspace.h&gt;</code><br />
-<code>#include &quot;GirsLib/version.h&quot;</code><br />
+<code>#include &lt;Ethernet.h&gt;</code><br />
+<code>#include &lt;IPAddress.h&gt;</code><br />
+<code>#include &lt;LiquidCrystal_I2C.h&gt;</code><br />
+<code>#include &lt;IrReceiverSampler.h&gt;</code><br />
+<code>#include &lt;IrWidgetAggregating.h&gt;</code><br />
+<code>#include &quot;<a class="el" href="version_8h_source.html">GirsLib/version.h</a>&quot;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for Girs.cpp:</div>
 <div class="dyncontent">
 <div class="center"><img src="Girs_8cpp__incl.png" border="0" usemap="#examples_2Girs_2Girs_8cpp" alt=""/></div>
 <map name="examples_2Girs_2Girs_8cpp" id="examples_2Girs_2Girs_8cpp">
-<area shape="rect" id="node2" href="Girs_2config_8h.html" title="config.h" alt="" coords="111,80,186,107"/>
-<area shape="rect" id="node3" href="LedLcdManager_8h.html" title="GirsLib/LedLcdManager.h" alt="" coords="62,155,246,181"/>
-<area shape="rect" id="node8" href="GirsUtils_8h.html" title="GirsLib/GirsUtils.h" alt="" coords="261,80,399,107"/>
-<area shape="rect" id="node4" href="Tokenizer_8h.html" title="Tokenizer.h" alt="" coords="105,229,203,256"/>
-<area shape="rect" id="node11" href="defineMissingStuff_8h.html" title="defineMissingStuff.h" alt="" coords="537,155,691,181"/>
+<area shape="rect" id="node2" href="Girs_2config_8h.html" title="config.h" alt="" coords="5,80,80,107"/>
+<area shape="rect" id="node3" href="LedLcdManager_8h.html" title="GirsLib/LedLcdManager.h" alt="" coords="155,155,339,181"/>
+<area shape="rect" id="node9" href="GirsUtils_8h.html" title="GirsLib/GirsUtils.h" alt="" coords="348,80,487,107"/>
+<area shape="rect" id="node17" href="version_8h.html" title="GirsLib/version.h" alt="" coords="1197,80,1328,107"/>
+<area shape="rect" id="node4" href="Tokenizer_8h.html" title="Tokenizer.h" alt="" coords="197,229,296,256"/>
+<area shape="rect" id="node12" href="defineMissingStuff_8h.html" title="defineMissingStuff.h" alt="" coords="363,155,517,181"/>
 </map>
 </div>
 </div>
@@ -100,7 +107,7 @@ Macros</h2></td></tr>
 <tr class="separator:a0e2339b3600eff15e09dec65faedeb76"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aacb6b2ea16c0ffb8fd5ed72fe80d6ab5"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Girs_8cpp.html#aacb6b2ea16c0ffb8fd5ed72fe80d6ab5">PARAMETER_CONST</a>&#160;&#160;&#160;const</td></tr>
 <tr class="separator:aacb6b2ea16c0ffb8fd5ed72fe80d6ab5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aef8062e44743148e47483593fba7ca44"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Girs_8cpp.html#aef8062e44743148e47483593fba7ca44">modulesSupported</a>&#160;&#160;&#160;<a class="el" href="defineMissingStuff_8h.html#aa1383d86e1b2c4442514026fd7ce2307">EXPAND_AND_QUOTE</a>(Base <a class="el" href="defineMissingStuff_8h.html#aef29ddd7a13222d9e3e7bd7afeaccf98">TRANSMIT_NAME</a> <a class="el" href="defineMissingStuff_8h.html#ab777162d862dfe2ca5487f776e42b73f">CAPTURE_NAME</a> <a class="el" href="defineMissingStuff_8h.html#a81fe37304b763a828ba74a20931b2e86">RENDERER_NAME</a> <a class="el" href="defineMissingStuff_8h.html#a0fa45ae571f8b31288bbecc7e2064c7b">RECEIVE_NAME</a> <a class="el" href="defineMissingStuff_8h.html#a7cc7b4538e369818e76584d33cf860cd">DECODER_NAME</a> <a class="el" href="defineMissingStuff_8h.html#a003a6f50161c1c59e2dd47a58299cb5c">LED_NAME</a> <a class="el" href="defineMissingStuff_8h.html#a559612bb1a145ac1c93cca9ee04d97dc">LCD_NAME</a> <a class="el" href="Girs_8cpp.html#a0e2339b3600eff15e09dec65faedeb76">PARAMETERS_NAME</a> <a class="el" href="defineMissingStuff_8h.html#a367343448c05c5b4bba43e7678794f78">NAMED_COMMANDS_NAME</a> )</td></tr>
+<tr class="memitem:aef8062e44743148e47483593fba7ca44"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Girs_8cpp.html#aef8062e44743148e47483593fba7ca44">modulesSupported</a>&#160;&#160;&#160;<a class="el" href="defineMissingStuff_8h.html#aa1383d86e1b2c4442514026fd7ce2307">EXPAND_AND_QUOTE</a>(Base <a class="el" href="defineMissingStuff_8h.html#aef29ddd7a13222d9e3e7bd7afeaccf98">TRANSMIT_NAME</a> <a class="el" href="defineMissingStuff_8h.html#ab777162d862dfe2ca5487f776e42b73f">CAPTURE_NAME</a> <a class="el" href="defineMissingStuff_8h.html#a81fe37304b763a828ba74a20931b2e86">RENDERER_NAME</a> <a class="el" href="defineMissingStuff_8h.html#a0fa45ae571f8b31288bbecc7e2064c7b">RECEIVE_NAME</a> <a class="el" href="defineMissingStuff_8h.html#a7cc7b4538e369818e76584d33cf860cd">DECODER_NAME</a> <a class="el" href="defineMissingStuff_8h.html#a003a6f50161c1c59e2dd47a58299cb5c">LED_NAME</a> <a class="el" href="defineMissingStuff_8h.html#a559612bb1a145ac1c93cca9ee04d97dc">LCD_NAME</a> <a class="el" href="Girs_8cpp.html#a0e2339b3600eff15e09dec65faedeb76">PARAMETERS_NAME</a> <a class="el" href="defineMissingStuff_8h.html#a367343448c05c5b4bba43e7678794f78">NAMED_COMMANDS_NAME</a> <a class="el" href="defineMissingStuff_8h.html#aa5c655bb9a196ff68fdbec6fd6287458">PRONTO_NAME</a>)</td></tr>
 <tr class="separator:aef8062e44743148e47483593fba7ca44"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8c9afb758de9a0355c93fc926b8ce6b1"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Girs_8cpp.html#a8c9afb758de9a0355c93fc926b8ce6b1">PROGNAME</a>&#160;&#160;&#160;&quot;AGirs&quot;</td></tr>
 <tr class="separator:a8c9afb758de9a0355c93fc926b8ce6b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -113,6 +120,16 @@ Macros</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
+<tr class="memitem:a415cead27b4c0bfb5809a8ad9433a702"><td class="memItemLeft" align="right" valign="top">EthernetServer&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Girs_8cpp.html#a415cead27b4c0bfb5809a8ad9433a702">server</a> (<a class="el" href="GirsFat_8config_8h.html#a614217d263be1fb1a5f76e2ff7be19a2">PORT</a>)</td></tr>
+<tr class="separator:a415cead27b4c0bfb5809a8ad9433a702"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8f4e669938ec76edb9b03c008112645f"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Girs_8cpp.html#a8f4e669938ec76edb9b03c008112645f">flushIn</a> (Stream &amp;stream <a class="el" href="defineMissingStuff_8h.html#addf5ec070e9499d36b7f2009ce736076">UNUSED</a>)</td></tr>
+<tr class="separator:a8f4e669938ec76edb9b03c008112645f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8e0a3f5d6b68e0ac8f0af4ec175abc65"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Girs_8cpp.html#a8e0a3f5d6b68e0ac8f0af4ec175abc65">decodeOrDump</a> (IrReader *irReader, Stream &amp;stream)</td></tr>
+<tr class="separator:a8e0a3f5d6b68e0ac8f0af4ec175abc65"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad95170be10394e004a2d291003ff155d"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Girs_8cpp.html#ad95170be10394e004a2d291003ff155d">receive</a> (Stream &amp;stream)</td></tr>
+<tr class="separator:ad95170be10394e004a2d291003ff155d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2782bdad298eb2f5d0e9afaa61f02026"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Girs_8cpp.html#a2782bdad298eb2f5d0e9afaa61f02026">capture</a> (Stream &amp;stream)</td></tr>
+<tr class="separator:a2782bdad298eb2f5d0e9afaa61f02026"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4fc01d736fe50cf5b977f755b675f11d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Girs_8cpp.html#a4fc01d736fe50cf5b977f755b675f11d">setup</a> ()</td></tr>
 <tr class="separator:a4fc01d736fe50cf5b977f755b675f11d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a71995f10b808bb0e75bc91430b663377"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Girs_8cpp.html#a71995f10b808bb0e75bc91430b663377">isPrefix</a> (const String &amp;cmd, const char *string)</td></tr>
@@ -129,8 +146,25 @@ Functions</h2></td></tr>
 <tr class="separator:a2717c6a361e905fc1d043a6489d70e67"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1af9901994df8fbc6680562f4a431b6e"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Girs_8cpp.html#a1af9901994df8fbc6680562f4a431b6e">readProcessOneCommand</a> (Stream &amp;stream)</td></tr>
 <tr class="separator:a1af9901994df8fbc6680562f4a431b6e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9c8d72fc409506e6fd0ff908f4b1a3c7"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Girs_8cpp.html#a9c8d72fc409506e6fd0ff908f4b1a3c7">readProcessOneTcpCommand</a> (EthernetClient &amp;client)</td></tr>
+<tr class="separator:a9c8d72fc409506e6fd0ff908f4b1a3c7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afe461d27b9c48d5921c00d521181f12f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Girs_8cpp.html#afe461d27b9c48d5921c00d521181f12f">loop</a> ()</td></tr>
 <tr class="separator:afe461d27b9c48d5921c00d521181f12f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
+Variables</h2></td></tr>
+<tr class="memitem:aef5a89b835aa7e438d66356b075188e9"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="Girs_8cpp.html#aacb6b2ea16c0ffb8fd5ed72fe80d6ab5">PARAMETER_CONST</a> unsigned long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Girs_8cpp.html#aef5a89b835aa7e438d66356b075188e9">captureEndingTimeout</a> = <a class="el" href="GirsLite_8config_8h.html#adcc00b402a24e4b611072e5626c8834e">DEFAULT_CAPTURE_ENDINGTIMEOUT</a></td></tr>
+<tr class="separator:aef5a89b835aa7e438d66356b075188e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afac9ae36e0af235db7d8e4bf9275a17f"><td class="memItemLeft" align="right" valign="top">static const unsigned&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Girs_8cpp.html#afac9ae36e0af235db7d8e4bf9275a17f">sensorNo</a> = 1</td></tr>
+<tr class="separator:afac9ae36e0af235db7d8e4bf9275a17f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5553e3467774f6fe03e5ebd9f5d8e34c"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="Girs_8cpp.html#aacb6b2ea16c0ffb8fd5ed72fe80d6ab5">PARAMETER_CONST</a> unsigned long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Girs_8cpp.html#a5553e3467774f6fe03e5ebd9f5d8e34c">receiveEndingTimeout</a> = <a class="el" href="GirsLite_8config_8h.html#a2251086cb4983ed27bb59a556a2f8e73">DEFAULT_RECEIVE_ENDINGTIMEOUT</a></td></tr>
+<tr class="separator:a5553e3467774f6fe03e5ebd9f5d8e34c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a31af471f410bf6b9b352e16afb8d2456"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="Girs_8cpp.html#aacb6b2ea16c0ffb8fd5ed72fe80d6ab5">PARAMETER_CONST</a> unsigned long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Girs_8cpp.html#a31af471f410bf6b9b352e16afb8d2456">beginTimeout</a> = <a class="el" href="GirsLite_8config_8h.html#a14b0da782dadd09a09a877cf38951c96">DEFAULT_BEGINTIMEOUT</a></td></tr>
+<tr class="separator:a31af471f410bf6b9b352e16afb8d2456"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a67b5caba2f0d57370ce7e0e35e8ea6cf"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="Girs_8cpp.html#aacb6b2ea16c0ffb8fd5ed72fe80d6ab5">PARAMETER_CONST</a> uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Girs_8cpp.html#a67b5caba2f0d57370ce7e0e35e8ea6cf">captureSize</a> = <a class="el" href="GirsLite_8config_8h.html#a4c544bddd265b3c1ab2a0e23c4b4dddc">DEFAULT_CAPTURESIZE</a></td></tr>
+<tr class="separator:a67b5caba2f0d57370ce7e0e35e8ea6cf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a70191836ac28fadfc0aef19fd029fea9"><td class="memItemLeft" align="right" valign="top">static const uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Girs_8cpp.html#a70191836ac28fadfc0aef19fd029fea9">receiverNo</a> = 1</td></tr>
+<tr class="separator:a70191836ac28fadfc0aef19fd029fea9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Macro Definition Documentation</h2>
 <a id="a6c8836fe2b52b707d8edc93209facbe5"></a>
@@ -172,7 +206,7 @@ Functions</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">#define modulesSupported&#160;&#160;&#160;<a class="el" href="defineMissingStuff_8h.html#aa1383d86e1b2c4442514026fd7ce2307">EXPAND_AND_QUOTE</a>(Base <a class="el" href="defineMissingStuff_8h.html#aef29ddd7a13222d9e3e7bd7afeaccf98">TRANSMIT_NAME</a> <a class="el" href="defineMissingStuff_8h.html#ab777162d862dfe2ca5487f776e42b73f">CAPTURE_NAME</a> <a class="el" href="defineMissingStuff_8h.html#a81fe37304b763a828ba74a20931b2e86">RENDERER_NAME</a> <a class="el" href="defineMissingStuff_8h.html#a0fa45ae571f8b31288bbecc7e2064c7b">RECEIVE_NAME</a> <a class="el" href="defineMissingStuff_8h.html#a7cc7b4538e369818e76584d33cf860cd">DECODER_NAME</a> <a class="el" href="defineMissingStuff_8h.html#a003a6f50161c1c59e2dd47a58299cb5c">LED_NAME</a> <a class="el" href="defineMissingStuff_8h.html#a559612bb1a145ac1c93cca9ee04d97dc">LCD_NAME</a> <a class="el" href="Girs_8cpp.html#a0e2339b3600eff15e09dec65faedeb76">PARAMETERS_NAME</a> <a class="el" href="defineMissingStuff_8h.html#a367343448c05c5b4bba43e7678794f78">NAMED_COMMANDS_NAME</a> )</td>
+          <td class="memname">#define modulesSupported&#160;&#160;&#160;<a class="el" href="defineMissingStuff_8h.html#aa1383d86e1b2c4442514026fd7ce2307">EXPAND_AND_QUOTE</a>(Base <a class="el" href="defineMissingStuff_8h.html#aef29ddd7a13222d9e3e7bd7afeaccf98">TRANSMIT_NAME</a> <a class="el" href="defineMissingStuff_8h.html#ab777162d862dfe2ca5487f776e42b73f">CAPTURE_NAME</a> <a class="el" href="defineMissingStuff_8h.html#a81fe37304b763a828ba74a20931b2e86">RENDERER_NAME</a> <a class="el" href="defineMissingStuff_8h.html#a0fa45ae571f8b31288bbecc7e2064c7b">RECEIVE_NAME</a> <a class="el" href="defineMissingStuff_8h.html#a7cc7b4538e369818e76584d33cf860cd">DECODER_NAME</a> <a class="el" href="defineMissingStuff_8h.html#a003a6f50161c1c59e2dd47a58299cb5c">LED_NAME</a> <a class="el" href="defineMissingStuff_8h.html#a559612bb1a145ac1c93cca9ee04d97dc">LCD_NAME</a> <a class="el" href="Girs_8cpp.html#a0e2339b3600eff15e09dec65faedeb76">PARAMETERS_NAME</a> <a class="el" href="defineMissingStuff_8h.html#a367343448c05c5b4bba43e7678794f78">NAMED_COMMANDS_NAME</a> <a class="el" href="defineMissingStuff_8h.html#aa5c655bb9a196ff68fdbec6fd6287458">PRONTO_NAME</a>)</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -262,6 +296,100 @@ Functions</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Function Documentation</h2>
+<a id="a2782bdad298eb2f5d0e9afaa61f02026"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2782bdad298eb2f5d0e9afaa61f02026">&#9670;&nbsp;</a></span>capture()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static bool capture </td>
+          <td>(</td>
+          <td class="paramtype">Stream &amp;&#160;</td>
+          <td class="paramname"><em>stream</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Girs_8cpp_source.html#l00284">284</a> of file <a class="el" href="Girs_8cpp_source.html">Girs.cpp</a>.</p>
+
+</div>
+</div>
+<a id="a8e0a3f5d6b68e0ac8f0af4ec175abc65"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8e0a3f5d6b68e0ac8f0af4ec175abc65">&#9670;&nbsp;</a></span>decodeOrDump()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static void decodeOrDump </td>
+          <td>(</td>
+          <td class="paramtype">IrReader *&#160;</td>
+          <td class="paramname"><em>irReader</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Stream &amp;&#160;</td>
+          <td class="paramname"><em>stream</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Girs_8cpp_source.html#l00210">210</a> of file <a class="el" href="Girs_8cpp_source.html">Girs.cpp</a>.</p>
+
+</div>
+</div>
+<a id="a8f4e669938ec76edb9b03c008112645f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8f4e669938ec76edb9b03c008112645f">&#9670;&nbsp;</a></span>flushIn()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static void flushIn </td>
+          <td>(</td>
+          <td class="paramtype">Stream &amp;stream&#160;</td>
+          <td class="paramname"><em>UNUSED</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Girs_8cpp_source.html#l00200">200</a> of file <a class="el" href="Girs_8cpp_source.html">Girs.cpp</a>.</p>
+
+</div>
+</div>
 <a id="a71995f10b808bb0e75bc91430b663377"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a71995f10b808bb0e75bc91430b663377">&#9670;&nbsp;</a></span>isPrefix() <span class="overload">[1/4]</span></h2>
 
@@ -511,6 +639,72 @@ Functions</h2></td></tr>
 
 </div>
 </div>
+<a id="a9c8d72fc409506e6fd0ff908f4b1a3c7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9c8d72fc409506e6fd0ff908f4b1a3c7">&#9670;&nbsp;</a></span>readProcessOneTcpCommand()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool readProcessOneTcpCommand </td>
+          <td>(</td>
+          <td class="paramtype">EthernetClient &amp;&#160;</td>
+          <td class="paramname"><em>client</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Girs_8cpp_source.html#l00782">782</a> of file <a class="el" href="Girs_8cpp_source.html">Girs.cpp</a>.</p>
+
+</div>
+</div>
+<a id="ad95170be10394e004a2d291003ff155d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad95170be10394e004a2d291003ff155d">&#9670;&nbsp;</a></span>receive()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static bool receive </td>
+          <td>(</td>
+          <td class="paramtype">Stream &amp;&#160;</td>
+          <td class="paramname"><em>stream</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Girs_8cpp_source.html#l00248">248</a> of file <a class="el" href="Girs_8cpp_source.html">Girs.cpp</a>.</p>
+
+</div>
+</div>
+<a id="a415cead27b4c0bfb5809a8ad9433a702"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a415cead27b4c0bfb5809a8ad9433a702">&#9670;&nbsp;</a></span>server()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">EthernetServer server </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="GirsFat_8config_8h.html#a614217d263be1fb1a5f76e2ff7be19a2">PORT</a>&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a id="a4fc01d736fe50cf5b977f755b675f11d"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a4fc01d736fe50cf5b977f755b675f11d">&#9670;&nbsp;</a></span>setup()</h2>
 
@@ -530,10 +724,155 @@ Functions</h2></td></tr>
 
 </div>
 </div>
+<h2 class="groupheader">Variable Documentation</h2>
+<a id="a31af471f410bf6b9b352e16afb8d2456"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a31af471f410bf6b9b352e16afb8d2456">&#9670;&nbsp;</a></span>beginTimeout</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="Girs_8cpp.html#aacb6b2ea16c0ffb8fd5ed72fe80d6ab5">PARAMETER_CONST</a> unsigned long beginTimeout = <a class="el" href="GirsLite_8config_8h.html#a14b0da782dadd09a09a877cf38951c96">DEFAULT_BEGINTIMEOUT</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Girs_8cpp_source.html#l00137">137</a> of file <a class="el" href="Girs_8cpp_source.html">Girs.cpp</a>.</p>
+
+</div>
+</div>
+<a id="aef5a89b835aa7e438d66356b075188e9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aef5a89b835aa7e438d66356b075188e9">&#9670;&nbsp;</a></span>captureEndingTimeout</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="Girs_8cpp.html#aacb6b2ea16c0ffb8fd5ed72fe80d6ab5">PARAMETER_CONST</a> unsigned long captureEndingTimeout = <a class="el" href="GirsLite_8config_8h.html#adcc00b402a24e4b611072e5626c8834e">DEFAULT_CAPTURE_ENDINGTIMEOUT</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Girs_8cpp_source.html#l00130">130</a> of file <a class="el" href="Girs_8cpp_source.html">Girs.cpp</a>.</p>
+
+</div>
+</div>
+<a id="a67b5caba2f0d57370ce7e0e35e8ea6cf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a67b5caba2f0d57370ce7e0e35e8ea6cf">&#9670;&nbsp;</a></span>captureSize</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="Girs_8cpp.html#aacb6b2ea16c0ffb8fd5ed72fe80d6ab5">PARAMETER_CONST</a> uint16_t captureSize = <a class="el" href="GirsLite_8config_8h.html#a4c544bddd265b3c1ab2a0e23c4b4dddc">DEFAULT_CAPTURESIZE</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Girs_8cpp_source.html#l00138">138</a> of file <a class="el" href="Girs_8cpp_source.html">Girs.cpp</a>.</p>
+
+</div>
+</div>
+<a id="a5553e3467774f6fe03e5ebd9f5d8e34c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5553e3467774f6fe03e5ebd9f5d8e34c">&#9670;&nbsp;</a></span>receiveEndingTimeout</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="Girs_8cpp.html#aacb6b2ea16c0ffb8fd5ed72fe80d6ab5">PARAMETER_CONST</a> unsigned long receiveEndingTimeout = <a class="el" href="GirsLite_8config_8h.html#a2251086cb4983ed27bb59a556a2f8e73">DEFAULT_RECEIVE_ENDINGTIMEOUT</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Girs_8cpp_source.html#l00134">134</a> of file <a class="el" href="Girs_8cpp_source.html">Girs.cpp</a>.</p>
+
+</div>
+</div>
+<a id="a70191836ac28fadfc0aef19fd029fea9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a70191836ac28fadfc0aef19fd029fea9">&#9670;&nbsp;</a></span>receiverNo</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const uint8_t receiverNo = 1</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Girs_8cpp_source.html#l00145">145</a> of file <a class="el" href="Girs_8cpp_source.html">Girs.cpp</a>.</p>
+
+</div>
+</div>
+<a id="afac9ae36e0af235db7d8e4bf9275a17f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afac9ae36e0af235db7d8e4bf9275a17f">&#9670;&nbsp;</a></span>sensorNo</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const unsigned sensorNo = 1</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Girs_8cpp_source.html#l00131">131</a> of file <a class="el" href="Girs_8cpp_source.html">Girs.cpp</a>.</p>
+
+</div>
+</div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Sat Aug 25 2018 08:21:27 for AGirs by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Sun Aug 26 2018 19:55:58 for AGirs by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.14
 </small></address>

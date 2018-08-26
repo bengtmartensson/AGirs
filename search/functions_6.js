@@ -1,6 +1,5 @@
 var searchData=
 [
-  ['lcdprint',['lcdPrint',['../classLedLcdManager.html#add1b3a58536e5813d3d74fefd98122ce',1,'LedLcdManager::lcdPrint(String &amp;string, bool clear=true, int x=0, int y=-1)'],['../classLedLcdManager.html#a842f82deb2ee404a6794e6ab01166121',1,'LedLcdManager::lcdPrint(const char *str, bool clear=true, int x=0, int y=-1)'],['../classLedLcdManager.html#a681c2cffab5ac28961fcc11332b0d44b',1,'LedLcdManager::lcdPrint(const __FlashStringHelper *pstr, bool clear=true, int x=0, int y=-1)']]],
-  ['lcdsetcursor',['lcdSetCursor',['../classLedLcdManager.html#a9bc242b629d4a239f078fa3327ef4070',1,'LedLcdManager']]],
-  ['loop',['loop',['../Girs_8cpp.html#afe461d27b9c48d5921c00d521181f12f',1,'loop():&#160;Girs.cpp'],['../Listener_8cpp.html#afe461d27b9c48d5921c00d521181f12f',1,'loop():&#160;Listener.cpp']]]
+  ['ip2string',['ip2string',['../classGirsUtils.html#a724100ced2bc0f1edb9abf5c5458c12b',1,'GirsUtils']]],
+  ['isprefix',['isPrefix',['../Girs_8cpp.html#a71995f10b808bb0e75bc91430b663377',1,'isPrefix(const String &amp;cmd, const char *string):&#160;Girs.cpp'],['../Girs_8cpp.html#acdb3f52c80bcc8df170bccd2e22c1c50',1,'isPrefix(const char *string, const String &amp;cmd):&#160;Girs.cpp'],['../Girs_8cpp.html#a7727acc806c407a5f319e1cbe0991ad4',1,'isPrefix(const String &amp;cmd, const __FlashStringHelper *pstring):&#160;Girs.cpp'],['../Girs_8cpp.html#a1c968e214150cdd1ead50026dea02e83',1,'isPrefix(const __FlashStringHelper *pstring, const String &amp;cmd):&#160;Girs.cpp']]]
 ];

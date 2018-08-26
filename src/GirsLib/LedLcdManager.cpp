@@ -124,7 +124,11 @@ void LedLcdManager::selfTest(const char *text) {
     lcdPrint(text);
     for (led_t i = 1; i <= maxLeds; i++)
         setLogicLed(i, on);
-    delay(lcd ? selftestTimeWithLCD : selftestTimeWithoutLCD);
+    delay(
+#ifdef LCD
+            lcd ? selftestTimeWithLCD :
+#endif
+                selftestTimeWithoutLCD);
     allOff(true);
 }
 
@@ -133,7 +137,11 @@ void LedLcdManager::selfTest(const __FlashStringHelper *text) {
     lcdPrint(text);
     for (led_t i = 1; i <= maxLeds; i++)
         setLogicLed(i, on);
-    delay(lcd ? selftestTimeWithLCD : selftestTimeWithoutLCD);
+    delay(
+#ifdef LCD
+    lcd ? selftestTimeWithLCD :
+#endif
+        selftestTimeWithoutLCD);
     allOff(true);
 }
 #endif

@@ -67,7 +67,7 @@
 #ifdef DOXYGEN
 #define NAMED_COMMANDS
 #endif
-//#define NAMED_COMMANDS
+#define NAMED_COMMANDS
 
 /**
  * Define to have the receive command report the durations, even if DECODE is defined

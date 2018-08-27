@@ -74,7 +74,7 @@ this program. If not, see http://www.gnu.org/licenses/.
 #endif
 
 #ifdef NAMED_COMMANDS
-#error NAMED_COMMANDS is presently not supported
+#include <GirsLib/RemoteSet.h>
 #endif
 
 #ifdef BEACON
@@ -315,7 +315,53 @@ static bool capture(Stream& stream) {
 }
 #endif // CAPTURE
 
-#ifdef NAMED_COMMANDS
+//#ifdef NAMED_COMMANDS
+const Command* yamaha_cmds[] = {
+    new Command("volume_up", Nec1Renderer::newIrSignal(122, 26)),
+    new Command("volume_down", Nec1Renderer::newIrSignal(122, 27)),
+    new Command("power_on",  Nec1Renderer::newIrSignal(122, 29)),
+    new Command("power_off", Nec1Renderer::newIrSignal(122, 30))
+};
+
+//const Command* tv_cmds[] = {
+//    new Rc5Command("0", 0, 0),
+//    new Rc5Command("1", 0, 1),
+//    new Rc5Command("2", 0, 2),
+//    new Rc5Command("3", 0, 3),
+//    new Rc5Command("4", 0, 4),
+//    new Rc5Command("5", 0, 5),
+//    new Rc5Command("6", 0, 6),
+//    new Rc5Command("7", 0, 7),
+//    new Rc5Command("8", 0, 8),
+//    new Rc5Command("9", 0, 9),
+//    new Rc5Command("power_toggle", 0, 12),
+//};
+
+const Remote* remotes[] = {
+    new Remote("yamaha", yamaha_cmds, sizeof (yamaha_cmds) / sizeof (Command*)),
+    //new Remote("tv",     tv_cmds,     sizeof (tv_cmds) / sizeof (Command*)),
+};
+RemoteSet remoteSet(remotes, sizeof (remotes) / sizeof (Remote*));
+#if 0
+boolean sendNamedCommand(Stream& stream, unsigned int noSends, String& remoteName, String& commandName) {
+    const Remote* remote = remoteSet.getRemote(remoteName);
+    if (remote == NULL) {
+        stream.println(F("No such remote"));
+        return false;
+    }
+
+    const IrSignal* command = remote->getIrSignal(commandName);
+    if (command == NULL) {
+        stream.println(F("No such command"));
+        return false;
+    }
+    const Renderer *renderer = command->getRenderer();
+    if (renderer != NULL) {
+        sendIrSignal(noSends, renderer); // waits, blinks
+        delete renderer;
+    }
+    return true;
+}
 // Defines a const IrNamedRemoteSet remoteSet with commands to be used.
 //#include "my_named_remotes.inc"
 extern const IrNamedRemoteSet remoteSet;
@@ -359,6 +405,7 @@ static void dumpRemote(Stream& stream, String& name) {
     }
 }
 #endif
+//#endif
 
 void setup() {
     LedLcdManager::setupLedGroundPins();
@@ -667,11 +714,30 @@ static bool processCommand(const String& line, Stream& stream) {
         if (success)
             stream.println(okString);
     } else
-
         if (isPrefix(cmd, "remote")) {
         String name = tokenizer.getToken();
         dumpRemote(stream, name);
     } else
+        String name = tokenizer.getToken();
+    if (name.length() == 0) {
+        for (unsigned int i = 0; i < remoteSet.getNoRemotes(); i++) {
+            stream.print(remoteSet.getRemotes()[i]->getName());
+            stream.print(" ");
+        }
+        stream.println();
+    } else {
+        const Remote* remote = remoteSet.getRemote(name.c_str());
+        if (remote == NULL)
+            stream.println(F("No such remote"));
+        else {
+            for (unsigned int i = 0; i < remote->getNoCommands(); i++) {
+                stream.print(remote->getCommands()[i]->getName());
+                stream.print(" ");
+            }
+            stream.println();
+        }
+    }
+} else
 #endif
 
 #ifdef RESET
@@ -723,7 +789,7 @@ static bool processCommand(const String& line, Stream& stream) {
         uint16_t noSends = (uint16_t) tokenizer.getInt();
         String protocol = tokenizer.getToken();
         const IrSignal *irSignal = NULL;
-        if (isPrefix(protocol, F("nec1"))) {
+        if (isPrefix(protocol, F("nec1)")) {
             unsigned int D = (unsigned) tokenizer.getInt();
             unsigned int S = (unsigned) tokenizer.getInt();
             unsigned int F = (unsigned) tokenizer.getInt();
@@ -753,6 +819,16 @@ static bool processCommand(const String& line, Stream& stream) {
         if (cmd[0] == 'v') { // version
         stream.println(F(PROGNAME " " VERSION));
     } else {
+#ifdef NAMED_COMMANDS
+//        if (cmd.startsWith("z")) {
+//        uint16_t noSends = (uint16_t) tokenizer.getInt();
+//        String remoteName = tokenizer.getToken();
+//        String commandName = tokenizer.getToken();
+//        boolean success = sendNamedCommand(stream, noSends, remoteName, commandName);
+//        if (success)
+//            stream.println(okString);
+//    } else {
+#endif
         stream.println(F(errorString));
     }
 

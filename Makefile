@@ -102,8 +102,11 @@ tag:
 	git tag -a Version-$(VERSION) -m "Tagging Version-$(VERSION)"
 	git push origin Version-$(VERSION)
 
-clean:
-	rm -rf *.a *.o *.hex *.zip api-doc xml gh-pages test1 $(FLASHER)
+mostlyclean:
+	rm -rf *.a *.o xml test1
+
+clean: mostlyclean
+	rm -rf *.hex *.zip api-doc gh-pages test1 $(FLASHER)
 
 # Remove all products. Do not use before commit.
 spotless: clean

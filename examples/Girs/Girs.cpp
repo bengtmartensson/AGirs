@@ -804,10 +804,13 @@ void loop() {
         return;
     client.setTimeout(10000);
 #ifdef LCD
-    LedLcdManager::lcdPrint(F("Connection!"), true, 0, 0);
+    LedLcdManager::lcdPrint(F("Connection from"), true, 0, 0);
+    String ip = GirsUtils::ip2string(client.remoteIP());
+    LedLcdManager::lcdPrint(ip, false, 0, 1);
 #endif
 #ifdef SERIAL_DEBUG
-    Serial.println(F("Connection!"));
+    Serial.print(F("Connection from "));
+    Serial.println(ip);
 #endif
 #if defined(COMMANDLED) & defined(LED)
     LedLcdManager::setLogicLed(commandled, LedLcdManager::on);

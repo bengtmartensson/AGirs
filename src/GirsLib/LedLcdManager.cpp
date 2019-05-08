@@ -24,7 +24,7 @@ led_t LedLcdManager::logicalLeds[maxLeds];
 bool LedLcdManager::shouldTimeOut[maxLeds];
 
 void LedLcdManager::setup(int8_t i2cAddress, uint8_t columns, uint8_t rows,
-        const pin_t physicalLeds_[], const pin_t logicalLeds_[], const bool shouldTimeOut_[]) {
+        const pin_t physicalLeds_[], const led_t logicalLeds_[], const bool shouldTimeOut_[]) {
     setupLcdI2c(i2cAddress, columns, rows);
     setupPhysicalLeds(physicalLeds_);
     setupLogicLeds(logicalLeds_);
@@ -83,7 +83,7 @@ bool LedLcdManager::setupLogicLeds(const led_t logicalLeds_[maxLeds]) {
     return true;
 }
 
-void LedLcdManager::setupPhysicalLeds(const led_t physicalLeds_[maxLeds]) {
+void LedLcdManager::setupPhysicalLeds(const pin_t physicalLeds_[maxLeds]) {
     for (int i = 0; i < maxLeds; i++) {
         physicalLeds[i] = physicalLeds_ == NULL ? invalidPin : physicalLeds_[i];
         if (physicalLeds[i] != invalidPin)

@@ -19,6 +19,7 @@ ZIP=zip
 VERSION=`grep 'version=' library.properties | sed -e 's/version=//'`
 
 OUTFILE=$PRODUCT-$VERSION-$BOARD-flasher.sh
+OUTFILE_BAT=$PRODUCT-$VERSION-$BOARD-flasher.bat
 
 rm -rf $TMPDIR $OUTFILE
 
@@ -88,8 +89,60 @@ EOF2
 chmod +x ${OUTFILE}
 cp $TMPDIR/$SKETCH.ino.hex $PRODUCT-$VERSION-$BOARD.hex
 
+cat > ${OUTFILE_BAT} << EOF3
+@echo off
+REM This bat-file can be used for flashing of $PRODUCT-$VERSION
+REM to the Arduino Nano.
+REM It uses avrdude, for example installed by Arduino.
+
+REM Use the actual port as argument to the file, or enter it at the prompt.
+
+REM Usage:
+REM ${OUTFILE_BAT} [<PORT>]
+
+REM Use 115200 for the new bootloader ("optiboot"), otherwise 57600.
+REM set BAUD=115200
+set BAUD=57600
+set PORT=
+
+if "%1" == "" (
+   set /p PORT="Enter port for the Arduino (default COM5): "
+) else (
+   set PORT=%1
+)
+
+if "%PORT%" == "" (
+    set PORT=COM5
+)
+
+set HEXFILE=%TEMP%\data.hex
+
+> %HEXFILE% (
+EOF3
+
+while read LINE; do
+    echo echo `echo $LINE | sed -e 's/\\r//'`>> ${OUTFILE_BAT}
+done < $TMPDIR/$SKETCH.ino.hex
+
+cat >> ${OUTFILE_BAT} << EOF4
+)
+
+set ARDUINO_ROOT=C:\Program Files\Arduino
+set TOOLS_ROOT=%ARDUINO_ROOT%\hardware\tools\avr
+set AVRDUDE=%TOOLS_ROOT%\bin\avrdude
+set AVRDUDE_CONF=%TOOLS_ROOT%\etc\avrdude.conf
+set PART=atmega328p
+set PROGRAMMER_ID=arduino
+
+"%AVRDUDE%" -C "%AVRDUDE_CONF%" -v -p %PART% -c %PROGRAMMER_ID% -P %PORT% -b %BAUD% -D -U flash:w:"%HEXFILE%":i
+
+pause
+del "%HEXFILE%"
+EOF4
+
 # Github rejects files ending with .sh
 $ZIP ${OUTFILE}.zip ${OUTFILE}
+$ZIP ${OUTFILE_BAT}.zip ${OUTFILE_BAT}
 $ZIP $PRODUCT-$VERSION-$BOARD.hex.zip $PRODUCT-$VERSION-$BOARD.hex
 
-echo Created $OUTFILE and ${OUTFILE}.zip
+echo Created $OUTFILE, ${OUTFILE}.zip, ${OUTFILE_BAT} and ${OUTFILE_BAT}.zip

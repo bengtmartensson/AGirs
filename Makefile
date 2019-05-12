@@ -34,6 +34,7 @@ VERSION=$(subst version=,,$(shell grep version= library.properties))
 ORIGINURL=$(shell git remote get-url origin)
 
 FLASHER=GirsLite-$(VERSION)-$(BOARD)-flasher.sh
+FLASHER_BAT=GirsLite-$(VERSION)-$(BOARD)-flasher.bat
 HEXFILE=GirsLite-$(VERSION)-$(BOARD).hex
 
 default: all
@@ -53,7 +54,7 @@ $(VERSION_H): library.properties Makefile
 flasher: $(FLASHER)
 hex: $(HEXFILE)
 
-$(FLASHER) $(HEXFILE):
+$(FLASHER) $(FLASHER_BAT) $(HEXFILE): tools/mkflasher.sh
 	tools/mkflasher.sh
 
 # Flash an Arduino nano on /dev/ttyUSB0, without questions etc. May require root.
@@ -106,7 +107,7 @@ mostlyclean:
 	rm -rf *.a *.o xml test1
 
 clean: mostlyclean
-	rm -rf *.hex *.zip api-doc gh-pages test1 $(FLASHER)
+	rm -rf *.hex *.zip api-doc gh-pages test1 $(FLASHER) $(FLASHER_BAT)
 
 # Remove all products. Do not use before commit.
 spotless: clean

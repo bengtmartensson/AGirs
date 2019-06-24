@@ -9,6 +9,10 @@
 
 #pragma once
 
+#ifdef __AVR_ATmega168__
+#error Unsupported CPU ATmega168 (too little memory)
+#endif
+
 #ifdef ARDUINO_AVR_UNO
 // Support sending signals without modulation, e.g. with RF module.
 #define NON_MOD

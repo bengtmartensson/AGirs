@@ -201,44 +201,44 @@ public:
         digitalWrite(IRRECEIVER_8_GND, LOW);
 #endif
 
-#ifdef IRRECEIVER_1_VSS
-        pinMode(IRRECEIVER_1_VSS, OUTPUT);
-        digitalWrite(IRRECEIVER_1_VSS, HIGH);
+#ifdef IRRECEIVER_1_VCC
+        pinMode(IRRECEIVER_1_VCC, OUTPUT);
+        digitalWrite(IRRECEIVER_1_VCC, HIGH);
 #endif
 
-#ifdef IRRECEIVER_2_VSS
-        pinMode(IRRECEIVER_2_VSS, OUTPUT);
-        digitalWrite(IRRECEIVER_2_VSS, HIGH);
+#ifdef IRRECEIVER_2_VCC
+        pinMode(IRRECEIVER_2_VCC, OUTPUT);
+        digitalWrite(IRRECEIVER_2_VCC, HIGH);
 #endif
 
-#ifdef IRRECEIVER_3_VSS
-        pinMode(IRRECEIVER_3_VSS, OUTPUT);
-        digitalWrite(IRRECEIVER_3_VSS, HIGH);
+#ifdef IRRECEIVER_3_VCC
+        pinMode(IRRECEIVER_3_VCC, OUTPUT);
+        digitalWrite(IRRECEIVER_3_VCC, HIGH);
 #endif
 
-#ifdef IRRECEIVER_4_VSS
-        pinMode(IRRECEIVER_4_VSS, OUTPUT);
-        digitalWrite(IRRECEIVER_4_VSS, HIGH);
+#ifdef IRRECEIVER_4_VCC
+        pinMode(IRRECEIVER_4_VCC, OUTPUT);
+        digitalWrite(IRRECEIVER_4_VCC, HIGH);
 #endif
 
-#ifdef IRRECEIVER_5_VSS
-        pinMode(IRRECEIVER_5_VSS, OUTPUT);
-        digitalWrite(IRRECEIVER_5_VSS, HIGH);
+#ifdef IRRECEIVER_5_VCC
+        pinMode(IRRECEIVER_5_VCC, OUTPUT);
+        digitalWrite(IRRECEIVER_5_VCC, HIGH);
 #endif
 
-#ifdef IRRECEIVER_6_VSS
-        pinMode(IRRECEIVER_6_VSS, OUTPUT);
-        digitalWrite(IRRECEIVER_6_VSS, HIGH);
+#ifdef IRRECEIVER_6_VCC
+        pinMode(IRRECEIVER_6_VCC, OUTPUT);
+        digitalWrite(IRRECEIVER_6_VCC, HIGH);
 #endif
 
-#ifdef IRRECEIVER_7_VSS
-        pinMode(IRRECEIVER_7_VSS, OUTPUT);
-        digitalWrite(IRRECEIVER_7_VSS, HIGH);
+#ifdef IRRECEIVER_7_VCC
+        pinMode(IRRECEIVER_7_VCC, OUTPUT);
+        digitalWrite(IRRECEIVER_7_VCC, HIGH);
 #endif
 
-#ifdef IRRECEIVER_8_VSS
-        pinMode(IRRECEIVER_8_VSS, OUTPUT);
-        digitalWrite(IRRECEIVER_8_VSS, HIGH);
+#ifdef IRRECEIVER_8_VCC
+        pinMode(IRRECEIVER_8_VCC, OUTPUT);
+        digitalWrite(IRRECEIVER_8_VCC, HIGH);
 #endif
     }
 
@@ -283,44 +283,44 @@ public:
         digitalWrite(IRSENSOR_8_GND, LOW);
 #endif
 
-#ifdef IRSENSOR_1_VSS
-        pinMode(IRSENSOR_1_VSS, OUTPUT);
-        digitalWrite(IRSENSOR_1_VSS, HIGH);
+#ifdef IRSENSOR_1_VCC
+        pinMode(IRSENSOR_1_VCC, OUTPUT);
+        digitalWrite(IRSENSOR_1_VCC, HIGH);
 #endif
 
-#ifdef IRSENSOR_2_VSS
-        pinMode(IRSENSOR_2_VSS, OUTPUT);
-        digitalWrite(IRSENSOR_2_VSS, HIGH);
+#ifdef IRSENSOR_2_VCC
+        pinMode(IRSENSOR_2_VCC, OUTPUT);
+        digitalWrite(IRSENSOR_2_VCC, HIGH);
 #endif
 
-#ifdef IRSENSOR_3_VSS
-        pinMode(IRSENSOR_3_VSS, OUTPUT);
-        digitalWrite(IRSENSOR_3_VSS, HIGH);
+#ifdef IRSENSOR_3_VCC
+        pinMode(IRSENSOR_3_VCC, OUTPUT);
+        digitalWrite(IRSENSOR_3_VCC, HIGH);
 #endif
 
-#ifdef IRSENSOR_4_VSS
-        pinMode(IRSENSOR_4_VSS, OUTPUT);
-        digitalWrite(IRSENSOR_4_VSS, HIGH);
+#ifdef IRSENSOR_4_VCC
+        pinMode(IRSENSOR_4_VCC, OUTPUT);
+        digitalWrite(IRSENSOR_4_VCC, HIGH);
 #endif
 
-#ifdef IRSENSOR_5_VSS
-        pinMode(IRSENSOR_5_VSS, OUTPUT);
-        digitalWrite(IRSENSOR_5_VSS, HIGH);
+#ifdef IRSENSOR_5_VCC
+        pinMode(IRSENSOR_5_VCC, OUTPUT);
+        digitalWrite(IRSENSOR_5_VCC, HIGH);
 #endif
 
-#ifdef IRSENSOR_6_VSS
-        pinMode(IRSENSOR_6_VSS, OUTPUT);
-        digitalWrite(IRSENSOR_6_VSS, HIGH);
+#ifdef IRSENSOR_6_VCC
+        pinMode(IRSENSOR_6_VCC, OUTPUT);
+        digitalWrite(IRSENSOR_6_VCC, HIGH);
 #endif
 
-#ifdef IRSENSOR_7_VSS
-        pinMode(IRSENSOR_7_VSS, OUTPUT);
-        digitalWrite(IRSENSOR_7_VSS, HIGH);
+#ifdef IRSENSOR_7_VCC
+        pinMode(IRSENSOR_7_VCC, OUTPUT);
+        digitalWrite(IRSENSOR_7_VCC, HIGH);
 #endif
 
-#ifdef IRSENSOR_8_VSS
-        pinMode(IRSENSOR_8_VSS, OUTPUT);
-        digitalWrite(IRSENSOR_8_VSS, HIGH);
+#ifdef IRSENSOR_8_VCC
+        pinMode(IRSENSOR_8_VCC, OUTPUT);
+        digitalWrite(IRSENSOR_8_VCC, HIGH);
 #endif
     }
 

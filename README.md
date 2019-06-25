@@ -235,8 +235,8 @@ The hardware configuration is determined by including a suitable
 header file. It describes the attach sensor(s) and the pins
 they are connected to. To allow soldering sensors directly to the
 holes in some boards, the program supports defining e.g. `SENSOR_GND`
-and `SENSOR_VSS`, which will make the program define these pins as
-digital outputs, being fed by constant 0 and 5 volts respectively.
+and `SENSOR_VCC`, which will make the program define these pins as
+digital outputs, being fed by constant 0 and 5 volts (3.3 Volts on a 3.3 Volt board) respectively.
 
 Note that the sending pin and the capture pin
 (as opposed to the receive pin) are not configurable, but has to

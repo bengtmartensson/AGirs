@@ -1,5 +1,5 @@
 /**
- * @file config.h
+ * @file examples/Girs/config.h
  * @brief User configuration file.
  * This file determines the configuration of the built program.
  * Feel free to be creative here; you can include pre-built files, you can replace

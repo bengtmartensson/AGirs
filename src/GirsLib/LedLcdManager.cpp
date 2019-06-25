@@ -1,9 +1,11 @@
 // Comment out if LCD is not wanted or needed. Except for needing some memory,
 // it has otherwise no disadvantages.
+// Remove for minimal memory footprint.
 
 // This should be taken from config.h, but the Arduino IDE does not seem
 // to allow for this. User friendlyness taken to a new level...
-#if defined(ARDUINO) & ! defined(ARDUINO_AVR_MICRO)
+// Adjust if needed
+#if defined(ARDUINO) & ! defined(ARDUINO_AVR_MICRO) & ! defined(ARDUINO_AVR_NANO)
 #define LCD
 #endif
 

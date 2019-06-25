@@ -4,9 +4,3 @@
 
 #include "config.h"
 #include <InfraredTypes.h>
-
-#ifdef LCD
-#include <LiquidCrystal_I2C.h>
-#include <Wire.h>
-#include <SPI.h>
-#endif

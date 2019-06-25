@@ -1,9 +1,10 @@
 <map id="src/GirsLib/Tokenizer.h" name="src/GirsLib/Tokenizer.h">
-<area shape="rect" id="node2" href="$LedLcdManager_8h.html" title="src/GirsLib/LedLcdManager.h" alt="" coords="307,80,514,107"/>
-<area shape="rect" id="node7" href="$LedLcdManager_8cpp.html" title="src/GirsLib/LedLcdManager.cpp" alt="" coords="449,155,671,181"/>
-<area shape="rect" id="node8" href="$Tokenizer_8cpp.html" title="src/GirsLib/Tokenizer.cpp" alt="" coords="594,80,779,107"/>
-<area shape="rect" id="node3" href="$GirsUtils_8h.html" title="src/GirsLib/GirsUtils.h" alt="" coords="211,155,373,181"/>
-<area shape="rect" id="node5" href="$Girs_8cpp.html" title="examples/Girs/Girs.cpp" alt="" coords="5,229,179,256"/>
-<area shape="rect" id="node6" href="$Listener_8cpp.html" title="examples/Listener/Listener.cpp" alt="" coords="405,229,630,256"/>
-<area shape="rect" id="node4" href="$GirsUtils_8cpp.html" title="src/GirsLib/GirsUtils.cpp" alt="" coords="203,229,381,256"/>
+<area shape="rect" id="node1" title=" " alt="" coords="471,5,638,32"/>
+<area shape="rect" id="node2" href="$LedLcdManager_8h.html" title=" " alt="" coords="307,80,514,107"/>
+<area shape="rect" id="node7" href="$LedLcdManager_8cpp.html" title=" " alt="" coords="448,155,669,181"/>
+<area shape="rect" id="node8" href="$Tokenizer_8cpp.html" title=" " alt="" coords="593,80,775,107"/>
+<area shape="rect" id="node3" href="$GirsUtils_8h.html" title=" " alt="" coords="211,155,373,181"/>
+<area shape="rect" id="node5" href="$Girs_8cpp.html" title=" " alt="" coords="5,229,179,256"/>
+<area shape="rect" id="node6" href="$Listener_8cpp.html" title=" " alt="" coords="405,229,629,256"/>
+<area shape="rect" id="node4" href="$GirsUtils_8cpp.html" title=" " alt="" coords="203,229,381,256"/>
 </map>

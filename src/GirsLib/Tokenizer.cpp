@@ -96,5 +96,5 @@ microseconds_t Tokenizer::getMicroseconds() {
 
 frequency_t Tokenizer::getFrequency() {
     long t = TOKEN2INT(getToken());
-    return (frequency_t) ((t < FREQUENCY_T_MAX) ? t : FREQUENCY_T_MAX);
+    return (frequency_t) t;
 }

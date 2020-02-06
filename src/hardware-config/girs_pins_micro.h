@@ -18,12 +18,12 @@
 // capture pin (ICP) 4
 
 //#define IRSENSOR_1_PULLUP
-#define IRSENSOR_GND 5
-#define IRSENSOR_VCC 6
+#define IRSENSOR_1_GND 5
+#define IRSENSOR_1_VCC 6
 
-#define IRRECEIVER_PIN 10
+#define IRRECEIVER_1_PIN 10
 //#define IRRECEIVER_1_PULLUP
-#define IRRECEIVER_GND 16
-#define IRRECEIVER_VCC 14
+#define IRRECEIVER_1_GND 16
+#define IRRECEIVER_1_VCC 14
 
 // Send pin 9

@@ -36,7 +36,7 @@ fi
 cat > ${OUTFILE} <<EOF1
 #!/bin/sh
 
-# Flashing of the ${PACKAGE} ${BOARD}, using avrdude installed like Fedora.
+# Flashing of the ${PACKAGE} ${BOARD}, using avrdude.
 # Sometimes root access is required, depending on the system configuration.
 
 # Usage:
@@ -58,10 +58,17 @@ else
     PORT=/dev/ttyUSB0
 fi
 
+# Linux defaults
 AVRDUDE=/usr/bin/avrdude
 AVRDUDE_CONF=/etc/avrdude/avrdude.conf
 PART=atmega328p
 PROGRAMMER_ID=arduino
+
+# Mac defaults
+if [ $(uname -s) == Darwin ]; then
+  AVRDUDE=/Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avrdude
+  AVRDUDE_CONF=/Applications/Arduino.app/Contents/Java/hardware/tools/avr/etc/avrdude.conf
+fi
 
 HEXFILE=/tmp/flasher\$\$
 

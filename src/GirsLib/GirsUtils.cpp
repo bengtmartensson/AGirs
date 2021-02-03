@@ -10,7 +10,7 @@ unsigned long GirsUtils::freeRam () {
 #else
   return 99999999999L;
 #endif
-};
+}
 //#endif
 
 //#ifdef RESET

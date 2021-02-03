@@ -21,7 +21,7 @@ TRANSFORMATION := $(KEYWORD_TXT_GENERATOR_DIR)/doxygen2keywords.xsl
 BROWSER=firefox
 
 DEBUGFLAGS=-g
-WARNINGFLAGS=-Wall -Wextra
+WARNINGFLAGS=-Wall -Wextra -pedantic -Werror
 BOARD=nano
 
 # Should point to the directory where the Infrared4Arduino

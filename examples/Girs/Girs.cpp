@@ -368,10 +368,13 @@ void setup() {
     // Make sure that sender is quiet (if reset or such)
     IrSenderPwm::getInstance(true)->mute();
 #endif
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpedantic"
     LedLcdManager::setup(LCD_I2C_ADDRESS, LCD_WIDTH, LCD_HEIGHT,
             (const pin_t[]) {SIGNAL_LED_1, SIGNAL_LED_2, SIGNAL_LED_3, SIGNAL_LED_4,
                     SIGNAL_LED_5, SIGNAL_LED_6, SIGNAL_LED_7, SIGNAL_LED_8 });
     LedLcdManager::selfTest(PROGNAME "\n" VERSION);
+#pragma GCC diagnostic pop
 #ifdef LED
     LedLcdManager::setupShouldTimeout(transmitled, false);
     LedLcdManager::setupShouldTimeout(receiveled, false);

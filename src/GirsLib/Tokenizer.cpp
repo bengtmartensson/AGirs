@@ -35,7 +35,7 @@ void Tokenizer::trim() {
     payload.erase(payload.find_last_not_of(" \t\n\r")+1, payload.length() - payload.find_last_not_of(" \t\n\r"));
 #endif
 #endif
-};
+}
 
 Tokenizer::~Tokenizer() {
 }

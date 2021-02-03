@@ -40,16 +40,16 @@ cat > ${OUTFILE} <<EOF1
 # Sometimes root access is required, depending on the system configuration.
 
 # Usage:
-# ${OUTFILE} [-n] [<PORT>]
+# ${OUTFILE} [-o] [<PORT>]
 #
-# where -n is for boards with the "new" bootloader, called optiboot.
+# where -o is for boards with the old bootloader.
 # <PORT> is the device name, default /dev/ttyUSB0.
 
-if [ "\$1" = "-n" ] ; then
-    BAUD=115200
+if [ "\$1" = "-o" ] ; then
+    BAUD=57600
     shift
 else
-    BAUD=57600
+    BAUD=115200
 fi
 
 if [ \$# -eq 1 ] ; then
@@ -107,9 +107,9 @@ REM Use the actual port as argument to the file, or enter it at the prompt.
 REM Usage:
 REM ${OUTFILE_BAT} [<PORT>]
 
-REM Use 115200 for the new bootloader ("optiboot"), otherwise 57600.
-REM set BAUD=115200
-set BAUD=57600
+REM Use 115200 for the new bootloader ("optiboot"), 57600 for old bootloader.
+set BAUD=115200
+REM set BAUD=57600
 set PORT=
 
 if "%1" == "" (

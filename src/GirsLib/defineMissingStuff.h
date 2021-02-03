@@ -1,5 +1,4 @@
-#ifndef DEFINEMISSINGSTUFF_H
-#define	DEFINEMISSINGSTUFF_H
+#pragma once
 
 #ifdef IRRECEIVER_1_PULLUP
 #define IRRECEIVER_1_PULLUP_VALUE true
@@ -238,5 +237,4 @@
 #define LCD_HEIGHT -1
 #endif
 
-#endif	/* DEFINEMISSINGSTUFF_H */
 

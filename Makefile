@@ -45,6 +45,7 @@ version: $(VERSION_H)
 
 $(VERSION_H): library.properties Makefile
 	echo "// This file was automatically generated from $<; do not edit." > $@
+	@echo "#pragma once"						     >> $@
 	echo "/**"                                                           >> $@
 	echo " * Version of the current library."                            >> $@
 	echo " * Taken from the version in $<."                              >> $@

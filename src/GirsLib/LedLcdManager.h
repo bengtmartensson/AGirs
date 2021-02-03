@@ -11,13 +11,13 @@ typedef uint8_t led_t;
 
 class LedLcdManager {
 public:
-    static const int maxLeds = 8;
-    static const int defaultLcdRows = 2;
-    static const int defaultLcdColumns = 16;
+    static constexpr int maxLeds = 8;
+    static constexpr int defaultLcdRows = 2;
+    static constexpr int defaultLcdColumns = 16;
 
-    static const int defaultBlinkTime = 2000;
-    static const int selftestTimeWithoutLCD = 200;
-    static const int selftestTimeWithLCD = 2000;
+    static constexpr int defaultBlinkTime = 2000;
+    static constexpr int selftestTimeWithoutLCD = 200;
+    static constexpr int selftestTimeWithLCD = 2000;
 
     enum LedState {
         on,
@@ -26,8 +26,7 @@ public:
         invalid
     };
 
-
-    static const led_t invalidLed = 255;
+    static constexpr led_t invalidLed = 255U;
 
 private:
     /** This array maps physical LEDs to hardware pins. */

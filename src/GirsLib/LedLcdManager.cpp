@@ -103,18 +103,16 @@ void LedLcdManager::setupShouldTimeout(led_t logicLed, bool state) {
         shouldTimeOut[logicLed-1] = state;
 }
 
-void LedLcdManager::setupLcdI2c(int8_t i2cAddress, uint8_t columns, uint8_t rows) {
+void LedLcdManager::setupLcdI2c(int8_t i2cAddress __attribute__((unused)),
+        uint8_t columns __attribute__((unused)),
+        uint8_t rows __attribute__((unused))) {
 #ifdef LCD
-    lcd = i2cAddress >= 0 ? new LiquidCrystal_I2C((uint8_t)i2cAddress, columns, rows) : NULL;
+    lcd = i2cAddress >= 0 ? new LiquidCrystal_I2C(static_cast<uint8_t>(i2cAddress), columns, rows) : nullptr;
     if (lcd) {
         lcdRows = rows;
         lcdColumns = columns;
         lcd->init();
     }
-#else
-    (void) i2cAddress;
-    (void) columns;
-    (void) rows;
 #endif
 }
 
@@ -171,7 +169,8 @@ void LedLcdManager::disableTurnOffTime() {
     turnOffTime = (unsigned long) -1;
 }
 
-void LedLcdManager::lcdPrint(String& string, bool clear, int x, int y) {
+void LedLcdManager::lcdPrint(String& string __attribute__((unused)), bool clear __attribute__((unused)),
+        int x __attribute((unused)), int y __attribute__((unused))) {
 #ifdef LCD
     if (!lcd)
         return;
@@ -205,10 +204,5 @@ void LedLcdManager::lcdPrint(String& string, bool clear, int x, int y) {
         lcd->backlight();
     }
     updateTurnOffTime();
-#else
-    (void) string;
-    (void) clear;
-    (void) x;
-    (void) y;
 #endif
 }

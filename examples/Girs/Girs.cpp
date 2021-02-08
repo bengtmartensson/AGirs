@@ -405,7 +405,8 @@ void setup() {
     Ethernet.begin(mac, IPAddress(IPADDRESS), IPAddress(DNSSERVER), IPAddress(GATEWAY), IPAddress(SUBNETMASK));
 #endif // !DHCP
 
-    String ipstring = GirsUtils::ip2string(Ethernet.localIP());
+    char ipstring[16];
+    sprintf(ipstring, "%d.%d.%d.%d", Ethernet.localIP()[0], Ethernet.localIP()[1], Ethernet.localIP()[2], Ethernet.localIP()[3]);
     LedLcdManager::lcdPrint(ipstring, false, 0, 3);
 
 #ifdef BEACON
@@ -808,7 +809,8 @@ void loop() {
     client.setTimeout(10000);
 #ifdef LCD
     LedLcdManager::lcdPrint(F("Connection from"), true, 0, 0);
-    String ip = GirsUtils::ip2string(client.remoteIP());
+    char ip[16];
+    sprintf(ip, "%d.%d.%d.%d", Ethernet.localIP()[0], Ethernet.localIP()[1], Ethernet.localIP()[2], Ethernet.localIP()[3]);
     LedLcdManager::lcdPrint(ip, false, 0, 1);
 #endif
 #ifdef SERIAL_DEBUG

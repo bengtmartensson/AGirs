@@ -26,10 +26,6 @@ public:
         stream.println(value);
     }
 
-#ifdef ARDUINO
-    static String ip2string(IPAddress ip);
-#endif
-
     static pin_t receiverPin(uint8_t receiverNo UNUSED) {
 
 #ifdef IRRECEIVER_1_PIN

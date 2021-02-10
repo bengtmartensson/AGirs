@@ -21,7 +21,7 @@ TRANSFORMATION := $(KEYWORD_TXT_GENERATOR_DIR)/doxygen2keywords.xsl
 BROWSER=firefox
 
 DEBUGFLAGS=-g
-WARNINGFLAGS=-Wall -Wextra -pedantic -Werror
+WARNINGFLAGS=-Wall -Wextra -pedantic
 BOARD=nano
 
 # Should point to the directory where the Infrared4Arduino
@@ -65,13 +65,16 @@ flash-nano: $(FLASHER)
 
 lib: libGirs.a
 
-INCLUDES=-I$(INFRARED4ARDUINO_DIR)/src -Isrc -Iattic/src-sil/LcdI2C
 VPATH=src src/GirsLib examples/Girs
 
 #.PRECIOUS: test1
 
 # TODO: compile Girs.o separately, in tests/Girs
-OBJS=Girs.o GirsUtils.o LedLcdManager.o Tokenizer.o
+OBJS=\
+GirsUtils.o \
+LedLcdManager.o \
+Tokenizer.o \
+StreamParser.o
 
 libGirs.a: $(OBJS)
 	$(AR) rs $@ $(OBJS)

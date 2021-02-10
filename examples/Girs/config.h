@@ -28,6 +28,8 @@
 
 #elif ! defined(ARDUINO)
 
+#include "sil.config.h"
+
 #else
 
 #error Your platform is currently not supported. Please extend examples/Girs/config.h according to your needs and wishes.

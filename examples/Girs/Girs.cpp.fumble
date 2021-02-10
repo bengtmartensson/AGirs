@@ -18,15 +18,10 @@ this program. If not, see http://www.gnu.org/licenses/.
 #include "config.h"
 #include "GirsLib/LedLcdManager.h"
 #include "GirsLib/GirsUtils.h"
-#include "GirsLib/StreamParser.h"
-
 #ifdef ARDUINO
 #include <avr/pgmspace.h>
 #else
 #define PROGMEM
-#include <cstring>
-#include <iostream>
-#include <sstream>
 #endif
 
 // Conditional includes
@@ -88,6 +83,11 @@ this program. If not, see http://www.gnu.org/licenses/.
 
 #ifdef PRONTO
 #include <Pronto.h>
+#endif
+
+#ifdef ARDUINO
+#else
+#include <string.h> // for strlen
 #endif
 
 #if defined(CONFIGURABLE_LEDS) & (! defined(PARAMETERS) | !defined(LED))
@@ -164,8 +164,6 @@ bool reset = false;
 #define okString "OK"
 #define errorString "ERROR"
 #define timeoutString "."
-
-static constexpr size_t cmdLength = 20U;
 
 #ifdef TRANSMIT
 
@@ -247,20 +245,17 @@ static void decodeOrDump(IrReader *irReader, Stream& stream) {
 #endif // !DECODER
 }
 
-static bool receive(StreamParser& parser) {
+static bool receive(Stream& stream) {
     IrReceiverSampler *irReceiver = IrReceiverSampler::getInstance();
-    if (irReceiver == nullptr)
+    if (irReceiver == NULL)
         irReceiver = IrReceiverSampler::newIrReceiverSampler(captureSize,
                 GirsUtils::receiverPin(receiverNo), GirsUtils::receiverPullup(receiverNo));
-    if (irReceiver == nullptr)
+    if (irReceiver == NULL)
         return false;
     irReceiver->setEndingTimeout(receiveEndingTimeout);
     irReceiver->setBeginningTimeout(beginTimeout);
     irReceiver->setMarkExcess(IRRECEIVER_MARK_EXCESS);
-    //Stream& stream = parser.getStream();
-#ifdef ARDUINO
-    flushIn(parser.getStream());
-#endif
+    flushIn(stream);
 #ifdef RECEIVELED
     LedLcdManager::setLogicLed(receiveled, LedLcdManager::on);
 #endif
@@ -289,7 +284,7 @@ static bool receive(StreamParser& parser) {
 static bool capture(Stream& stream) {
     IrWidget *irWidget = IrWidgetAggregating::newIrWidgetAggregating(captureSize,
             GirsUtils::sensorPullup(sensorNo));
-    if (irWidget == nullptr)
+    if (irWidget == NULL)
         stream.println(F("This cannot happen"));
     irWidget->setEndingTimeout(captureEndingTimeout);
     irWidget->setBeginningTimeout(beginTimeout);
@@ -327,13 +322,13 @@ extern const IrNamedRemoteSet remoteSet;
 
 static bool sendNamedCommand(Stream& stream, String& remoteName, String& commandName, unsigned int noSends) {
     const IrNamedRemote* remote = remoteSet.getIrNamedRemote(remoteName.c_str());
-    if (remote == nullptr) {
+    if (remote == NULL) {
         stream.println(F("No such remote"));
         return false;
     }
 
     const IrNamedCommand* command = remote->getIrNamedCommand(commandName.c_str());
-    if (command == nullptr) {
+    if (command == NULL) {
         stream.println(F("No such command"));
         return false;
     }
@@ -352,7 +347,7 @@ static void dumpRemote(Stream& stream, String& name) {
         stream.println();
     } else {
         const IrNamedRemote* remote = remoteSet.getIrNamedRemote(name.c_str());
-        if (remote == nullptr)
+        if (remote == NULL)
             stream.println(F("No such remote"));
         else {
             for (unsigned int i = 0; i < remote->getNoCommands(); i++) {
@@ -378,7 +373,7 @@ void setup() {
     LedLcdManager::setup(LCD_I2C_ADDRESS, LCD_WIDTH, LCD_HEIGHT,
             (const pin_t[]) {SIGNAL_LED_1, SIGNAL_LED_2, SIGNAL_LED_3, SIGNAL_LED_4,
                     SIGNAL_LED_5, SIGNAL_LED_6, SIGNAL_LED_7, SIGNAL_LED_8 });
-    LedLcdManager::selfTest(F(PROGNAME "\n" VERSION));
+    LedLcdManager::selfTest(PROGNAME "\n" VERSION);
 #pragma GCC diagnostic pop
 #ifdef LED
     LedLcdManager::setupShouldTimeout(transmitled, false);
@@ -388,9 +383,9 @@ void setup() {
 #endif
 #ifdef LCD
 #ifdef ETHERNET
-    LedLcdManager::lcdPrint(F("TCP"), false, 0, 2);
+    LedLcdManager::lcdPrint("TCP", false, 0, 2);
 #ifdef SERIAL_DEBUG
-    LedLcdManager::lcdPrint(F(",SerialDbg"), false);
+    LedLcdManager::lcdPrint(",SerialDbg", false);
 #endif
 #else // ! ETHERNET
     LedLcdManager::lcdPrint(F("Serial"), false, 0, 2);
@@ -425,9 +420,10 @@ void setup() {
 #if defined(ARDUINO) & !defined(ETHERNET) | defined(SERIAL_DEBUG)
 
     Serial.begin(SERIALBAUD);
+#if defined(ARDUINO_AVR_LEONARDO) | defined(ARDUINO_AVR_MICRO)
     while (!Serial)
         ; // wait for serial port to connect. "Needed for Leonardo only"
-
+#endif
     Serial.println(F(PROGNAME " " VERSION));
     Serial.setTimeout(SERIALTIMEOUT);
 
@@ -460,79 +456,74 @@ void info(Stream& stream) {
 }
 #endif
 
-//static inline bool isPrefix(const String& cmd, const char *string) {
-//    return strncmp(cmd.c_str(), string, cmd.length()) == 0;
-//}
+static inline bool isPrefix(const String& cmd, const char *string) {
+    return strncmp(cmd.c_str(), string, cmd.length()) == 0;
+}
 
-static bool isPrefix(const char *string, const char* cmd) {
-    return strncmp(cmd, string, strlen(string)) == 0;
+static inline bool isPrefix(const char *string, const String& cmd) {
+    return strncmp(cmd.c_str(), string, strlen(string)) == 0;
 }
 
 #ifdef ARDUINO
-bool isPrefix(const char* cmd, const __FlashStringHelper *pstring) {
-    return strncmp_PF(cmd, reinterpret_cast<uint_farptr_t>(pstring), strlen(cmd)) == 0;
+bool isPrefix(const String& cmd, const __FlashStringHelper *pstring) {
+    return strncmp_PF(cmd.c_str(), (uint_farptr_t) pstring, cmd.length()) == 0;
 }
 
-bool isPrefix(const __FlashStringHelper *pstring, const char* cmd) {
-    return strncmp_PF(cmd, reinterpret_cast<uint_farptr_t>(pstring), strlen_PF(reinterpret_cast<uint_farptr_t>(pstring))) == 0;
+bool isPrefix(const __FlashStringHelper *pstring, const String& cmd) {
+    return strncmp_PF(cmd.c_str(), (uint_farptr_t) pstring, strlen_PF((uint_farptr_t) pstring)) == 0;
 }
 #endif
 
-static void readCommand(char* cmd, size_t cmdLength, StreamParser& parser) {
+static String readCommand(Stream& stream) {
 #if defined(COMMANDLED) & defined(LED)
     LedLcdManager::setLogicLed(commandled, LedLcdManager::on);
 #endif
 
 #ifdef ARDUINO
     //flushIn(stream);
-    while (parser.getStream().available() == 0)
-#endif
+    while (stream.available() == 0) {
         LedLcdManager::checkTurnoff();
+    }
 
-
-    parser.parseWord(cmd, cmdLength);
-//#else
-//    LedLcdManager::checkTurnoff();
-//    static char str[1000];
-//    parser.getLine(str, 1000);
-//    if (std::cin.eof()) {
-//        std::cout << "Bye!" << std::endl;
-//        exit(0);
-//    }
-//    char *s = str;
-//    while (isspace(*s))
-//        s++;
-//    while (isspace(s[strlen(s)-1]))
-//        s[strlen(s)-1] = '\0';
-//    String line(s);
-//#endif
+    String line = stream.readStringUntil(EOLCHAR);
+    line.trim();
+#else
+    (void) stream;
+    LedLcdManager::checkTurnoff();
+    static char str[1000];
+    std::cin.getline(str, 1000);
+    if (std::cin.eof()) {
+        std::cout << "Bye!" << std::endl;
+        exit(0);
+    }
+    char *s = str;
+    while (isspace(*s))
+        s++;
+    while (isspace(s[strlen(s)-1]))
+        s[strlen(s)-1] = '\0';
+    String line(s);
+#endif
 
 #if defined(DEBUG_CMD)
-    LedLcdManager::lcdPrint(cmd, true, 0, 0);
+    LedLcdManager::lcdPrint(line.c_str(), true, 0, 0);
 #endif
 #if defined(COMMANDLED) & defined(LED)
     LedLcdManager::setLogicLed(commandled, LedLcdManager::off);
 #endif
+    return line;
 }
 
-static bool processCommand(const char* cmd, StreamParser& parser) {
+static bool processCommand(const String& line, Stream& stream) {
 #ifdef ETHERNET
     bool quit = false;
 #endif
-#ifdef ARDUINO
-    Stream
-#else
-    std::istream
-#endif
-    & stream = parser.getStream();
+    Tokenizer tokenizer(line);
+    String cmd = tokenizer.getToken();
+
     // Decode command
-    if (cmd[0] == '\0') {
+    if (cmd.length() == 0) {
         // empty command, do nothing
-#ifdef ARDUINO
         stream.println(F(okString));
-#else
-        std::cout << okString << std::endl;
-#endif
     } else
 
 #ifdef CAPTURE
@@ -543,30 +534,23 @@ static bool processCommand(const char* cmd, StreamParser& parser) {
 
 #ifdef LCD
         if (isPrefix(cmd, F("lcd"))) { //LCD
-            constexpr size_t buflen = 40U;
-            char rest[buflen];
-            parser.getLine(rest, buflen);
-        LedLcdManager::lcdPrint(rest);
+        String rest = tokenizer.getRest();
+        LedLcdManager::lcdPrint(rest.c_str());
         stream.println(F(okString));
         } else
 #endif // LCD
 
 #ifdef LED
         if (isPrefix(cmd, F("led"))) {
-        pin_t no = static_cast<pin_t>(parser.parseAbsInt());
-        char value[cmdLength];
-        parser.parseWord(value, cmdLength);
-        bool success = LedLcdManager::setLogicLed(no, value);
+        pin_t no = (pin_t) tokenizer.getInt();
+        String value = tokenizer.getToken();
+        bool success = LedLcdManager::setLogicLed(no, value.c_str());
         stream.println(success ? F(okString) : F(errorString));
     } else
 #endif // LED
 
         if (isPrefix(cmd, F("modules"))) {
-#ifdef ARDUINO
         stream.println(F(modulesSupported));
-#else
-        std::cout << modulesSupported << std::endl;
-#endif
     } else
 
 #ifdef FREEMEM
@@ -583,12 +567,11 @@ static bool processCommand(const char* cmd, StreamParser& parser) {
 
 #ifdef PARAMETERS
         if (cmd[0] == 'p') { // parameter
-            char variableName[cmdLength];
-            parser.parseWord(variableName, cmdLength);
-        long value = parser.parseAbsInt();
-        unsigned long *variable32 = nullptr;
-        uint16_t *variable16 = nullptr;
-        uint8_t *variable8 = nullptr;
+        String variableName = tokenizer.getToken();
+        long value = tokenizer.getInt();
+        unsigned long *variable32 = NULL;
+        uint16_t *variable16 = NULL;
+        uint8_t *variable8 = NULL;
 #if defined(RECEIVE) || defined(CAPTURE)
            if (isPrefix(F("beg"), variableName))
             variable32 = &beginTimeout;
@@ -643,21 +626,21 @@ static bool processCommand(const char* cmd, StreamParser& parser) {
         {
         }
 
-        if (variable32 != nullptr) {
-            if (value != StreamParser::invalid)
+        if (variable32 != NULL) {
+            if (value != Tokenizer::invalid)
                 *variable32 = value;
 
-            GirsUtils::printVariable(stream, variableName, *variable32);
-        } else if (variable16 != nullptr) {
-            if (value != StreamParser::invalid)
-                *variable16 = static_cast<uint16_t>(value);
+            GirsUtils::printVariable(stream, variableName.c_str(), *variable32);
+        } else if (variable16 != NULL) {
+            if (value != Tokenizer::invalid)
+                *variable16 = (uint16_t) value;
 
-            GirsUtils::printVariable(stream, variableName, *variable16);
-        } else if (variable8 != nullptr) {
-            if (value != StreamParser::invalid)
+            GirsUtils::printVariable(stream, variableName.c_str(), *variable16);
+        } else if (variable8 != NULL) {
+            if (value != Tokenizer::invalid)
                 *variable8 = (uint8_t) value;
 
-            GirsUtils::printVariable(stream, variableName, *variable8);
+            GirsUtils::printVariable(stream, variableName.c_str(), *variable8);
         } else
             stream.println(F("No such variable"));
     } else
@@ -672,7 +655,7 @@ static bool processCommand(const char* cmd, StreamParser& parser) {
 #ifdef RECEIVE
         // TODO: option for force decoding off
         if (isPrefix(cmd, F("receive"))) { // receive
-        bool status = receive(parser);
+        bool status = receive(stream);
         if (!status)
             stream.println(F(errorString));
     } else
@@ -680,7 +663,7 @@ static bool processCommand(const char* cmd, StreamParser& parser) {
 
 #ifdef NAMED_COMMANDS
         if (cmd[0] == 'n') {
-        uint16_t noSends = static_cast<uint16_t>(parser.parseAbsInt());
+        uint16_t noSends = (uint16_t) tokenizer.getInt();
         String remoteName = tokenizer.getToken();
         String commandName = tokenizer.getToken();
         bool success = sendNamedCommand(stream, remoteName, commandName, noSends);
@@ -703,96 +686,77 @@ static bool processCommand(const char* cmd, StreamParser& parser) {
 #ifdef TRANSMIT
         if (cmd[0] == 's') { // send
         // TODO: handle unparsable data gracefully
-        uint16_t noSends = static_cast<uint16_t>(parser.parseAbsInt());
-        frequency_t frequency = static_cast<frequency_t>(parser.parseAbsInt());
-        uint16_t introLength = static_cast<uint16_t>(parser.parseAbsInt());
-        uint16_t repeatLength = static_cast<uint16_t>(parser.parseAbsInt());
-        uint16_t endingLength = static_cast<uint16_t>(parser.parseAbsInt());
-        microseconds_t *intro = new microseconds_t[introLength];
-        parser.parseData(intro, introLength);
-        microseconds_t *repeat = new microseconds_t[repeatLength];
-        parser.parseData(repeat, repeatLength);
-        microseconds_t *ending = new microseconds_t[endingLength];
-        parser.parseData(ending, endingLength);
+        uint16_t noSends = (uint16_t) tokenizer.getInt();
+        frequency_t frequency = tokenizer.getFrequency();
+        uint16_t introLength = (uint16_t) tokenizer.getInt();
+        uint16_t repeatLength = (uint16_t) tokenizer.getInt();
+        uint16_t endingLength = (uint16_t) tokenizer.getInt();
+        microseconds_t intro[introLength];
+        microseconds_t repeat[repeatLength];
+        microseconds_t ending[endingLength];
+        for (uint16_t i = 0; i < introLength; i++)
+            intro[i] = tokenizer.getMicroseconds();
+        for (uint16_t i = 0; i < repeatLength; i++)
+            repeat[i] = tokenizer.getMicroseconds();
+        for (uint16_t i = 0; i < endingLength; i++)
+            ending[i] = tokenizer.getMicroseconds();
         IrSignal irSignal(intro, introLength, repeat, repeatLength, ending, endingLength, frequency);
         bool status = sendIrSignal(irSignal, noSends); // waits
-#ifdef ARDUINO
         stream.println(status ? F(okString) : F(errorString));
-#else
-        std::cout << (status ? okString : errorString) << std::endl;
-#endif
     } else
 #endif // TRANSMIT
 
 #ifdef PRONTO
-        if (isPrefix(cmd, F("pronto"))) { // pronto hex send
-        uint16_t noSends = static_cast<uint16_t>(parser.parseAbsInt());
-        //String rest = tokenizer.getRest();
-        IrSignal *irSignal = parser.parsePronto();
+        if (isPrefix(cmd, F("hex"))) { // pronto hex send
+        uint16_t noSends = (uint16_t) tokenizer.getInt();
+        String rest = tokenizer.getRest();
+        IrSignal *irSignal = Pronto::parse(rest.c_str());
         bool status = false;
-        if (irSignal != nullptr) {
+        if (irSignal != NULL) {
             status = sendIrSignal(*irSignal, noSends); // waits
             delete irSignal;
         }
-#ifdef ARDUINO
         stream.println(status ? F(okString) : F(errorString));
-#else
-        std::cout << (status ? okString : errorString) << std::endl;
-#endif
     } else
 #endif // PRONTO
 
 #ifdef RENDERER
         if (cmd[0] == 't') { // transmit
         // TODO: handle unparseable data gracefully
-        uint16_t noSends = static_cast<uint16_t>(parser.parseAbsInt());
-        constexpr size_t buflen = 20U;
-        char protocol[buflen];
-        parser.parseWord(protocol, buflen);
-        const IrSignal *irSignal = nullptr;
+        uint16_t noSends = (uint16_t) tokenizer.getInt();
+        String protocol = tokenizer.getToken();
+        const IrSignal *irSignal = NULL;
         if (isPrefix(protocol, F("nec1"))) {
-            unsigned int D = static_cast<unsigned>(parser.parseAbsInt());
-            unsigned int S = static_cast<unsigned>(parser.parseAbsInt());
-            unsigned int F = static_cast<unsigned>(parser.parseAbsInt());
-            irSignal = (F == StreamParser::invalid)
+            unsigned int D = (unsigned) tokenizer.getInt();
+            unsigned int S = (unsigned) tokenizer.getInt();
+            unsigned int F = (unsigned) tokenizer.getInt();
+            irSignal = (F == Tokenizer::invalid)
                     ? Nec1Renderer::newIrSignal(D, S)
                     : Nec1Renderer::newIrSignal(D, S, F);
         } else if (isPrefix(protocol, F("rc5"))) {
-            unsigned int D = static_cast<unsigned>(parser.parseAbsInt());
-            unsigned int F = static_cast<unsigned>(parser.parseAbsInt());
-            unsigned int T = static_cast<unsigned>(parser.parseAbsInt());
-            irSignal = (T == StreamParser::invalid)
+            unsigned int D = (unsigned) tokenizer.getInt();
+            unsigned int F = (unsigned) tokenizer.getInt();
+            unsigned int T = (unsigned) tokenizer.getInt();
+            irSignal = (T == Tokenizer::invalid)
                     ? Rc5Renderer::newIrSignal(D, F)
                     : Rc5Renderer::newIrSignal(D, F, T);
         } else {
-#ifdef ARDUINO
             stream.print(F("no such protocol: "));
             stream.println(protocol);
-#endif
         }
         bool status = false;
-        if (irSignal != nullptr) {
+        if (irSignal != NULL) {
             status = sendIrSignal(*irSignal, noSends); // waits, blinks
             delete irSignal;
         }
-#ifdef ARDUINO
         stream.println(status ? F(okString) : F(errorString));
-#endif
-        } else
+    } else
 #endif // RENDERER
 
         if (cmd[0] == 'v') { // version
-#ifdef ARDUINO
         stream.println(F(PROGNAME " " VERSION));
-#else
-        std::cout << PROGNAME " " VERSION << std::endl;
-#endif
     } else {
-#ifdef ARDUINO
         stream.println(F(errorString));
-#else
-        std::cout << errorString << std::endl;
-#endif
     }
 
     //flushIn(stream);
@@ -809,22 +773,12 @@ static bool processCommand(const char* cmd, StreamParser& parser) {
     return true;
 }
 
-static bool readProcessOneCommand(
-#ifdef ARDUINO
-        Stream
-#else
-        std::istream
-#endif
-        & stream) {
-    StreamParser parser(stream);
-    char cmd[cmdLength];
-    //parser.parseWord(cmd, cmdLength);
-    readCommand(cmd, cmdLength, parser);
+static bool readProcessOneCommand(Stream& stream) {
+    String line = readCommand(stream);
 #ifdef SERIAL_DEBUG
-    Serial.println("Command: " + cmd);
-    delay(1000);
+    Serial.println("Command: " + line);
 #endif
-    return processCommand(cmd, parser);
+    return processCommand(line, stream);
 }
 
 #if defined(ETHERNET)
@@ -841,7 +795,6 @@ bool readProcessOneTcpCommand(EthernetClient& client) {
 }
 #endif
 
-#ifdef ARDUINO
 void loop() {
     LedLcdManager::checkTurnoff();
 #ifdef ETHERNET
@@ -854,14 +807,14 @@ void loop() {
         return;
     client.setTimeout(10000);
 #ifdef LCD
-    LedLcdManager::lcdPrint(F("Connection from"), true, 0, 0);
-    char ip[16];
-    sprintf(ip, "%d.%d.%d.%d", Ethernet.localIP()[0], Ethernet.localIP()[1], Ethernet.localIP()[2], Ethernet.localIP()[3]);
-    LedLcdManager::lcdPrint(ip, false, 0, 1);
+    LedLcdManager::lcdPrint("Connection from", true, 0, 0);
+    char ipstring[16];
+    sprintf(ipstring, "%d.%d.%d.%d", Ethernet.localIP()[0], Ethernet.localIP()[1], Ethernet.localIP()[2], Ethernet.localIP()[3]);
+    LedLcdManager::lcdPrint(ipstring, false, 0, 1);
 #endif
 #ifdef SERIAL_DEBUG
     Serial.print(F("Connection from "));
-    Serial.println(ip);
+    Serial.println(ipstring);
 #endif
 #if defined(COMMANDLED) & defined(LED)
     LedLcdManager::setLogicLed(commandled, LedLcdManager::on);
@@ -873,7 +826,7 @@ void loop() {
 #endif
         ;
 #ifdef LCD
-    LedLcdManager::lcdPrint(F("Connection closed!"), true, 0, 0);
+    LedLcdManager::lcdPrint("Connection closed!", true, 0, 0);
 #endif
 #ifdef SERIAL_DEBUG
     Serial.println(F("Connection closed!"));
@@ -890,8 +843,12 @@ void loop() {
 
 #else // ! ETHERNET
 
+#ifdef ARDUINO
     Stream& stream = Serial;
-    readProcessOneCommand(stream);
+ #else
+    Stream stream(std::cout);
+#endif
+   readProcessOneCommand(stream);
 #endif // ! ETHERNET
 
 #ifdef RESET
@@ -901,35 +858,11 @@ void loop() {
     }
 #endif
 }
-#endif // ARDUINO
 
 #ifndef ARDUINO
-int main(int argc, char* argv[]) {
+int main() {
     setup();
-//    while (true)
-//        loop();
-    if (argc == 1) {
-        while (true) {
-            constexpr size_t linemax = 1000;
-            char line[linemax];
-            std::cin.getline(line, linemax);
-            if (line[0] == '\0' || strncmp(line, "quit", 1) == 0)
-                return 0;
-            std::stringstream sstream(line);
-            bool success = readProcessOneCommand(sstream);
-            if (!success)
-                std::cerr << "**ERROR**" << std::endl;
-        }
-    } else {
-        std::string str;
-        for (int i = 1; i < argc; i++) {
-            str.append(argv[i]);
-            str.append(" ");
-        }
-
-        std::stringstream sstream(str);
-        bool success = readProcessOneCommand(sstream);
-        return success ? 0 : 1;
-    }
+    while (true)
+        loop();
 }
 #endif

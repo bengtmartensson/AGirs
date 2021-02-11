@@ -158,9 +158,10 @@ bool reset = false;
 #ifndef PROGNAME
 #define PROGNAME "AGirs"
 #endif
-#ifndef VERSION
-#include "GirsLib/version.h"
+#ifdef VERSION
+#undef VERSION
 #endif // VERSION
+#include "GirsLib/version.h"
 #define okString "OK"
 #define errorString "ERROR"
 #define timeoutString "."

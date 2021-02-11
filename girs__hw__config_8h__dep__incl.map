@@ -1,7 +1,7 @@
 <map id="src/girs_hw_config.h" name="src/girs_hw_config.h">
-<area shape="rect" id="node1" title=" " alt="" coords="285,5,439,32"/>
-<area shape="rect" id="node2" href="$GirsFat_8config_8h.html" title="Complete configuration options." alt="" coords="5,80,225,107"/>
-<area shape="rect" id="node3" href="$GirsLite_8config_8h.html" title="Configuration optimized for IrScrutinizer and Lirc." alt="" coords="249,80,475,107"/>
-<area shape="rect" id="node4" href="$Listener_2config_8h.html" title=" " alt="" coords="499,80,697,107"/>
-<area shape="rect" id="node5" href="$Listener_8cpp.html" title=" " alt="" coords="486,155,710,181"/>
+<area shape="rect" id="node1" title=" " alt="" coords="265,5,407,32"/>
+<area shape="rect" id="node2" href="$GirsFat_8config_8h.html" title="Complete configuration options." alt="" coords="5,80,208,107"/>
+<area shape="rect" id="node3" href="$GirsLite_8config_8h.html" title="Configuration optimized for IrScrutinizer and Lirc." alt="" coords="233,80,439,107"/>
+<area shape="rect" id="node4" href="$Listener_2config_8h.html" title=" " alt="" coords="463,80,641,107"/>
+<area shape="rect" id="node5" href="$Listener_8cpp.html" title=" " alt="" coords="451,155,653,181"/>
 </map>

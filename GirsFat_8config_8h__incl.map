@@ -1,6 +1,6 @@
 <map id="examples/Girs/GirsFat.config.h" name="examples/Girs/GirsFat.config.h">
-<area shape="rect" id="node1" title="Complete configuration options." alt="" coords="5,5,225,32"/>
-<area shape="rect" id="node2" href="$girs__hw__config_8h.html" title=" " alt="" coords="50,80,181,107"/>
-<area shape="rect" id="node3" href="$girs__pins_8h.html" title=" " alt="" coords="38,155,193,196"/>
-<area shape="rect" id="node4" href="$girs__pins__default_8h.html" title=" " alt="" coords="43,244,188,271"/>
+<area shape="rect" id="node1" title="Complete configuration options." alt="" coords="5,5,208,32"/>
+<area shape="rect" id="node2" href="$girs__hw__config_8h.html" title=" " alt="" coords="46,80,167,107"/>
+<area shape="rect" id="node3" href="$girs__pins_8h.html" title=" " alt="" coords="37,155,177,196"/>
+<area shape="rect" id="node4" href="$girs__pins__default_8h.html" title=" " alt="" coords="41,244,172,271"/>
 </map>

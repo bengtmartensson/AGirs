@@ -533,7 +533,7 @@ static bool processCommand(const String& line, Stream& stream) {
 #ifdef LCD
         if (isPrefix(cmd, F("lcd"))) { //LCD
         String rest = tokenizer.getRest();
-        LedLcdManager::lcdPrint(rest);
+        LedLcdManager::lcdPrint(rest.c_str());
         stream.println(F(okString));
         } else
 #endif // LCD

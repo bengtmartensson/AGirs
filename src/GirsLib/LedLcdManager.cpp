@@ -13,9 +13,17 @@
 #include "Tokenizer.h"
 #include <string.h>
 
+#ifdef ARDUINO
+#include <avr/pgmspace.h>
+#endif
+
 #ifdef LCD
 LiquidCrystal_I2C *LedLcdManager::lcd;
 #endif
+
+unsigned int LedLcdManager::row = 0U;
+unsigned int LedLcdManager::column = 0U;
+
 milliseconds_t LedLcdManager::blinkTime = defaultBlinkTime;
 unsigned long LedLcdManager::turnOffTime;
 unsigned int LedLcdManager::lcdRows = 0;
@@ -169,40 +177,79 @@ void LedLcdManager::disableTurnOffTime() {
     turnOffTime = (unsigned long) -1;
 }
 
-void LedLcdManager::lcdPrint(String& string __attribute__((unused)), bool clear __attribute__((unused)),
-        int x __attribute((unused)), int y __attribute__((unused))) {
+#ifdef ARDUINO
+
+void LedLcdManager::lcdPrint(const __FlashStringHelper *pstr __attribute__ ((unused)), bool clear __attribute__ ((unused)), int x __attribute__ ((unused)), int y __attribute__ ((unused))) {
 #ifdef LCD
     if (!lcd)
         return;
-
-    int row = (y < 0 && clear) ? 0 : y;
-    int column = x < 0 ? 0 : x;
-    if (row > (int) lcdRows - 1 || column > (int) lcdColumns - 1) // outside of display
-        return;
-
-    if (clear)
-        lcd->clear();
-
-    bool didPrint = false;
-    Tokenizer tokenizer(string);
-    while (true) {
-        String line = tokenizer.getLine();
-        if (line.length() == 0)
-            break;
-        if (line.length() > lcdColumns)
-            line = line.substring(0, lcdColumns);
-        if (clear || y >= 0) {
-            lcd->setCursor(column, row);
-            row++;
-            column = 0;
+    prepare(clear, x, y);
+    PGM_P p = reinterpret_cast<PGM_P>(pstr);
+    char c;
+    do {
+        c = pgm_read_byte(p++);
+        switch (c) {
+            case '\r':
+            case '\0':
+                break;
+            case '\n':
+                column = 0;
+                row++;
+                lcd->setCursor(column, row);
+                break;
+            default:
+                lcd->write(c);
         }
-        lcd->print(line.c_str());
-        didPrint = true;
-    }
-    if (didPrint) {
-        lcd->display();
-        lcd->backlight();
-    }
+    } while (c != '\0');
+
+    lcd->display();
+    lcd->backlight();
     updateTurnOffTime();
+#endif
+}
+#endif
+
+void LedLcdManager::lcdPrint(const char* string __attribute__ ((unused)), bool clear __attribute__ ((unused)),
+        int x __attribute ((unused)), int y __attribute__ ((unused))) {
+#ifdef LCD
+    if (!lcd)
+        return;
+    prepare(clear, x, y);
+    size_t len = strlen(string);
+    for (size_t i = 0; i < len; i++) {
+        char c = string[i];
+        switch (c) {
+            case '\r':
+                break;
+            case '\n':
+                column = 0;
+                row++;
+                lcd->setCursor(column, row);
+                break;
+            default:
+                lcd->write(c);
+        }
+    }
+    lcd->display();
+    lcd->backlight();
+    updateTurnOffTime();
+#endif
+}
+
+void LedLcdManager::prepare(bool clear __attribute__((unused)), int x __attribute__((unused)), int y __attribute__((unused))) {
+#ifdef LCD
+    if (x >= 0 && y >= 0) {
+        row = y;
+        column = x;
+        if (row > (int) lcdRows - 1 || column > (int) lcdColumns - 1) // outside of display
+            return;
+        lcd->setCursor(column, row);
+    }
+
+    if (clear) {
+        row = 0U;
+        column = 0U;
+        lcd->clear();
+    }
 #endif
 }

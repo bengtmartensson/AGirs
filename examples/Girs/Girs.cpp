@@ -34,10 +34,6 @@ this program. If not, see http://www.gnu.org/licenses/.
 #include <IPAddress.h>
 #endif // ETHERNET
 
-#ifdef LCD
-#include <LiquidCrystal_I2C.h>
-#endif
-
 #ifdef RECEIVE
 #include <IrReceiverSampler.h>
 #endif

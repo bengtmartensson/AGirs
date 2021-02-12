@@ -4,7 +4,7 @@
 #include <InfraredTypes.h>
 #include <IrSender.h>
 #ifdef LCD
-#include <LiquidCrystal_I2C.h> // https://github.com/marcoschwartz/LiquidCrystal_I2C
+#include "LiquidCrystal_I2C_bm.h" // https://github.com/marcoschwartz/LiquidCrystal_I2C
 #endif
 
 typedef uint8_t led_t;

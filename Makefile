@@ -29,6 +29,8 @@ BOARD=nano
 # sources are located. Only used for SIL test.
 INFRARED4ARDUINO_DIR=../Infrared4Arduino
 
+INCLUDES=-I$(INFRARED4ARDUINO_DIR)/src -Isrc
+
 # Get VERSION from the version in library.properties
 VERSION=$(subst version=,,$(shell grep version= library.properties))
 ORIGINURL=$(shell git remote get-url origin)
@@ -70,7 +72,12 @@ VPATH=src src/GirsLib examples/Girs
 #.PRECIOUS: test1
 
 # TODO: compile Girs.o separately, in tests/Girs
-OBJS=Girs.o GirsUtils.o LedLcdManager.o Tokenizer.o LiquidCrystal_I2C_bm.o
+OBJS=\
+Girs.o \
+GirsUtils.o \
+LedLcdManager.o \
+LiquidCrystal_I2C_bm.o \
+StreamParser.o
 
 libGirs.a: $(OBJS)
 	$(AR) rs $@ $(OBJS)

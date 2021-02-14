@@ -3,6 +3,7 @@
  * The reads are blocking.
  * To be used instead instead of parseInt() and such,
  * since they do not offer enough flexibility.
+ * This is not written to be used outside of the package.
  */
 
 #pragma once
@@ -51,9 +52,16 @@ public:
     /**
      * Reads a number and returns it as 16 bit unsigned. Blocking. Signs are ignored.
      * @return int16_t
-     * @return
      */
     int32_t parseAbsInt();
+
+    /**
+     * Reads a number and returns it as 16 bit unsigned. Blocking. Signs are ignored.
+     * If no valid character remains before line end, return the fallback argument.
+     * @param fallback Default value
+     * @return int16_t
+     */
+    int32_t parseAbsIntDefault(int32_t fallback);
 
     /**
      * Returns a word (separated by whitespace).
@@ -66,6 +74,8 @@ public:
     const char* getLine(char* buf, size_t buflen);
 
     Stream& getStream() { return stream; }
+
+    void flushLine();
 
     /**
      * Convenience function: combines the constructor and parseIrSignal. Blocking.
@@ -84,7 +94,8 @@ private:
 
     Stream &stream;
     microseconds_t* parseData(size_t length);
-    char readCharBlock();
+    int32_t parseAbsInt(char initial);
+    char customReadChar();
     void disposeUntilWhitespace();
     static unsigned int parseHex(char c);
     /**

@@ -10,7 +10,6 @@
 #endif
 
 #include "LedLcdManager.h"
-#include "Tokenizer.h"
 #include <string.h>
 
 #ifdef ARDUINO
@@ -241,7 +240,7 @@ void LedLcdManager::prepare(bool clear __attribute__((unused)), int x __attribut
     if (x >= 0 && y >= 0) {
         row = y;
         column = x;
-        if (row > (int) lcdRows - 1 || column > (int) lcdColumns - 1) // outside of display
+        if (row > (unsigned int) lcdRows - 1 || column > (unsigned int) lcdColumns - 1) // outside of display
             return;
         lcd->setCursor(column, row);
     }

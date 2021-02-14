@@ -103,37 +103,56 @@ const char* StreamParser::getLine(char* buf, size_t buflen) {
 #endif
 }
 
+int32_t StreamParser::parseAbsIntDefault(int32_t fallback) {
+    char c;
+    do {
+        c = customReadChar();
+    } while (c == ' ' || c == '\t' || c == '-' || c == '+');
+
+    if (c == '\r' || c == '\n')
+        return fallback;
+
+    return parseAbsInt(c);
+}
+
 int32_t StreamParser::parseAbsInt() {
     char c;
     do {
-        c = readCharBlock();
+        c = customReadChar();
     } while (isspace(c) || c == '-' || c == '+');
 
-    int32_t value = 0;
+    return parseAbsInt(c);
+}
+
+int32_t StreamParser::parseAbsInt(char initial) {
+    char c = initial;
+    int32_t value = invalid;
     while (true) {
         if (isspace(c))
             return value;
         int32_t n = static_cast<int> (c) - static_cast<int> ('0');
         if (n < 0 || n > 9) {
             disposeUntilWhitespace();
-            return invalid;
+            return value;
         }
+        if (value == invalid)
+            value = 0;
         value = value * 10 + n;
-        c = readCharBlock();
+        c = customReadChar();
     }
 }
 
 uint16_t StreamParser::parseProntoNumber() {
     char c;
     do {
-        c = readCharBlock();
+        c = customReadChar();
     } while (isspace(c));
 
     int32_t value = 0;
     for (unsigned i = 0; i < Pronto::digitsInProntoNumber; i++) {
         int n = parseHex(c);
         value = value * 16 + n;
-        c = readCharBlock();
+        c = customReadChar();
     }
     return value;
 }
@@ -165,17 +184,31 @@ unsigned int StreamParser::parseHex(char c) {
             : invalid;
 }
 
-char StreamParser::readCharBlock() {
+char StreamParser::customReadChar() {
     int c;
 #ifdef ARDUINO
     do {
-        c = stream.read(); // does not block
+        yield();
+        c = stream.peek(); // does not block
     } while (c == invalid);
 #else
     c = stream.get();
 #endif
+    if (c == '\r' || c == '\n')
+        return static_cast<char>(c);
 
-    return static_cast<char> (c);
+    stream.read();
+    return static_cast<char>(c);
+}
+
+void StreamParser::flushLine() {
+    while (true) {
+        int c = stream.peek();
+        if (isspace(c))
+            stream.read();
+        else
+            return;
+    }
 }
 
 void StreamParser::disposeUntilWhitespace() {

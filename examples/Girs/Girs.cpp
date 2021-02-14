@@ -76,6 +76,7 @@ this program. If not, see http://www.gnu.org/licenses/.
 
 #ifdef NAMED_COMMANDS
 #error NAMED_COMMANDS is presently not supported
+#include "GirsLib/IrNamedRemoteSet.h"
 #endif
 
 #ifdef BEACON
@@ -254,7 +255,7 @@ static bool receive(StreamParser& parser) {
     irReceiver->setEndingTimeout(receiveEndingTimeout);
     irReceiver->setBeginningTimeout(beginTimeout);
     irReceiver->setMarkExcess(IRRECEIVER_MARK_EXCESS);
-    //Stream& stream = parser.getStream();
+    Stream& stream = parser.getStream();
 #ifdef ARDUINO
     flushIn(parser.getStream());
 #endif
@@ -322,14 +323,14 @@ static bool capture(Stream& stream) {
 //#include "my_named_remotes.inc"
 extern const IrNamedRemoteSet remoteSet;
 
-static bool sendNamedCommand(Stream& stream, String& remoteName, String& commandName, unsigned int noSends) {
-    const IrNamedRemote* remote = remoteSet.getIrNamedRemote(remoteName.c_str());
+static bool sendNamedCommand(Stream& stream, const char* remoteName, const char* commandName, unsigned int noSends) {
+    const IrNamedRemote* remote = remoteSet.getIrNamedRemote(remoteName);
     if (remote == nullptr) {
         stream.println(F("No such remote"));
         return false;
     }
 
-    const IrNamedCommand* command = remote->getIrNamedCommand(commandName.c_str());
+    const IrNamedCommand* command = remote->getIrNamedCommand(commandName);
     if (command == nullptr) {
         stream.println(F("No such command"));
         return false;
@@ -340,20 +341,20 @@ static bool sendNamedCommand(Stream& stream, String& remoteName, String& command
     return status;
 }
 
-static void dumpRemote(Stream& stream, String& name) {
-    if (name.length() == 0) {
-        for (unsigned int i = 0; i < remoteSet.getNoIrNamedRemotes(); i++) {
-            stream.print(remoteSet.getIrNamedRemotes()[i]->getName());
+static void dumpRemote(Stream& stream, const char* name) {
+    if (name[0] != '\0') {
+        for (IrNamedRemote remote : remoteSet) {
+            stream.print(remote.getName());
             stream.print(" ");
         }
         stream.println();
     } else {
-        const IrNamedRemote* remote = remoteSet.getIrNamedRemote(name.c_str());
+        const IrNamedRemote* remote = remoteSet.getIrNamedRemote(name);
         if (remote == nullptr)
             stream.println(F("No such remote"));
         else {
-            for (unsigned int i = 0; i < remote->getNoCommands(); i++) {
-                stream.print(remote->getAllCommands()[i]->getName());
+            for (IrNamedCommand command : *remote) {
+                stream.print(command.getName());
                 stream.print(" ");
             }
             stream.println();
@@ -457,23 +458,22 @@ void info(Stream& stream) {
 }
 #endif
 
-//static inline bool isPrefix(const String& cmd, const char *string) {
-//    return strncmp(cmd.c_str(), string, cmd.length()) == 0;
-//}
-
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-function"
 static bool isPrefix(const char *string, const char* cmd) {
     return strncmp(cmd, string, strlen(string)) == 0;
 }
 
 #ifdef ARDUINO
 bool isPrefix(const char* cmd, const __FlashStringHelper *pstring) {
-    return strncmp_PF(cmd, reinterpret_cast<uint_farptr_t>(pstring), strlen(cmd)) == 0;
+    return strncmp_PF(cmd, STRCPY_PF_CAST(reinterpret_cast<uint_farptr_t>(pstring)), strlen(cmd)) == 0;
 }
 
 bool isPrefix(const __FlashStringHelper *pstring, const char* cmd) {
-    return strncmp_PF(cmd, reinterpret_cast<uint_farptr_t>(pstring), strlen_PF(reinterpret_cast<uint_farptr_t>(pstring))) == 0;
+    return strncmp_PF(cmd, STRCPY_PF_CAST(reinterpret_cast<uint_farptr_t>(pstring)), strlen_PF(STRCPY_PF_CAST(reinterpret_cast<uint_farptr_t>(pstring)))) == 0;
 }
 #endif
+#pragma GCC diagnostic pop
 
 static void readCommand(char* cmd, size_t cmdLength, StreamParser& parser) {
 #if defined(COMMANDLED) & defined(LED)
@@ -488,21 +488,6 @@ static void readCommand(char* cmd, size_t cmdLength, StreamParser& parser) {
 
 
     parser.parseWord(cmd, cmdLength);
-//#else
-//    LedLcdManager::checkTurnoff();
-//    static char str[1000];
-//    parser.getLine(str, 1000);
-//    if (std::cin.eof()) {
-//        std::cout << "Bye!" << std::endl;
-//        exit(0);
-//    }
-//    char *s = str;
-//    while (isspace(*s))
-//        s++;
-//    while (isspace(s[strlen(s)-1]))
-//        s[strlen(s)-1] = '\0';
-//    String line(s);
-//#endif
 
 #if defined(DEBUG_CMD)
     LedLcdManager::lcdPrint(cmd, true, 0, 0);
@@ -678,15 +663,18 @@ static bool processCommand(const char* cmd, StreamParser& parser) {
 #ifdef NAMED_COMMANDS
         if (cmd[0] == 'n') {
         uint16_t noSends = static_cast<uint16_t>(parser.parseAbsInt());
-        String remoteName = tokenizer.getToken();
-        String commandName = tokenizer.getToken();
+        char remoteName[cmdLength];
+        parser.parseWord(remoteName, cmdLength);
+        char commandName[cmdLength];
+        parser.parseWord(commandName, cmdLength);
         bool success = sendNamedCommand(stream, remoteName, commandName, noSends);
         if (success)
             stream.println(okString);
     } else
 
         if (isPrefix(cmd, "remote")) {
-        String name = tokenizer.getToken();
+            char name[cmdLength];
+            parser.parseWord(name, cmdLength);
         dumpRemote(stream, name);
     } else
 #endif
@@ -748,16 +736,26 @@ static bool processCommand(const char* cmd, StreamParser& parser) {
         parser.parseWord(protocol, buflen);
         const IrSignal *irSignal = nullptr;
         if (isPrefix(protocol, F("nec1"))) {
-            unsigned int D = static_cast<unsigned>(parser.parseAbsInt());
-            unsigned int S = static_cast<unsigned>(parser.parseAbsInt());
-            unsigned int F = static_cast<unsigned>(parser.parseAbsInt());
-            irSignal = (F == StreamParser::invalid)
-                    ? Nec1Renderer::newIrSignal(D, S)
-                    : Nec1Renderer::newIrSignal(D, S, F);
+            int D = static_cast<unsigned>(parser.parseAbsInt());
+            int second = static_cast<unsigned>(parser.parseAbsInt());
+            int third = static_cast<unsigned>(parser.parseAbsIntDefault(StreamParser::invalid));
+            parser.flushLine();
+            stream.println("NEC1 ");
+            stream.println(D);
+            stream.println(second);
+            stream.println(third);
+            irSignal = (third == StreamParser::invalid)
+                    ? Nec1Renderer::newIrSignal(D, second)
+                    : Nec1Renderer::newIrSignal(D, second, third);
         } else if (isPrefix(protocol, F("rc5"))) {
-            unsigned int D = static_cast<unsigned>(parser.parseAbsInt());
-            unsigned int F = static_cast<unsigned>(parser.parseAbsInt());
-            unsigned int T = static_cast<unsigned>(parser.parseAbsInt());
+            int D = static_cast<unsigned>(parser.parseAbsInt());
+            int F = static_cast<unsigned>(parser.parseAbsInt());
+            int T = static_cast<unsigned>(parser.parseAbsIntDefault(StreamParser::invalid));
+            parser.flushLine();
+            stream.println("RC5 ");
+            stream.println(D);
+            stream.println(F);
+            stream.println(T);
             irSignal = (T == StreamParser::invalid)
                     ? Rc5Renderer::newIrSignal(D, F)
                     : Rc5Renderer::newIrSignal(D, F, T);
@@ -818,7 +816,8 @@ static bool readProcessOneCommand(
     //parser.parseWord(cmd, cmdLength);
     readCommand(cmd, cmdLength, parser);
 #ifdef SERIAL_DEBUG
-    Serial.println("Command: " + cmd);
+    Serial.print(F("Command: "));
+    Serial.println(cmd);
     delay(1000);
 #endif
     return processCommand(cmd, parser);

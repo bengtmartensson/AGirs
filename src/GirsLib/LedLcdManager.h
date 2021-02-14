@@ -1,10 +1,9 @@
 #pragma once
 
-#include "Tokenizer.h"
 #include <InfraredTypes.h>
 #include <IrSender.h>
 #ifdef LCD
-#include "LiquidCrystal_I2C_bm.h" // https://github.com/marcoschwartz/LiquidCrystal_I2C
+#include "LiquidCrystal_I2C_bm.h"
 #endif
 
 typedef uint8_t led_t;
@@ -92,6 +91,9 @@ public:
             pin_t led7 = invalidPin, pin_t led8 = invalidPin);
 
     void static lcdPrint(const char *str, bool clear = true, int x = invalidLine, int y = invalidLine);
+    void static lcdPrint(String& string, bool clear = true, int x = invalidLine, int y = invalidLine) {
+        lcdPrint(string.c_str(), clear, x, y);
+    }
 
 #ifdef ARDUINO
     void static lcdPrint(const __FlashStringHelper *pstr, bool clear = true, int x = 0, int y = invalidLine);

@@ -70,11 +70,7 @@ VPATH=src src/GirsLib examples/Girs
 #.PRECIOUS: test1
 
 # TODO: compile Girs.o separately, in tests/Girs
-OBJS=\
-GirsUtils.o \
-LedLcdManager.o \
-Tokenizer.o \
-StreamParser.o
+OBJS=Girs.o GirsUtils.o LedLcdManager.o Tokenizer.o LiquidCrystal_I2C_bm.o
 
 libGirs.a: $(OBJS)
 	$(AR) rs $@ $(OBJS)

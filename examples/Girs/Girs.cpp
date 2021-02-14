@@ -39,10 +39,6 @@ this program. If not, see http://www.gnu.org/licenses/.
 #include <IPAddress.h>
 #endif // ETHERNET
 
-#ifdef LCD
-#include <LiquidCrystal_I2C.h>
-#endif
-
 #ifdef RECEIVE
 #include <IrReceiverSampler.h>
 #endif
@@ -158,9 +154,10 @@ bool reset = false;
 #ifndef PROGNAME
 #define PROGNAME "AGirs"
 #endif
-#ifndef VERSION
-#include "GirsLib/version.h"
+#ifdef VERSION
+#undef VERSION
 #endif // VERSION
+#include "GirsLib/version.h"
 #define okString "OK"
 #define errorString "ERROR"
 #define timeoutString "."

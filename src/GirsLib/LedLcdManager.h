@@ -4,7 +4,7 @@
 #include <InfraredTypes.h>
 #include <IrSender.h>
 #ifdef LCD
-#include <LiquidCrystal_I2C.h> // https://github.com/marcoschwartz/LiquidCrystal_I2C
+#include "LiquidCrystal_I2C_bm.h" // https://github.com/marcoschwartz/LiquidCrystal_I2C
 #endif
 
 typedef uint8_t led_t;
@@ -14,6 +14,7 @@ public:
     static constexpr int maxLeds = 8;
     static constexpr int defaultLcdRows = 2;
     static constexpr int defaultLcdColumns = 16;
+    static constexpr int invalidLine = -1;
 
     static constexpr int defaultBlinkTime = 2000;
     static constexpr int selftestTimeWithoutLCD = 200;
@@ -29,6 +30,9 @@ public:
     static constexpr led_t invalidLed = 255U;
 
 private:
+    static unsigned int row;
+    static unsigned int column;
+
     /** This array maps physical LEDs to hardware pins. */
     static pin_t physicalLeds[maxLeds];
 
@@ -50,8 +54,6 @@ private:
     static unsigned int lcdRows;
     static unsigned int lcdColumns;
 
-    //static LedLcdManager instance;
-
     static void setupPhysicalLeds(const pin_t physicalLeds[maxLeds]);
     static void setupShouldTimeOut(const bool shouldTimeOut[maxLeds]);
     /*pin_t pled1, pin_t pled2 = invalidPin,
@@ -60,9 +62,7 @@ private:
             pin_t pled7 = invalidPin, pin_t pled8 = invalidPin);*/
 
     static void setupLcdI2c(int8_t i2cAddress, uint8_t columns, uint8_t rows);
-    LedLcdManager();
-
-    //void initArray(char *array, uint8_t value);
+    LedLcdManager() = delete;
 
     static void disableTurnOffTime();
 
@@ -71,9 +71,11 @@ private:
         digitalWrite(pin, LOW);
     }
 
+    static void prepare(bool clean, int x, int y);
+
 public:
     /** Sets up the instance, to be called before using the instance.  */
-    static void setup(int8_t i2cAddress = -1, uint8_t columns = defaultLcdColumns, uint8_t rows = defaultLcdRows,
+    static void setup(int8_t i2cAddress/* = -1*/, uint8_t columns = defaultLcdColumns, uint8_t rows = defaultLcdRows,
             const pin_t physicalLeds[maxLeds] = NULL,
             const led_t logicalLeds[maxLeds] = NULL,
             const bool shouldTimeOut[maxLeds] = NULL);
@@ -89,27 +91,11 @@ public:
             pin_t led5 = invalidPin, pin_t led6 = invalidPin,
             pin_t led7 = invalidPin, pin_t led8 = invalidPin);
 
-    void static lcdPrint(String& string, bool clear = true, int x = 0, int y = -1);
-    void static lcdPrint(const char *str, bool clear = true, int x = 0, int y = -1) {
-        String string(str);
-        lcdPrint(string, clear, x, y);
-    };
+    void static lcdPrint(const char *str, bool clear = true, int x = invalidLine, int y = invalidLine);
+
 #ifdef ARDUINO
-    void static lcdPrint(const __FlashStringHelper *pstr, bool clear = true, int x = 0, int y = -1) {
-        String string(pstr);
-        lcdPrint(string, clear, x, y);
-    }
+    void static lcdPrint(const __FlashStringHelper *pstr, bool clear = true, int x = 0, int y = invalidLine);
 #endif
-
-    //void static lcdPrint(const String& str);
-
-    //LedLcdManager& getInstance() {
-    //    return instance;
-    //};
-
-    //static LiquidCrystal_I2C& getLcd() {
-    //    return *lcd;
-    //}
 
     static void lcdSetCursor(uint8_t x = 0, uint8_t y = 0) {
 #ifdef LCD

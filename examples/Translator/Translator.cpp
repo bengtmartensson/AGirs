@@ -125,7 +125,7 @@ static void read() {
 #endif
 }
 
-static void loop() {
+void loop() {
     read();
     action();
 }

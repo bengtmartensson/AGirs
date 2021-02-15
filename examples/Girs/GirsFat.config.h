@@ -26,7 +26,9 @@
  * Define to support capturing of IR signals.
  * Requires non-demodulating IR sensor (TSMP58000, QSE159, etc).
  */
+#if HAS_INPUT_CAPTURE
 #define CAPTURE
+#endif
 
 /**
  * Define to support reception of demodulated IR signals.
@@ -144,7 +146,7 @@
 /**
  * Define to use Ethernet (TCP) as the communication channel.
  */
-#define ETHERNET
+//#define ETHERNET
 
 // Print received commands on the LCD display
 //#define DEBUG_CMD

@@ -18,7 +18,7 @@
 #define NON_MOD
 #endif
 
-#if defined(ARDUINO_AVR_UNO) | defined(ARDUINO_AVR_NANO) | defined(ARDUINO_AVR_MICRO) | defined(ARDUINO_AVR_LEONARDO)
+#if defined(ARDUINO_AVR_UNO) | defined(ARDUINO_AVR_NANO) | defined(ARDUINO_AVR_MICRO) | defined(ARDUINO_AVR_LEONARDO) | defined(ARDUINO_SAMD_ZERO)
 
 #include "GirsLite.config.h"
 

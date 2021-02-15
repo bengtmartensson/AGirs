@@ -39,14 +39,15 @@ static const microseconds_t markExcess = IRRECEIVER_MARK_EXCESS;
 static LED_PARAMETER_CONST led_t receiveled = RECEIVELED;
 #endif
 
-static IrReceiver *irReceiver = NULL;
+static IrReader *irReceiver = NULL;
 
 #ifndef PROGNAME
 #define PROGNAME "Listener"
 #endif // ! PROGNAME
-#ifndef VERSION
-#include "GirsLib/version.h"
+#ifdef VERSION
+#undef VERSION
 #endif // VERSION
+#include "GirsLib/version.h"
 
 #ifdef ETHERNET
 static EthernetUDP udp;
@@ -68,6 +69,7 @@ static void readOneDecode() {
 #ifdef RECEIVELED
     LedLcdManager::setLogicLed(receiveled, LedLcdManager::off);
 #endif
+#ifdef DECODE
     MultiDecoder multiDecoder(*irReceiver);
 #ifdef LCD
     if (multiDecoder.getType() > MultiDecoder::noise) {
@@ -79,9 +81,10 @@ static void readOneDecode() {
     }
 #endif
     MultiDecoder::Type type = multiDecoder.getType();
-    strncpy(decode, multiDecoder.getDecode(), 100);
+    strncpy(decode, multiDecoder.getDecode(), 99);
 
     LedLcdManager::setLogicLed(GirsUtils::decode2logicalLed(type), LedLcdManager::blink);
+#endif
     irReceiver->disable();
 }
 
@@ -99,7 +102,12 @@ void setup() {
 
 #ifdef LCD
 #ifdef ETHERNET
-    LedLcdManager::lcdPrint(GirsUtils::ip2string(broadcastIp) + ":" + BROADCAST_PORT, false, 0, 1);
+#define xstr(s) str(s)
+#define str(s) #s
+    char ipstring[16];
+    sprintf(ipstring, "%d.%d.%d.%d", broadcastIp[0], broadcastIp[1], broadcastIp[2], broadcastIp[3]);
+    LedLcdManager::lcdPrint(ipstring, false, 0, 1);
+    LedLcdManager::lcdPrint(F(":" xstr(BROADCAST_PORT)), false);
 #else // ! ETHERNET
     LedLcdManager::lcdPrint(F("Serial"), false, 0, 1);
 #endif // ! ETHERNET
@@ -119,8 +127,7 @@ void setup() {
     , IPAddress(IPADDRESS), IPAddress(DNSSERVER), IPAddress(GATEWAY), IPAddress(SUBNETMASK)
 #endif // !DHCP
     );
-
-    String ipstring = GirsUtils::ip2string(Ethernet.localIP());
+    sprintf(ipstring, "%d.%d.%d.%d", Ethernet.localIP()[0], Ethernet.localIP()[1], Ethernet.localIP()[2], Ethernet.localIP()[3]);
     LedLcdManager::lcdPrint(ipstring, false, 0, 2);
 
 #ifdef BEACON
@@ -153,14 +160,26 @@ void loop() {
     Beacon::checkSend();
 #endif
     readOneDecode();
-    if (decode[0] != '\0') {
+#ifdef DECODE
+    if (decode[0] == '\0')
+        return;
+#endif
+
 #ifdef ETHERNET
-        udp.beginPacket(broadcastIp, BROADCAST_PORT);
-        udp.write(decode);
-        udp.write(EOLCHAR);
-        udp.endPacket();
+    udp.beginPacket(broadcastIp, BROADCAST_PORT);
+#ifdef DECODE
+    udp.write(decode);
+#else
+    irReceiver->dump(udp);
+#endif
+    udp.write(EOLCHAR);
+    udp.endPacket();
 #else // ! ETHERNET
-        Serial.println(decode);
+#ifdef DECODE
+    Serial.println(decode);
+#else // ! DECODE
+    irReceiver->dump(Serial);
+    Serial.println();
+#endif // ! DECODE
 #endif // ! ETHERNET
-    }
 }

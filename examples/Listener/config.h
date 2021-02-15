@@ -2,6 +2,9 @@
 
 #pragma once
 
+// Define to (try to) decode, otherwise the raw signals are passed through.
+#define DECODE
+
 // Use LEDs
 #define LED
 
@@ -16,11 +19,13 @@
 #define LCD
 
 // Define if using Ethernet (TCP or UDP) as the communication channel
-//#define ETHERNET
+#ifdef ARDUINO_AVR_MEGA2560
+#define ETHERNET
+#endif
 
 // If LCD support desired, include appropriate hardware description
 #ifdef LCD
-#define LCD_0x27_16_2
+#define LCD_0x3F_20_4
 #endif
 
 #include <girs_hw_config.h>

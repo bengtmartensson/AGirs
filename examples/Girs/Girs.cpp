@@ -222,6 +222,7 @@ static void decodeOrDump(IrReader *irReader, Stream& stream) {
             break;
         case MultiDecoder::undecoded:
             irReader->dump(stream); // report data of undecoded signals
+            stream.println();
             break;
         default:
             stream.println(multiDecoder.getDecode()); // also for timeout
@@ -230,8 +231,10 @@ static void decodeOrDump(IrReader *irReader, Stream& stream) {
 #else  // ! (defined(DECODER) & ! defined(DONT_REPORT_DECODES))
     if (irReader->isEmpty())
         stream.println(F(timeoutString));
-    else
+    else {
         irReader->dump(stream);
+        stream.println();
+    }
 #endif // !DECODER
 }
 
@@ -289,6 +292,7 @@ static bool capture(Stream& stream) {
         // Trying to decode the capture does not make sense,
         // that is what "receive" is for.
         irWidget->dump(stream);
+        stream.println();
     } else
         stream.println(F(timeoutString));
     IrWidgetAggregating::deleteInstance();

@@ -740,10 +740,6 @@ static bool processCommand(const char* cmd, StreamParser& parser) {
             int second = static_cast<unsigned>(parser.parseAbsInt());
             int third = static_cast<unsigned>(parser.parseAbsIntDefault(StreamParser::invalid));
             parser.flushLine();
-            stream.println("NEC1 ");
-            stream.println(D);
-            stream.println(second);
-            stream.println(third);
             irSignal = (third == StreamParser::invalid)
                     ? Nec1Renderer::newIrSignal(D, second)
                     : Nec1Renderer::newIrSignal(D, second, third);
@@ -752,10 +748,6 @@ static bool processCommand(const char* cmd, StreamParser& parser) {
             int F = static_cast<unsigned>(parser.parseAbsInt());
             int T = static_cast<unsigned>(parser.parseAbsIntDefault(StreamParser::invalid));
             parser.flushLine();
-            stream.println("RC5 ");
-            stream.println(D);
-            stream.println(F);
-            stream.println(T);
             irSignal = (T == StreamParser::invalid)
                     ? Rc5Renderer::newIrSignal(D, F)
                     : Rc5Renderer::newIrSignal(D, F, T);

@@ -393,8 +393,11 @@ void setup() {
     LedLcdManager::lcdPrint(ipstring, false, 0, 3);
 
 #ifdef BEACON
-    Beacon::setup(PROGNAME, "DE-AD-BE-EF-FE-ED", "Utility", "www.harctoolbox.org",
-            "", "", "", "http://arduino/nosuchfile.html");
+    char url[23];
+    strcpy(url, "http://");
+    strcat(url, ipstring);
+    Beacon::setup(PROGNAME, "DE-AD-BE-EF-FE-ED", "Girs Server", "www.harctoolbox.org",
+            "AGirs", VERSION, PROGNAME, url);
 #endif
 
     server.begin();

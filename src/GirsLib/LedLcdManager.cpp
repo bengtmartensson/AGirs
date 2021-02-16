@@ -5,16 +5,13 @@
 // This should be taken from config.h, but the Arduino IDE does not seem
 // to allow for this. User friendlyness taken to a new level...
 // Adjust if needed
-#if defined(ARDUINO) & ! defined(ARDUINO_AVR_MICRO) & ! defined(ARDUINO_AVR_NANO)
+#if ! defined(ARDUINO_AVR_MICRO) & ! defined(ARDUINO_AVR_NANO)
 #define LCD
 #endif
 
 #include "LedLcdManager.h"
 #include <string.h>
-
-#ifdef ARDUINO
 #include <avr/pgmspace.h>
-#endif
 
 #ifdef LCD
 LiquidCrystal_I2C *LedLcdManager::lcd;
@@ -46,11 +43,7 @@ bool LedLcdManager::setPhysicalLed(led_t physicalLed, LedState state) {
     if (pin == invalidPin)
         return false;
 
-#ifdef ARDUINO
     digitalWrite(pin, state == off ? LOW : HIGH);
-#else
-    std::cout << "setPhysicalLed: pin = " << (int) pin << ", " << (state == off ? "off" : "on") << std::endl;
-#endif
     if (state == blink)
         updateTurnOffTime();
     return true;
@@ -139,7 +132,6 @@ void LedLcdManager::selfTest(const char *text) {
     allOff(true);
 }
 
-#ifdef ARDUINO
 void LedLcdManager::selfTest(const __FlashStringHelper *text) {
     lcdPrint(text);
     for (led_t i = 1; i <= maxLeds; i++)
@@ -151,7 +143,6 @@ void LedLcdManager::selfTest(const __FlashStringHelper *text) {
         selftestTimeWithoutLCD);
     allOff(true);
 }
-#endif
 
 void LedLcdManager::checkTurnoff() {
     if (millis() > turnOffTime)
@@ -175,8 +166,6 @@ void LedLcdManager::allOff(bool force) {
 void LedLcdManager::disableTurnOffTime() {
     turnOffTime = (unsigned long) -1;
 }
-
-#ifdef ARDUINO
 
 void LedLcdManager::lcdPrint(const __FlashStringHelper *pstr __attribute__ ((unused)), bool clear __attribute__ ((unused)), int x __attribute__ ((unused)), int y __attribute__ ((unused))) {
 #ifdef LCD
@@ -206,7 +195,6 @@ void LedLcdManager::lcdPrint(const __FlashStringHelper *pstr __attribute__ ((unu
     updateTurnOffTime();
 #endif
 }
-#endif
 
 void LedLcdManager::lcdPrint(const char* string __attribute__ ((unused)), bool clear __attribute__ ((unused)),
         int x __attribute ((unused)), int y __attribute__ ((unused))) {

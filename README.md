@@ -106,7 +106,7 @@ otherwise `<no_sends>` - 1 times. Finally, the (normally empty) ending sequence 
 ### [Capture](http://www.harctoolbox.org/Girs.html#Capture)
 Available if configured with the `CAPTURE` option.
 
-*Input*: `analyze`
+*Input*: `analyze` or `capture`
 
 *Output* (Normal): `f=<frequency> <durations with signs...>`
 
@@ -120,7 +120,7 @@ gaps as "-".
 ### [Receive](http://www.harctoolbox.org/Girs.html#Receive)
 Available if configured with the `RECEIVE` option.
 
-*Input*: `analyze`
+*Input*: `receive`
 
 *Output* (Normal): `<durations with signs...>
 
@@ -289,12 +289,13 @@ the other commands can be tested in this way.
 * `Ethernet`, preferably version 2.0.0 or later.
 * `SPI` (if enabling the `ETHERNET` or `LCD_I2C` configure option). Contained in the Arduino IDE.
 * `Wire` (if enabling the `LCD_I2C` configure option). Contained in the Arduino IDE.
-* [`LiquidCrystal_I2C`](https://github.com/marcoschwartz/LiquidCrystal_I2C) version 1.1.2 or later.
- Available in the Arduino library manager.
 If the preprocessor symbol `LCD` is defined in `src/GirsLib/LedLcdManager.cpp`,
 this is needed also if not actually using an LCD display.
 * (Optional) [`Beacon`](https://github.com/bengtmartensson/ABeacon) for an AMX compatible Ethernet beacon.
  It is also available in the Arduino library manager with the name `Beacon`.
+
+In previous versions, the library LiquidCrystal_I2C was explicitly needed to be included.
+Currently, it has been integrated in the project (and slightly modified); see `src/GirsLib/LiquidCrystal_I2C_bm.[h|cpp]`.
 
 ## Questions and answers
 
@@ -314,10 +315,10 @@ unless you really need it.
 
 To build the project for the Arduino, use the Arduino IDE from [arduino.cc](https://www.arduino.cc/en/Main/Software),
 as in most Arduino projects.
-The Makefile is used for building a "Software-in-the-loop" test version for the PC;
-of interest for developers only.
-It is also used for maintainer work, like generating API documentation with Doxygen,
-as well as generating keywords.txt. Feel free to learn from it!
+The Makefile is used for maintainer work, like generating API documentation with Doxygen,
+as well as generating keywords.txt. It also generates scripts for Linux and Windows,
+that can be used for flashing the firmware to an Arduino Nano without deploying the
+Arduino IDE.
 
 * What is the difference between
   ["receive"](http://www.harctoolbox.org/Glossary.html#ReceivingIrSignals)

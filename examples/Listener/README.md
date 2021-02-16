@@ -1,13 +1,15 @@
 # Listerner
 
-This is a quite a dumb program. It just runs in an infinite loop, receiving IR signals, decodes them,
-and writes the decode to either the serial console, or a UDP socket.
+This is a quite a dumb program. It just runs in an infinite loop, receiving IR signals,
+and outputs either their decodes or the raw signal,
+to either the serial console, or a UDP socket.
 
-Presently, only NEC1 and RC5 signals are supported.
+if the preprocessor symbol `DECODE` is defined, the program tries do decode the
+received signals (presently, only NEC1 and RC5 protocols are supported), otherwise the raw signal is output.
 
 It uses a demodulating IR receiver (e.g. TSOP-*).
 If an LCD display is connected, the decodes
-are written to it. Also, LEDs can be connected, and when a signal is successfuly decoded,
+are written to it. Also, LEDs can be connected, and when a signal is successfully decoded,
 a LED, dependent on the decode type, is lit. (Using a "multicolored LED" for this is nice.)
 
 This program is intended to work as a gateway;

@@ -65,7 +65,7 @@ $(FLASHER) $(FLASHER_BAT) $(HEXFILE): tools/mkflasher.sh
 flash-nano: $(FLASHER)
 	./$(FLASHER)
 
-lib: libGirs.a
+#lib: libGirs.a
 
 VPATH=src src/GirsLib examples/Girs
 
@@ -127,8 +127,8 @@ keywords.txt: xml/index.xml
 
 build-tests:
 
-test: lib
+#test: lib
 
-all: version keywords flasher api-doc/index.html test
+all: version keywords flasher api-doc/index.html
 
 .PHONY: clean distclean spotless version keywords flasher flash-nano lib

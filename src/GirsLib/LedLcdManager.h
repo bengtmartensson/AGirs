@@ -95,9 +95,7 @@ public:
         lcdPrint(string.c_str(), clear, x, y);
     }
 
-#ifdef ARDUINO
     void static lcdPrint(const __FlashStringHelper *pstr, bool clear = true, int x = 0, int y = invalidLine);
-#endif
 
     static void lcdSetCursor(uint8_t x = 0, uint8_t y = 0) {
 #ifdef LCD
@@ -125,9 +123,7 @@ public:
 
     static void selfTest(const char *text);
 
-#ifdef ARDUINO
     static void selfTest(const __FlashStringHelper *text);
-#endif
 
     static bool setPhysicalLed(led_t physicalLed, LedState state);
 

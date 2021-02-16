@@ -2,9 +2,7 @@
 
 #include "LedLcdManager.h" // for led_t
 #include <MultiDecoder.h>  // for MultiDecoder::Type
-#ifdef ARDUINO
 #include <IPAddress.h>
-#endif
 #include "defineMissingStuff.h"
 
 class GirsUtils {

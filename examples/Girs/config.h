@@ -9,6 +9,8 @@
 
 #pragma once
 
+#include "Board.h"
+
 #ifdef __AVR_ATmega168__
 #error Unsupported CPU ATmega168 (too little memory)
 #endif
@@ -25,10 +27,6 @@
 #elif defined(ARDUINO_AVR_MEGA2560)
 
 #include "GirsFat.config.h"
-
-#elif ! defined(ARDUINO)
-
-#include "sil.config.h"
 
 #else
 

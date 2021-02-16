@@ -2,10 +2,6 @@
 #include "Pronto.h"
 #include <string.h>
 
-#ifndef ARDUINO
-#define Stream std::istream
-#endif
-
 StreamParser::StreamParser(Stream &stream_) : stream(stream_) {
 }
 
@@ -28,7 +24,6 @@ IrSignal* StreamParser::parse(Stream &stream) {
 }
 
 const char* StreamParser::parseWord(char* buf, size_t buflen) {
-#ifdef ARDUINO
     while (stream.available() == 0)
         yield();
 
@@ -54,20 +49,10 @@ const char* StreamParser::parseWord(char* buf, size_t buflen) {
     }
     buf[i] = '\0';
 
-#else
-    std::string str;
-    stream >> str;
-    strncpy(buf, str.c_str(), buflen);
-    //if (str.length() > buflen - 1)
-    //    str.resize(buflen - 1);
-
-    return str.c_str();
-#endif
     return buf;
 }
 
 const char* StreamParser::getLine(char* buf, size_t buflen) {
-    #ifdef ARDUINO
     while (stream.available() == 0)
         yield();
 
@@ -94,13 +79,6 @@ const char* StreamParser::getLine(char* buf, size_t buflen) {
     }
     buf[i] = '\0';
     return buf;
-#else
-    (void) buf;
-    (void) buflen;
-    std::string str;
-    stream >> str;
-    return str.c_str();
-#endif
 }
 
 int32_t StreamParser::parseAbsIntDefault(int32_t fallback) {
@@ -186,14 +164,10 @@ unsigned int StreamParser::parseHex(char c) {
 
 char StreamParser::customReadChar() {
     int c;
-#ifdef ARDUINO
     do {
         yield();
         c = stream.peek(); // does not block
     } while (c == invalid);
-#else
-    c = stream.get();
-#endif
     if (c == '\r' || c == '\n')
         return static_cast<char>(c);
 
@@ -205,19 +179,17 @@ void StreamParser::flushLine() {
     while (true) {
         int c = stream.peek();
         if (isspace(c))
-            stream.read();
+    stream.read();
         else
             return;
     }
 }
 
 void StreamParser::disposeUntilWhitespace() {
-#ifdef ARDUINO
     int c;
     do {
         c = stream.read();
     } while (isspace(c));
-#endif
 }
 
 microseconds_t* StreamParser::parseData(size_t length) {

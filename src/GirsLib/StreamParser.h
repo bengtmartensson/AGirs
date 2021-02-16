@@ -10,10 +10,6 @@
 
 #include "IrSignal.h"
 
-#ifndef ARDUINO
-#define Stream std::istream
-#endif
-
 class StreamParser {
 public:
     /**
@@ -104,7 +100,3 @@ private:
      */
     uint16_t parseProntoNumber();
 };
-
-#ifndef ARDUINO
-#undef Stream
-#endif

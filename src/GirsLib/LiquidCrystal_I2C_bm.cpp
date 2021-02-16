@@ -1,8 +1,6 @@
 #include "LiquidCrystal_I2C_bm.h"
 
-#ifdef ARDUINO
 #include "Wire.h"
-#endif
 
 // commands (previously in the header)
 #define LCD_CLEARDISPLAY 0x01
@@ -49,11 +47,7 @@
 #define Rs B00000001  // Register select bit
 
 size_t LiquidCrystal_I2C::write(uint8_t value) {
-#ifdef ARDUINO
     send(value, Rs);
-#else
-    (void) value;
-#endif
     return 1;
 }
 
@@ -94,11 +88,9 @@ void LiquidCrystal_I2C::init() {
 }
 
 void LiquidCrystal_I2C::init_priv() {
-#ifdef ARDUINO
     Wire.begin();
     _displayfunction = LCD_4BITMODE | LCD_1LINE | LCD_5x8DOTS;
     begin(_cols, _rows);
-#endif
 }
 
 void LiquidCrystal_I2C::begin(uint8_t cols __attribute__ ((unused)), uint8_t lines, uint8_t dotsize) {
@@ -306,23 +298,15 @@ void LiquidCrystal_I2C::write4bits(uint8_t value) {
 }
 
 void LiquidCrystal_I2C::expanderWrite(uint8_t _data) {
-#ifdef ARDUINO
     Wire.beginTransmission(_Addr);
     /*printIIC*/Wire.write((int) (_data) | _backlightval);
     Wire.endTransmission();
-#else
-    (void) _data;
-#endif
 }
 
 void LiquidCrystal_I2C::pulseEnable(uint8_t _data) {
-#ifdef ARDUINO
     expanderWrite(_data | En); // En high
     delayMicroseconds(1); // enable pulse must be >450ns
 
     expanderWrite(_data & ~En); // En low
     delayMicroseconds(50); // commands need > 37us to settle
-#else
-    (void) _data;
-#endif
 }

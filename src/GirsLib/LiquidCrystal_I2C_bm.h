@@ -12,11 +12,7 @@
 
 #include <Arduino.h>
 
-class LiquidCrystal_I2C
-#ifdef ARDUINO
-: public Print
-#endif
-{
+class LiquidCrystal_I2C : public Print {
 public:
 
     static constexpr uint8_t LCD_5x10DOTS = 0x04U;

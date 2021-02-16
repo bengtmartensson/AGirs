@@ -34,20 +34,13 @@ this program. If not, see http://www.gnu.org/licenses/.
 #error LCD is presently required
 #endif
 
-#ifdef ARDUINO
-//#ifdef ARDUINO_AVR_MEGA2560
-//Stream& stream = Serial1;
-//#else  // !ARDUINO_AVR_MEGA2560
 Stream& stream = Serial;
-//#endif // ! ARDUINO_AVR_MEGA2560
-#else  // ! ARDUINO
-Stream stream(std::cout);
-#endif // ! ARDUINO
 
 #ifndef PROGNAME
 #define PROGNAME "Opponator"
 #endif
-#ifndef VERSION
+#ifdef VERSION
+#undef VERSION
 #include "GirsLib/version.h"
 #endif
 
@@ -60,11 +53,9 @@ void send(String payload) {
 void sendReceiveDisplay(String payload, String title) {
     send(payload);
     LedLcdManager::lcdPrint(title, true);
-#ifdef ARDUINO
     String answer = stream.readStringUntil('\r');
     answer.trim();
     LedLcdManager::lcdPrint(answer, false, 0, 1);
-#endif
 }
 
 void action(IrReader *irReader) {
@@ -73,11 +64,7 @@ void action(IrReader *irReader) {
             && decoder.getD() == selectedD
             && decoder.getS() == selectedS) {
         LedLcdManager::lcdPrint("Signal " +
-#ifdef ARDUINO
                 String(decoder.getF())
-#else
-                std::to_string(decoder.getF())
-#endif
                 );
         switch (decoder.getF()) {
             case 6: // Play
@@ -131,18 +118,8 @@ void setup() {
     LedLcdManager::lcdPrint(F(PROGNAME));
     LedLcdManager::lcdPrint(F(VERSION), false, 0, 1);
 
-#ifdef ARDUINO
     Serial.begin(serialBaud);
-#endif
 
     irReceiver = IrReceiverSampler::newIrReceiverSampler(IrReader::defaultCaptureLength,
             IRRECEIVER_1_PIN, IRRECEIVER_1_PULLUP_VALUE, IRRECEIVER_MARK_EXCESS, DEFAULT_BEGINTIMEOUT, DEFAULT_ENDINGTIMEOUT);
 }
-
-#ifndef ARDUINO
-int main() {
-    setup();
-    while (true)
-        loop();
-}
-#endif

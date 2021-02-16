@@ -19,21 +19,9 @@ this program. If not, see http://www.gnu.org/licenses/.
 #include "GirsLib/LedLcdManager.h"
 #include "GirsLib/GirsUtils.h"
 #include "GirsLib/StreamParser.h"
-
-#ifdef ARDUINO
 #include <avr/pgmspace.h>
-#else
-#define PROGMEM
-#include <cstring>
-#include <iostream>
-#include <sstream>
-#endif
 
 // Conditional includes
-#if defined(ETHERNET) & !defined(ARDUINO)
-#error not supported
-#endif
-
 #ifdef ETHERNET
 #include <Ethernet.h>
 #include <IPAddress.h>
@@ -46,6 +34,7 @@ this program. If not, see http://www.gnu.org/licenses/.
 #ifdef TRANSMIT
 #include <IrSenderPwm.h>
 #endif
+
 #if defined(RECEIVE)
 #include <IrReceiverSampler.h>
 #endif
@@ -163,6 +152,9 @@ bool reset = false;
 #define errorString "ERROR"
 #define timeoutString "."
 
+/**
+ * Allocated length (-1) for commands etc.
+ */
 static constexpr size_t cmdLength = 20U;
 
 #ifdef TRANSMIT
@@ -197,11 +189,9 @@ static bool sendIrSignal(const IrSignal &irSignal, unsigned int noSends=1) {
 #endif // TRANSMIT
 
 # if defined(RECEIVE) | defined(CAPTURE)
-static void flushIn(Stream &stream UNUSED) {
-#ifdef ARDUINO
+static void flushIn(Stream &stream) {
     while (stream.available())
         stream.read();
-#endif
 }
 #endif
 
@@ -256,19 +246,12 @@ static bool receive(StreamParser& parser) {
     irReceiver->setBeginningTimeout(beginTimeout);
     irReceiver->setMarkExcess(IRRECEIVER_MARK_EXCESS);
     Stream& stream = parser.getStream();
-#ifdef ARDUINO
     flushIn(parser.getStream());
-#endif
 #ifdef RECEIVELED
     LedLcdManager::setLogicLed(receiveled, LedLcdManager::on);
 #endif
     irReceiver->enable();
-#ifdef ARDUINO
     while (!irReceiver->isReady() && stream.available() == 0)
-#else
-        std::cout << "** Simulating timeout **" << std::endl;
-        delay(beginTimeout);
-#endif
         LedLcdManager::checkTurnoff();
     bool ready = irReceiver->isReady();
     irReceiver->disable();
@@ -297,12 +280,7 @@ static bool capture(Stream& stream) {
     LedLcdManager::setLogicLed(captureled, LedLcdManager::on);
 #endif
     flushIn(stream);
-#ifdef ARDUINO
     irWidget->capture();
-#else
-    std::cout << "** Simulating timeout **" << std::endl;
-    delay(beginTimeout);
-#endif
 
 #ifdef CAPTURELED
     LedLcdManager::setLogicLed(captureled, LedLcdManager::off);
@@ -320,7 +298,6 @@ static bool capture(Stream& stream) {
 
 #ifdef NAMED_COMMANDS
 // Defines a const IrNamedRemoteSet remoteSet with commands to be used.
-//#include "my_named_remotes.inc"
 extern const IrNamedRemoteSet remoteSet;
 
 static bool sendNamedCommand(Stream& stream, const char* remoteName, const char* commandName, unsigned int noSends) {
@@ -420,7 +397,7 @@ void setup() {
 
 #endif // ETHERNET
 
-#if defined(ARDUINO) & !defined(ETHERNET) | defined(SERIAL_DEBUG)
+#if ! defined(ETHERNET) | defined(SERIAL_DEBUG)
 
     Serial.begin(SERIALBAUD);
     while (!Serial)
@@ -432,7 +409,7 @@ void setup() {
 #ifdef ETHERNET
     Serial.println(Ethernet.localIP());
 #endif
-#endif // defined(ARDUINO) & !defined(ETHERNET) | defined(SERIAL_DEBUG)
+#endif // !defined(ETHERNET) | defined(SERIAL_DEBUG)
 }
 
 #ifdef INFO
@@ -464,7 +441,6 @@ static bool isPrefix(const char *string, const char* cmd) {
     return strncmp(cmd, string, strlen(string)) == 0;
 }
 
-#ifdef ARDUINO
 bool isPrefix(const char* cmd, const __FlashStringHelper *pstring) {
     return strncmp_PF(cmd, STRCPY_PF_CAST(reinterpret_cast<uint_farptr_t>(pstring)), strlen(cmd)) == 0;
 }
@@ -472,7 +448,6 @@ bool isPrefix(const char* cmd, const __FlashStringHelper *pstring) {
 bool isPrefix(const __FlashStringHelper *pstring, const char* cmd) {
     return strncmp_PF(cmd, STRCPY_PF_CAST(reinterpret_cast<uint_farptr_t>(pstring)), strlen_PF(STRCPY_PF_CAST(reinterpret_cast<uint_farptr_t>(pstring)))) == 0;
 }
-#endif
 #pragma GCC diagnostic pop
 
 static void readCommand(char* cmd, size_t cmdLength, StreamParser& parser) {
@@ -480,10 +455,8 @@ static void readCommand(char* cmd, size_t cmdLength, StreamParser& parser) {
     LedLcdManager::setLogicLed(commandled, LedLcdManager::on);
 #endif
 
-#ifdef ARDUINO
     //flushIn(stream);
     while (parser.getStream().available() == 0)
-#endif
         LedLcdManager::checkTurnoff();
 
 
@@ -501,20 +474,11 @@ static bool processCommand(const char* cmd, StreamParser& parser) {
 #ifdef ETHERNET
     bool quit = false;
 #endif
-#ifdef ARDUINO
-    Stream
-#else
-    std::istream
-#endif
-    & stream = parser.getStream();
+    Stream& stream = parser.getStream();
     // Decode command
     if (cmd[0] == '\0') {
         // empty command, do nothing
-#ifdef ARDUINO
         stream.println(F(okString));
-#else
-        std::cout << okString << std::endl;
-#endif
     } else
 
 #ifdef CAPTURE
@@ -544,11 +508,7 @@ static bool processCommand(const char* cmd, StreamParser& parser) {
 #endif // LED
 
         if (isPrefix(cmd, F("modules"))) {
-#ifdef ARDUINO
-        stream.println(F(modulesSupported));
-#else
-        std::cout << modulesSupported << std::endl;
-#endif
+            stream.println(F(modulesSupported));
     } else
 
 #ifdef FREEMEM
@@ -701,11 +661,7 @@ static bool processCommand(const char* cmd, StreamParser& parser) {
         parser.parseData(ending, endingLength);
         IrSignal irSignal(intro, introLength, repeat, repeatLength, ending, endingLength, frequency);
         bool status = sendIrSignal(irSignal, noSends); // waits
-#ifdef ARDUINO
         stream.println(status ? F(okString) : F(errorString));
-#else
-        std::cout << (status ? okString : errorString) << std::endl;
-#endif
     } else
 #endif // TRANSMIT
 
@@ -719,11 +675,7 @@ static bool processCommand(const char* cmd, StreamParser& parser) {
             status = sendIrSignal(*irSignal, noSends); // waits
             delete irSignal;
         }
-#ifdef ARDUINO
         stream.println(status ? F(okString) : F(errorString));
-#else
-        std::cout << (status ? okString : errorString) << std::endl;
-#endif
     } else
 #endif // PRONTO
 
@@ -752,34 +704,22 @@ static bool processCommand(const char* cmd, StreamParser& parser) {
                     ? Rc5Renderer::newIrSignal(D, F)
                     : Rc5Renderer::newIrSignal(D, F, T);
         } else {
-#ifdef ARDUINO
             stream.print(F("no such protocol: "));
             stream.println(protocol);
-#endif
         }
         bool status = false;
         if (irSignal != nullptr) {
             status = sendIrSignal(*irSignal, noSends); // waits, blinks
             delete irSignal;
         }
-#ifdef ARDUINO
         stream.println(status ? F(okString) : F(errorString));
-#endif
         } else
 #endif // RENDERER
 
         if (cmd[0] == 'v') { // version
-#ifdef ARDUINO
         stream.println(F(PROGNAME " " VERSION));
-#else
-        std::cout << PROGNAME " " VERSION << std::endl;
-#endif
     } else {
-#ifdef ARDUINO
         stream.println(F(errorString));
-#else
-        std::cout << errorString << std::endl;
-#endif
     }
 
     //flushIn(stream);
@@ -796,13 +736,7 @@ static bool processCommand(const char* cmd, StreamParser& parser) {
     return true;
 }
 
-static bool readProcessOneCommand(
-#ifdef ARDUINO
-        Stream
-#else
-        std::istream
-#endif
-        & stream) {
+static bool readProcessOneCommand(Stream& stream) {
     StreamParser parser(stream);
     char cmd[cmdLength];
     //parser.parseWord(cmd, cmdLength);
@@ -829,7 +763,6 @@ bool readProcessOneTcpCommand(EthernetClient& client) {
 }
 #endif
 
-#ifdef ARDUINO
 void loop() {
     LedLcdManager::checkTurnoff();
 #ifdef ETHERNET
@@ -889,35 +822,3 @@ void loop() {
     }
 #endif
 }
-#endif // ARDUINO
-
-#ifndef ARDUINO
-int main(int argc, char* argv[]) {
-    setup();
-//    while (true)
-//        loop();
-    if (argc == 1) {
-        while (true) {
-            constexpr size_t linemax = 1000;
-            char line[linemax];
-            std::cin.getline(line, linemax);
-            if (line[0] == '\0' || strncmp(line, "quit", 1) == 0)
-                return 0;
-            std::stringstream sstream(line);
-            bool success = readProcessOneCommand(sstream);
-            if (!success)
-                std::cerr << "**ERROR**" << std::endl;
-        }
-    } else {
-        std::string str;
-        for (int i = 1; i < argc; i++) {
-            str.append(argv[i]);
-            str.append(" ");
-        }
-
-        std::stringstream sstream(str);
-        bool success = readProcessOneCommand(sstream);
-        return success ? 0 : 1;
-    }
-}
-#endif

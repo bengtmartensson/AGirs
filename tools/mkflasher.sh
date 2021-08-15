@@ -65,7 +65,7 @@ PART=atmega328p
 PROGRAMMER_ID=arduino
 
 # Mac defaults
-if [ $(uname -s) == Darwin ]; then
+if [ \$(uname -s) == Darwin ]; then
   AVRDUDE=/Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avrdude
   AVRDUDE_CONF=/Applications/Arduino.app/Contents/Java/hardware/tools/avr/etc/avrdude.conf
 fi

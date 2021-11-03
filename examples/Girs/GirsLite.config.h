@@ -89,6 +89,11 @@
 //#define NON_MOD
 
 /**
+ * Define to invert the output of the transmit send pin.
+ */
+//#define TRANSMIT_INVERT
+
+/**
  * Define to support a reset command, Experimental!!
  */
 //#define RESET

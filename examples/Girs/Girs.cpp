@@ -159,6 +159,12 @@ static constexpr size_t cmdLength = 20U;
 
 #ifdef TRANSMIT
 
+#ifdef TRANSMIT_INVERT
+#define INVERT true
+#else
+#define INVERT false
+#endif
+
 static bool sendIrSignal(const IrSignal &irSignal, unsigned int noSends=1) {
     if (noSends == 0)
         return false;
@@ -167,9 +173,9 @@ static bool sendIrSignal(const IrSignal &irSignal, unsigned int noSends=1) {
 #endif
     IrSender *irSender =
 #ifdef NON_MOD
-            (irSignal.getFrequency() == 0) ? (IrSender*) new IrSenderNonMod(NON_MOD_PIN) :
+            (irSignal.getFrequency() == 0) ? (IrSender*) new IrSenderNonMod(NON_MOD_PIN, INVERT) :
 #endif
-            (IrSender*) IrSenderPwm::getInstance(true);
+            (IrSender*) IrSenderPwm::getInstance(true, PWM_PIN, INVERT);
 
     irSender->sendIrSignal(irSignal, noSends);
 
@@ -348,9 +354,9 @@ void setup() {
     LedLcdManager::setupLedGroundPins();
     GirsUtils::setupReceivers();
     GirsUtils::setupSensors();
-#if defined(TRANSMIT)
+#if defined(TRANSMIT) && !defined(NON_MOD)
     // Make sure that sender is quiet (if reset or such)
-    IrSenderPwm::getInstance(true)->mute();
+    IrSenderPwm::getInstance(true, PWM_PIN, INVERT)->mute();
 #endif
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wpedantic"

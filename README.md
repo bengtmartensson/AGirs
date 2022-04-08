@@ -25,8 +25,7 @@ required/desired for inclusion in the Arduino library manager.
 (There is presently no "Arduino application manager".)
 
 For compilation with the Arduino IDE, the library
-[Infrared4Arduino](https://github.com/bengtmartensson/Infrared4Arduino) and, preferably,
-the [LiquidCrystal_I2C](https://github.com/marcoschwartz/LiquidCrystal_I2C) (version 1.1.2 or later)
+[Infrared4Arduino](https://github.com/bengtmartensson/Infrared4Arduino)
 should be installed with the Arduino library manager.
 
 ## Configuration files

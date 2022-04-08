@@ -1,8 +1,7 @@
 <map id="src/GirsLib/LedLcdManager.h" name="src/GirsLib/LedLcdManager.h">
-<area shape="rect" id="node1" title=" " alt="" coords="101,5,294,32"/>
-<area shape="rect" id="node2" href="$Tokenizer_8h.html" title=" " alt="" coords="99,80,186,107"/>
-<area shape="rect" id="node3" title=" " alt="" coords="5,155,117,181"/>
-<area shape="rect" id="node5" title=" " alt="" coords="211,80,293,107"/>
-<area shape="rect" id="node6" title=" " alt="" coords="317,80,453,107"/>
-<area shape="rect" id="node4" title=" " alt="" coords="141,155,205,181"/>
+<area shape="rect" id="node1" title=" " alt="" coords="86,5,279,32"/>
+<area shape="rect" id="node2" title=" " alt="" coords="5,80,117,107"/>
+<area shape="rect" id="node3" title=" " alt="" coords="141,80,224,107"/>
+<area shape="rect" id="node4" href="$LiquidCrystal__I2C__bm_8h.html" title="Functions for deploying I2C LCD displays." alt="" coords="248,80,411,107"/>
+<area shape="rect" id="node5" title=" " alt="" coords="291,155,368,181"/>
 </map>

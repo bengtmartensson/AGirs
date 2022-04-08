@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['flushin_253',['flushIn',['../Girs_8cpp.html#a8f4e669938ec76edb9b03c008112645f',1,'Girs.cpp']]],
-  ['freeram_254',['freeRam',['../classGirsUtils.html#a89314dd44f30a800849ec3e609ab37ac',1,'GirsUtils']]]
+  ['end_350',['end',['../classIrNamedRemote.html#a48cf68c5f785645c4a772999fbf7194f',1,'IrNamedRemote::end()'],['../classIrNamedRemoteSet.html#a202a4887c1ed240e7eeb1a861317d87e',1,'IrNamedRemoteSet::end()']]]
 ];

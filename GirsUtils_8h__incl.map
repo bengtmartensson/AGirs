@@ -1,12 +1,11 @@
 <map id="src/GirsLib/GirsUtils.h" name="src/GirsLib/GirsUtils.h">
-<area shape="rect" id="node1" title=" " alt="" coords="326,5,479,32"/>
-<area shape="rect" id="node2" href="$LedLcdManager_8h.html" title=" " alt="" coords="135,80,260,107"/>
-<area shape="rect" id="node8" title=" " alt="" coords="285,80,395,107"/>
-<area shape="rect" id="node9" title=" " alt="" coords="420,80,513,107"/>
-<area shape="rect" id="node10" href="$defineMissingStuff_8h.html" title=" " alt="" coords="538,80,678,107"/>
-<area shape="rect" id="node3" href="$Tokenizer_8h.html" title=" " alt="" coords="99,155,186,181"/>
-<area shape="rect" id="node4" title=" " alt="" coords="5,229,117,256"/>
-<area shape="rect" id="node6" title=" " alt="" coords="211,155,293,181"/>
-<area shape="rect" id="node7" title=" " alt="" coords="317,155,453,181"/>
-<area shape="rect" id="node5" title=" " alt="" coords="141,229,205,256"/>
+<area shape="rect" id="node1" title=" " alt="" coords="311,5,465,32"/>
+<area shape="rect" id="node2" href="$LedLcdManager_8h.html" title=" " alt="" coords="120,80,245,107"/>
+<area shape="rect" id="node7" title=" " alt="" coords="270,80,381,107"/>
+<area shape="rect" id="node8" title=" " alt="" coords="405,80,499,107"/>
+<area shape="rect" id="node9" href="$defineMissingStuff_8h.html" title=" " alt="" coords="523,80,663,107"/>
+<area shape="rect" id="node3" title=" " alt="" coords="5,155,117,181"/>
+<area shape="rect" id="node4" title=" " alt="" coords="141,155,224,181"/>
+<area shape="rect" id="node5" href="$LiquidCrystal__I2C__bm_8h.html" title="Functions for deploying I2C LCD displays." alt="" coords="248,155,411,181"/>
+<area shape="rect" id="node6" title=" " alt="" coords="291,229,368,256"/>
 </map>

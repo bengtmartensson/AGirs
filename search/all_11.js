@@ -1,6 +1,9 @@
 var searchData=
 [
-  ['udp_210',['udp',['../Listener_8cpp.html#aba8beb26e2853305bbdfb4eb6a81c628',1,'Listener.cpp']]],
-  ['unused_211',['UNUSED',['../defineMissingStuff_8h.html#addf5ec070e9499d36b7f2009ce736076',1,'defineMissingStuff.h']]],
-  ['updateturnofftime_212',['updateTurnOffTime',['../classLedLcdManager.html#acec530936d41b89c8ddf8a96b6b801c7',1,'LedLcdManager']]]
+  ['timeoutstring_285',['timeoutString',['../Girs_8cpp.html#a348ae8c3390478ddf8136aaa0d572b1d',1,'Girs.cpp']]],
+  ['transmit_286',['TRANSMIT',['../GirsFat_8config_8h.html#a1f10b8ba5835d94b044aff121dd2b839',1,'TRANSMIT():&#160;GirsFat.config.h'],['../GirsLite_8config_8h.html#a1f10b8ba5835d94b044aff121dd2b839',1,'TRANSMIT():&#160;GirsLite.config.h']]],
+  ['transmit_5fname_287',['TRANSMIT_NAME',['../defineMissingStuff_8h.html#aef29ddd7a13222d9e3e7bd7afeaccf98',1,'defineMissingStuff.h']]],
+  ['transmitled_288',['transmitled',['../defineMissingStuff_8h.html#ac564fe872d7bee01fd72f45e17f4e748',1,'defineMissingStuff.h']]],
+  ['transmitled_289',['TRANSMITLED',['../GirsFat_8config_8h.html#aa41277cf206186eea6a6b6beded44292',1,'TRANSMITLED():&#160;GirsFat.config.h'],['../GirsLite_8config_8h.html#aa41277cf206186eea6a6b6beded44292',1,'TRANSMITLED():&#160;GirsLite.config.h']]],
+  ['transmitters_5fname_290',['TRANSMITTERS_NAME',['../defineMissingStuff_8h.html#aa7786adc431b5dd4e603f2ffbdbe4c7b',1,'defineMissingStuff.h']]]
 ];

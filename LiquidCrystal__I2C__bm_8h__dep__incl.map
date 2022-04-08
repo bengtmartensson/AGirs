@@ -1,0 +1,10 @@
+<map id="src/GirsLib/LiquidCrystal_I2C_bm.h" name="src/GirsLib/LiquidCrystal_I2C_bm.h">
+<area shape="rect" id="node1" title="Functions for deploying I2C LCD displays." alt="" coords="349,5,515,47"/>
+<area shape="rect" id="node2" href="$LedLcdManager_8h.html" title=" " alt="" coords="234,102,427,129"/>
+<area shape="rect" id="node8" href="$LiquidCrystal__I2C__bm_8cpp.html" title=" " alt="" coords="451,95,618,136"/>
+<area shape="rect" id="node3" href="$GirsUtils_8h.html" title=" " alt="" coords="197,184,350,211"/>
+<area shape="rect" id="node5" href="$Girs_8cpp.html" title=" " alt="" coords="5,259,165,285"/>
+<area shape="rect" id="node6" href="$Listener_8cpp.html" title=" " alt="" coords="381,259,584,285"/>
+<area shape="rect" id="node7" href="$LedLcdManager_8cpp.html" title=" " alt="" coords="426,184,633,211"/>
+<area shape="rect" id="node4" href="$GirsUtils_8cpp.html" title=" " alt="" coords="190,259,357,285"/>
+</map>

@@ -188,12 +188,10 @@ static bool sendIrSignal(const IrSignal &irSignal, unsigned int noSends=1) {
 
 #endif // TRANSMIT
 
-# if defined(RECEIVE) | defined(CAPTURE)
 static void flushIn(Stream &stream) {
     while (stream.available())
         stream.read();
 }
-#endif
 
 #ifdef RECEIVE
 
@@ -635,8 +633,8 @@ static bool processCommand(const char* cmd, StreamParser& parser) {
         char commandName[cmdLength];
         parser.parseWord(commandName, cmdLength);
         bool success = sendNamedCommand(stream, remoteName, commandName, noSends);
-        if (success)
-            stream.println(okString);
+        stream.println(success ? F(okString) : F(errorString));
+        flushIn(stream);
     } else
 
         if (isPrefix(cmd, "remote")) {
@@ -669,6 +667,7 @@ static bool processCommand(const char* cmd, StreamParser& parser) {
         IrSignal irSignal(intro, introLength, repeat, repeatLength, ending, endingLength, frequency);
         bool status = sendIrSignal(irSignal, noSends); // waits
         stream.println(status ? F(okString) : F(errorString));
+        flushIn(stream);
     } else
 #endif // TRANSMIT
 
@@ -683,6 +682,7 @@ static bool processCommand(const char* cmd, StreamParser& parser) {
             delete irSignal;
         }
         stream.println(status ? F(okString) : F(errorString));
+        flushIn(stream);
     } else
 #endif // PRONTO
 
@@ -720,6 +720,7 @@ static bool processCommand(const char* cmd, StreamParser& parser) {
             delete irSignal;
         }
         stream.println(status ? F(okString) : F(errorString));
+        flushIn(stream);
         } else
 #endif // RENDERER
 

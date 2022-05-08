@@ -4,4 +4,4 @@
  * Version of the current library.
  * Taken from the version in library.properties.
  */
-#define VERSION "1.0.4"
+#define VERSION "1.0.5"

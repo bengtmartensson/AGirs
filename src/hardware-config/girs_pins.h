@@ -15,6 +15,8 @@
 #endif // ! ETHERNET
 #elif defined(ARDUINO_AVR_LEONARDO)
 #include "girs_pins_leonardo.h"
+#elif defined(ESP32)
+#include "girs_pins_esp32.h"
 #else
 // Generic configuration for Uno-like boards
 //#include "girs_pins_combi_shield.h"

@@ -28,6 +28,12 @@
 
 #include "GirsFat.config.h"
 
+#elif defined(ESP32)
+
+#warning This platform is in active development and nothing is known to work yet.
+
+#include "GirsFat.ESP32.config.h"
+
 #else
 
 #error Your platform is currently not supported. Please extend examples/Girs/config.h according to your needs and wishes.

@@ -19,9 +19,17 @@ this program. If not, see http://www.gnu.org/licenses/.
 #include "GirsLib/LedLcdManager.h"
 #include "GirsLib/GirsUtils.h"
 #include "GirsLib/StreamParser.h"
+
+#if defined(ARDUINO_ARCH_AVR)
 #include <avr/pgmspace.h>
+#endif
 
 // Conditional includes
+#ifdef WIFI
+#include <WiFi.h>
+#include <WiFiServer.h>
+#endif
+
 #ifdef ETHERNET
 #include <Ethernet.h>
 #include <IPAddress.h>
@@ -68,7 +76,7 @@ this program. If not, see http://www.gnu.org/licenses/.
 #include "GirsLib/IrNamedRemoteSet.h"
 #endif
 
-#ifdef BEACON
+#if defined(BEACON) | defined(WIFI_BEACON)
 #include <Beacon.h>
 #endif
 
@@ -132,6 +140,9 @@ static const uint8_t receiverNo = 1;
 #endif
 #endif
 
+#ifdef WIFI
+WiFiServer wifiserver(WIFI_PORT);
+#endif
 #ifdef ETHERNET
 EthernetServer server(PORT);
 #endif // ETHERNET
@@ -374,6 +385,30 @@ void setup() {
 #endif // ! ETHERNET
 #endif // LCD
 
+#ifdef WIFI
+    // Connect to a pre-configured wifi network
+    WiFi.begin(SECRET_WIFI_SSID, SECRET_OPTIONAL_WIFI_PASSWORD);
+
+    // Waste some time while the ESP32 libraries take care of the wifi connection
+    while (WiFi.status() != WL_CONNECTED) {
+        delay(250);
+    }
+    
+    // Should be connected, now
+
+#ifdef WIFI_BEACON
+    char ipstring[16];
+    spring(ipstring, "%d.%d.%d.%d", WiFi.localIP()[0], WiFi.localIP()[1], WiFi.localIP()[2], WiFi.localIP()[3]);
+    char url[23];
+    strcpy(url, "http://");
+    strcat(url, ipstring);
+    Beacon::setup(PROGNAME, "DE-AD-BE-EF-FE-ED", "Girs Server", "www.harctoolbox.org",
+            "AGirs", VERSION, PROGNAME, url);
+#endif
+
+    wifiserver.begin();
+#endif
+
 #ifdef ETHERNET
 #ifdef SDCARD_ON_ETHERSHIELD_PIN
     // disable the SD card, as recommended in the doc
@@ -430,6 +465,8 @@ void info(Stream& stream) {
     stream.print(F("Arduino Leonardo"));
 #elif defined(ARDUINO_AVR_UNO)
     stream.print(F("Arduino Uno"));
+#elif defined(ESP32)
+    stream.print(F("ESP32"));
 #else
     stream.print(F("Unknown"));
 #endif
@@ -447,11 +484,19 @@ static bool isPrefix(const char *string, const char* cmd) {
 }
 
 bool isPrefix(const char* cmd, const __FlashStringHelper *pstring) {
-    return strncmp_PF(cmd, STRCPY_PF_CAST(reinterpret_cast<uint_farptr_t>(pstring)), strlen(cmd)) == 0;
+    #ifdef ARDUINO_ARCH_AVR
+        return strncmp_PF(cmd, STRCPY_PF_CAST(reinterpret_cast<uint_farptr_t>(pstring)), strlen(cmd)) == 0;
+    #else
+        return strncmp(cmd, (const char *)(pstring), strlen(cmd)) == 0;
+    #endif
 }
 
 bool isPrefix(const __FlashStringHelper *pstring, const char* cmd) {
-    return strncmp_PF(cmd, STRCPY_PF_CAST(reinterpret_cast<uint_farptr_t>(pstring)), strlen_PF(STRCPY_PF_CAST(reinterpret_cast<uint_farptr_t>(pstring)))) == 0;
+    #ifdef ARDUINO_ARCH_AVR
+        return strncmp_PF(cmd, STRCPY_PF_CAST(reinterpret_cast<uint_farptr_t>(pstring)), strlen_PF(STRCPY_PF_CAST(reinterpret_cast<uint_farptr_t>(pstring)))) == 0;
+    #else
+        return strncmp(cmd, (const char*)(pstring), strlen((const char*)(pstring))) == 0;
+    #endif
 }
 #pragma GCC diagnostic pop
 
@@ -476,7 +521,7 @@ static void readCommand(char* cmd, size_t cmdLength, StreamParser& parser) {
 }
 
 static bool processCommand(const char* cmd, StreamParser& parser) {
-#ifdef ETHERNET
+#if defined(ETHERNET) | defined(WIFI)
     bool quit = false;
 #endif
     Stream& stream = parser.getStream();
@@ -610,7 +655,7 @@ static bool processCommand(const char* cmd, StreamParser& parser) {
     } else
 #endif // PARAMETERS
 
-#ifdef ETHERNET
+#if defined(ETHERNET) | defined(WIFI)
         if (cmd[0] == 'q') { // quit
         quit = true;
     } else
@@ -736,7 +781,7 @@ static bool processCommand(const char* cmd, StreamParser& parser) {
         return false;
 #endif
 
-#ifdef ETHERNET
+#if defined(ETHERNET) | defined(WIFI)
     if (quit)
         return false;
 #endif
@@ -757,6 +802,19 @@ static bool readProcessOneCommand(Stream& stream) {
     return processCommand(cmd, parser);
 }
 
+#if defined(WIFI)
+bool readProcessOneTcpCommand(WiFiClient& client) {
+    while (client.available() == 0) {
+        #ifdef WIFI_BEACON
+            Beacon::checkSend();
+        #endif
+        if(!client.connected())
+            return false;
+    }
+    return readProcessOneCommand(client);
+}
+#endif
+
 #if defined(ETHERNET)
 bool readProcessOneTcpCommand(EthernetClient& client) {
     while (client.available() == 0) {
@@ -773,7 +831,37 @@ bool readProcessOneTcpCommand(EthernetClient& client) {
 
 void loop() {
     LedLcdManager::checkTurnoff();
-#ifdef ETHERNET
+
+#if defined(WIFI)
+#ifdef WIFI_BEACON
+    Beacon::checkSend();
+#endif
+
+    WiFiClient wificlient = wifiserver.available();
+    if (!wificlient)
+        return;
+    wificlient.setTimeout(10000);
+#if defined(COMMANDLED) & defined(LED)
+    LedLcdManager::setLogicLed(commandled, LedLcdManager::on);
+#endif
+    while (readProcessOneTcpCommand(wificlient)) {
+#if defined(COMMANDLED) & defined(LED)
+        LedLcdManager::setLogicLed(commandled, LedLcdManager::on);
+#endif
+    }
+#ifdef LCD
+    LedLcdManager::lcdPrint(F("Connection closed!"), true, 0, 0);
+#endif
+    wificlient.println(F("Bye"));
+
+#if defined(COMMANDLED) & defined(LED)
+    LedLcdManager::setLogicLed(commandled, LedLcdManager::off);
+#endif
+
+    if (wificlient.connected())
+        wificlient.flush();
+    wificlient.stop();
+#elif defined(ETHERNET)
 #ifdef BEACON
     Beacon::checkSend();
 #endif

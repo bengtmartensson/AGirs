@@ -782,10 +782,10 @@ void loop() {
     if (!client)
         return;
     client.setTimeout(10000);
-#ifdef LCD
-    LedLcdManager::lcdPrint(F("Connection from"), true, 0, 0);
     char ip[16];
     sprintf(ip, "%d.%d.%d.%d", Ethernet.localIP()[0], Ethernet.localIP()[1], Ethernet.localIP()[2], Ethernet.localIP()[3]);
+#ifdef LCD
+    LedLcdManager::lcdPrint(F("Connection from"), true, 0, 0);
     LedLcdManager::lcdPrint(ip, false, 0, 1);
 #endif
 #ifdef SERIAL_DEBUG

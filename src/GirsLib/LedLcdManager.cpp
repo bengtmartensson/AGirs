@@ -11,7 +11,9 @@
 
 #include "LedLcdManager.h"
 #include <string.h>
+#if defined(ARDUINO_ARCH_AVR)
 #include <avr/pgmspace.h>
+#endif
 
 #ifdef LCD
 LiquidCrystal_I2C *LedLcdManager::lcd;

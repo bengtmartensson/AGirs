@@ -82,7 +82,7 @@ Presently not implemented, but is [planned](https://github.com/bengtmartensson/A
 ### [Transmit](http://www.harctoolbox.org/Girs.html#Transmit)
 Supported if the CPP symbol `TRANSMIT` is defined in the configuration.
 #### transmit
-*Input*: `send <no_sends> <frequency> <length_intro> <length_repeat>  <durations...>`
+*Input*: `send <no_sends> <frequency> <length_intro> <length_repeat> <length_ending> <durations...>`
 
 *Output*: `OK`
 
